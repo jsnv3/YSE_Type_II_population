@@ -1,0 +1,375 @@
+# CREATED_DATE: 2021-06-28T04:33:15.012Z
+# MODIFIED_DATE: 2022-09-06T01:14:44.785Z
+# STATUS: NeedsTemplate
+# OBS_GROUP: YSE
+# NON_DETECT_BAND: Gaia-Photometric - G
+# BEST_SPEC_CLASS: SN II
+# PHOTO_CLASS: None
+# CONTEXT_CLASS: SN
+# BEST_SPECTRUM: None
+# HOST: Host: 2MASXJ15194792+1341104; (15:19:47.92, +13:41:10.44)
+# ABS_MAG_PEAK_BAND: None
+# ANTARES_CLASSIFICATION: None
+# INTERNAL_SURVEY: None
+# NAME: 2021rem
+# RA: 229.94886289628926
+# DEC: 13.687623158486879
+# RA_ERR: None
+# DEC_ERR: None
+# DISC_DATE: 2021-06-27T00:00:00Z
+# REDSHIFT: 0.03
+# REDSHIFT_ERR: None
+# REDSHIFT_SOURCE: None
+# NON_DETECT_DATE: 2021-06-29T23:29:46Z
+# NON_DETECT_LIMIT: 21.5
+# MW_EBV: 0.037
+# ABS_MAG_PEAK: None
+# ABS_MAG_PEAK_DATE: None
+# POSTAGE_STAMP_FILE: 11FYSEekx/59392/1151947721134115400_59392.342_116759802_267_target.jpeg
+# POSTAGE_STAMP_REF: 11FYSEekx/59392/1151947721134115400_59392.342_116759802_267_ref.jpeg
+# POSTAGE_STAMP_DIFF: 11FYSEekx/59392/1151947721134115400_59392.342_116759802_267_diff.jpeg
+# POSTAGE_STAMP_FILE_FITS: 11FYSEekx/59392/1151947721134115400_59392.342_116759802_267_target.fits
+# POSTAGE_STAMP_REF_FITS: 11FYSEekx/59392/1151947721134115400_59392.342_116759802_267_ref.fits
+# POSTAGE_STAMP_DIFF_FITS: 11FYSEekx/59392/1151947721134115400_59392.342_116759802_267_diff.fits
+# K2_VALIDATED: None
+# K2_MSG: None
+# TNS_SPEC_CLASS: SN II
+# POINT_SOURCE_PROBABILITY: None
+# ALT_STATUS: CONFIRMED
+# SLUG: 2021rem
+# REAL_BOGUS_SCORE: 0.943117
+# HAS_HST: False
+# HAS_SPITZER: None
+# HAS_CHANDRA: False
+# TAGS: [29]
+
+VARLIST:  MJD        FLT  FLUXCAL   FLUXCALERR    MAG     MAGERR     MAGSYS   TELESCOPE    INSTRUMENT   DQ
+OBS:      59295.546  z  124.137  169.008  22.265  1.361  None  Pan-STARRS1  GPC1  None
+OBS:      59298.511  r  -47.795  231.292  nan  -5.254  None  Pan-STARRS1  GPC1  None
+OBS:      59299.606  i  -71.982  190.216  nan  -2.869  None  Pan-STARRS1  GPC1  None
+OBS:      59299.609  r  -0.017  236.309  nan  -14754.453  None  Pan-STARRS1  GPC1  None
+OBS:      59300.503  r  -729.161  698.513  nan  -1.040  None  Pan-STARRS1  GPC1  None
+OBS:      59300.505  z  -234.155  654.019  nan  -3.033  None  Pan-STARRS1  GPC1  None
+OBS:      59310.487  z  7.726  112.751  25.280  14.593  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59311.344  g  5.504  64.634  25.648  11.744  None  Pan-STARRS1  GPC1  None
+OBS:      59316.419  r  -89.217  220.267  nan  -2.681  None  Pan-STARRS1  GPC1  None
+OBS:      59323.434  g  -34.201  114.652  nan  -3.640  None  Pan-STARRS1  GPC1  None
+OBS:      59323.436  z  -17.224  125.247  nan  -7.895  None  Pan-STARRS1  GPC1  None
+OBS:      59327.430  z  -120.270  170.795  nan  -1.542  None  Pan-STARRS1  GPC1  None
+OBS:      59327.433  r  -120.261  94.756  nan  -0.855  None  Pan-STARRS1  GPC1  None
+OBS:      59334.435  z  -304.208  358.175  nan  -1.278  None  Pan-STARRS1  GPC1  None
+OBS:      59343.382  g  -1.001  102.309  nan  -110.964  None  Pan-STARRS1  GPC1  None
+OBS:      59343.385  r  -77.887  82.467  nan  -1.150  None  Pan-STARRS1  GPC1  None
+OBS:      59346.389  i  -202.453  96.791  nan  -0.519  None  Pan-STARRS1  GPC1  None
+OBS:      59350.381  g  -156.353  285.993  nan  -1.986  None  Pan-STARRS1  GPC1  None
+OBS:      59367.339  z  -2.069  112.810  nan  -59.204  None  Pan-STARRS1  GPC1  None
+OBS:      59382.283  i  -112.123  61.784  nan  -0.598  None  Pan-STARRS1  GPC1  None
+OBS:      59382.286  g  -36.647  66.230  nan  -1.962  None  Pan-STARRS1  GPC1  None
+OBS:      59383.279  g  -154.168  118.136  nan  -0.832  None  Pan-STARRS1  GPC1  None
+OBS:      59389.273  z  23.198  184.908  24.086  7.971  None  Pan-STARRS1  GPC1  None
+OBS:      59389.276  r  -41.766  125.554  nan  -3.264  None  Pan-STARRS1  GPC1  None
+OBS:      59392.340  r  1687.131  91.005  19.432  0.054  None  Pan-STARRS1  GPC1  None
+OBS:      59392.343  i  1439.710  93.020  19.604  0.065  None  Pan-STARRS1  GPC1  None
+OBS:      59406.334  i  7549.531  146.040  17.805  0.021  None  Pan-STARRS1  GPC1  None
+OBS:      59406.337  g  8314.574  142.378  17.700  0.019  None  Pan-STARRS1  GPC1  None
+OBS:      59409.326  g  8172.595  352.373  17.719  0.047  None  Pan-STARRS1  GPC1  None
+OBS:      59409.329  r  9352.334  265.544  17.573  0.031  None  Pan-STARRS1  GPC1  None
+OBS:      59417.288  r  10237.643  723.956  17.474  0.077  None  Pan-STARRS1  GPC1  None
+OBS:      59417.291  i  9297.368  695.049  17.579  0.081  None  Pan-STARRS1  GPC1  None
+OBS:      59420.353  z  7602.563  233.579  17.798  0.033  None  Pan-STARRS1  GPC1  None
+OBS:      59420.356  r  9529.717  352.589  17.552  0.040  None  Pan-STARRS1  GPC1  None
+OBS:      59423.289  r  8795.084  153.295  17.639  0.019  None  Pan-STARRS1  GPC1  None
+OBS:      59423.292  i  8490.241  162.498  17.678  0.021  None  Pan-STARRS1  GPC1  None
+OBS:      59424.365  z  7353.261  346.736  17.834  0.051  None  Pan-STARRS1  GPC1  None
+OBS:      59424.367  r  8565.644  337.474  17.668  0.043  None  Pan-STARRS1  GPC1  None
+OBS:      59426.285  g  4181.769  121.319  18.447  0.031  None  Pan-STARRS1  GPC1  None
+OBS:      59426.288  z  7397.415  204.401  17.827  0.030  None  Pan-STARRS1  GPC1  None
+OBS:      59429.266  g  4045.386  307.593  18.483  0.083  None  Pan-STARRS1  GPC1  None
+OBS:      59429.269  i  7586.474  188.673  17.800  0.027  None  Pan-STARRS1  GPC1  None
+OBS:      59431.268  g  3358.923  226.724  18.684  0.073  None  Pan-STARRS1  GPC1  None
+OBS:      59431.270  r  7339.053  237.961  17.836  0.035  None  Pan-STARRS1  GPC1  None
+OBS:      59433.308  g  3261.670  138.861  18.716  0.046  None  Pan-STARRS1  GPC1  None
+OBS:      59433.310  i  7152.206  149.829  17.864  0.023  None  Pan-STARRS1  GPC1  None
+OBS:      59434.262  g  3063.092  99.182  18.785  0.035  None  Pan-STARRS1  GPC1  None
+OBS:      59434.265  r  6630.099  122.092  17.946  0.020  None  Pan-STARRS1  GPC1  None
+OBS:      59438.264  g  2415.906  111.846  19.042  0.050  None  Pan-STARRS1  GPC1  None
+OBS:      59444.254  i  5818.352  176.360  18.088  0.033  None  Pan-STARRS1  GPC1  None
+OBS:      59444.257  r  5654.055  235.038  18.119  0.045  None  Pan-STARRS1  GPC1  None
+OBS:      59446.252  z  5985.770  179.907  18.057  0.033  None  Pan-STARRS1  GPC1  None
+OBS:      59446.255  r  5194.216  135.056  18.211  0.028  None  Pan-STARRS1  GPC1  None
+OBS:      59448.272  i  5583.159  91.720  18.133  0.018  None  Pan-STARRS1  GPC1  None
+OBS:      59448.274  r  5245.175  91.866  18.201  0.019  None  Pan-STARRS1  GPC1  None
+OBS:      59451.260  r  5210.027  302.731  18.208  0.063  None  Pan-STARRS1  GPC1  None
+OBS:      59451.263  i  5311.290  175.934  18.187  0.036  None  Pan-STARRS1  GPC1  None
+OBS:      59452.308  z  5862.461  237.885  18.080  0.044  None  Pan-STARRS1  GPC1  None
+OBS:      59452.311  r  5254.362  141.277  18.199  0.029  None  Pan-STARRS1  GPC1  None
+OBS:      59453.263  i  5115.405  279.759  18.228  0.059  None  Pan-STARRS1  GPC1  None
+OBS:      59453.265  r  5100.820  227.292  18.231  0.048  None  Pan-STARRS1  GPC1  None
+OBS:      59454.258  z  5887.352  242.520  18.075  0.045  None  Pan-STARRS1  GPC1  None
+OBS:      59454.261  r  4839.940  170.024  18.288  0.038  None  Pan-STARRS1  GPC1  None
+OBS:      59456.247  z  5219.153  292.399  18.206  0.061  None  Pan-STARRS1  GPC1  None
+OBS:      59456.249  g  1602.360  238.754  19.488  0.162  None  Pan-STARRS1  GPC1  None
+OBS:      59462.258  g  1173.384  324.666  19.826  0.300  None  Pan-STARRS1  GPC1  None
+OBS:      59462.261  i  4231.360  496.133  18.434  0.127  None  Pan-STARRS1  GPC1  None
+OBS:      59471.243  g  699.523  319.523  20.388  0.457  None  Pan-STARRS1  GPC1  None
+OBS:      59471.245  i  3687.058  497.575  18.583  0.147  None  Pan-STARRS1  GPC1  None
+OBS:      59476.232  i  3323.533  490.720  18.696  0.160  None  Pan-STARRS1  GPC1  None
+OBS:      59476.235  r  3949.299  393.844  18.509  0.108  None  Pan-STARRS1  GPC1  None
+OBS:      59477.230  z  4654.146  301.140  18.330  0.070  None  Pan-STARRS1  GPC1  None
+OBS:      59477.233  r  3554.021  180.713  18.623  0.055  None  Pan-STARRS1  GPC1  None
+OBS:      59479.229  z  4409.608  255.639  18.389  0.063  None  Pan-STARRS1  GPC1  None
+OBS:      59479.232  r  3277.631  196.200  18.711  0.065  None  Pan-STARRS1  GPC1  None
+OBS:      59482.228  i  2427.281  507.843  19.037  0.227  None  Pan-STARRS1  GPC1  None
+OBS:      59482.230  r  3145.140  208.426  18.756  0.072  None  Pan-STARRS1  GPC1  None
+OBS:      59484.227  z  3909.129  910.227  18.520  0.253  None  Pan-STARRS1  GPC1  None
+OBS:      59484.230  r  3151.520  358.420  18.754  0.123  None  Pan-STARRS1  GPC1  None
+OBS:      59487.225  z  3416.646  755.369  18.666  0.240  None  Pan-STARRS1  GPC1  None
+OBS:      59487.228  g  345.580  319.601  21.154  0.925  None  Pan-STARRS1  GPC1  None
+OBS:      59492.222  r  2927.386  446.562  18.834  0.166  None  Pan-STARRS1  GPC1  None
+OBS:      59492.225  g  508.210  346.584  20.735  0.682  None  Pan-STARRS1  GPC1  None
+OBS:      59819.265  g  -105.023  132.295  nan  -1.368  None  Pan-STARRS1  GPC1  None
+OBS:      59819.268  r  -48.125  146.659  nan  -3.309  None  Pan-STARRS1  GPC1  None
+OBS:      59827.242  i  -177.541  327.662  nan  -2.004  None  Pan-STARRS1  GPC1  None
+OBS:      59827.244  g  47.934  416.231  23.298  8.683  None  Pan-STARRS1  GPC1  None
+OBS:      59392.340  r  1674.943  77.134  19.440  0.050  None  Pan-STARRS1  GPC1  None
+OBS:      59401.372  w  7655.966  70.514  17.790  0.010  None  Pan-STARRS1  GPC1  None
+OBS:      59455.280  w  3767.038  69.391  18.560  0.020  None  Pan-STARRS1  GPC1  None
+OBS:      59337.464  orange-ATLAS  -0.363  0.472  nan  -1.411  None  ATLAS  HKO  None
+OBS:      59337.467  orange-ATLAS  0.835  0.617  19.227  5.000  None  ATLAS  HKO  None
+OBS:      59337.493  orange-ATLAS  -0.871  0.472  nan  -0.588  None  ATLAS  HKO  None
+OBS:      59337.510  orange-ATLAS  -0.182  0.399  nan  -2.389  None  ATLAS  HKO  None
+OBS:      59339.390  cyan-ATLAS  0.871  2.868  17.858  5.000  None  ATLAS  HKO  Bad
+OBS:      59339.393  cyan-ATLAS  -1.089  0.545  nan  -0.543  None  ATLAS  HKO  None
+OBS:      59339.395  cyan-ATLAS  0.145  0.545  19.675  5.000  None  ATLAS  HKO  None
+OBS:      59339.401  cyan-ATLAS  -0.290  0.617  nan  -2.307  None  ATLAS  HKO  None
+OBS:      59341.534  orange-ATLAS  -1.017  0.327  nan  -0.349  None  ATLAS  HKO  None
+OBS:      59341.538  orange-ATLAS  0.908  0.290  20.405  0.347  None  ATLAS  HKO  None
+OBS:      59341.551  orange-ATLAS  -0.436  0.399  nan  -0.995  None  ATLAS  HKO  None
+OBS:      59341.556  orange-ATLAS  -1.452  0.327  nan  -0.244  None  ATLAS  HKO  None
+OBS:      59343.382  cyan-ATLAS  -0.182  0.254  nan  -1.520  None  ATLAS  HKO  None
+OBS:      59343.384  cyan-ATLAS  -0.690  0.254  nan  -0.400  None  ATLAS  HKO  None
+OBS:      59343.387  cyan-ATLAS  -0.327  0.290  nan  -0.965  None  ATLAS  HKO  None
+OBS:      59345.381  orange-ATLAS  0.581  0.327  19.816  5.000  None  ATLAS  HKO  None
+OBS:      59345.383  orange-ATLAS  -0.073  0.218  nan  -3.257  None  ATLAS  HKO  None
+OBS:      59345.387  orange-ATLAS  -0.871  0.363  nan  -0.452  None  ATLAS  HKO  None
+OBS:      59345.422  orange-ATLAS  0.145  0.290  20.282  5.000  None  ATLAS  HKO  None
+OBS:      59347.383  cyan-ATLAS  0.109  0.290  20.322  5.000  None  ATLAS  HKO  None
+OBS:      59347.386  cyan-ATLAS  -0.182  0.290  nan  -1.737  None  ATLAS  HKO  None
+OBS:      59347.389  cyan-ATLAS  -0.036  0.290  nan  -8.686  None  ATLAS  HKO  None
+OBS:      59347.395  cyan-ATLAS  0.363  0.363  19.895  5.000  None  ATLAS  HKO  None
+OBS:      59349.383  orange-ATLAS  -0.508  0.290  nan  -0.620  None  ATLAS  HKO  None
+OBS:      59349.385  orange-ATLAS  0.399  0.327  19.951  5.000  None  ATLAS  HKO  None
+OBS:      59349.390  orange-ATLAS  0.073  0.327  20.244  5.000  None  ATLAS  HKO  None
+OBS:      59349.415  orange-ATLAS  -0.073  0.399  nan  -5.972  None  ATLAS  HKO  None
+OBS:      59351.484  cyan-ATLAS  -0.036  0.363  nan  -10.857  None  ATLAS  HKO  None
+OBS:      59351.494  cyan-ATLAS  -0.036  0.327  nan  -9.772  None  ATLAS  HKO  None
+OBS:      59351.502  cyan-ATLAS  -0.399  0.327  nan  -0.888  None  ATLAS  HKO  None
+OBS:      59351.513  cyan-ATLAS  -0.383  0.243  nan  -0.688  None  ATLAS  HKO  None
+OBS:      59351.525  cyan-ATLAS  -0.363  0.363  nan  -1.086  None  ATLAS  HKO  None
+OBS:      59353.386  orange-ATLAS  -0.436  0.363  nan  -0.905  None  ATLAS  HKO  None
+OBS:      59353.391  orange-ATLAS  -0.581  0.363  nan  -0.679  None  ATLAS  HKO  None
+OBS:      59353.410  orange-ATLAS  0.399  0.436  19.720  5.000  None  ATLAS  HKO  None
+OBS:      59353.412  orange-ATLAS  -0.290  0.254  nan  -0.950  None  ATLAS  HKO  None
+OBS:      59354.384  orange-ATLAS  0.835  0.508  19.368  5.000  None  ATLAS  HKO  None
+OBS:      59354.386  orange-ATLAS  -0.399  0.436  nan  -1.184  None  ATLAS  HKO  None
+OBS:      59354.390  orange-ATLAS  -0.690  0.436  nan  -0.686  None  ATLAS  HKO  None
+OBS:      59354.415  orange-ATLAS  -0.726  0.436  nan  -0.651  None  ATLAS  HKO  None
+OBS:      59355.552  cyan-ATLAS  0.290  0.799  19.227  5.000  None  ATLAS  HKO  Bad
+OBS:      59355.575  cyan-ATLAS  -14.378  17.464  nan  -1.319  None  ATLAS  HKO  Bad
+OBS:      59357.355  orange-ATLAS  1.126  6.499  17.014  5.000  None  ATLAS  HKO  Bad
+OBS:      59357.357  orange-ATLAS  0.762  0.799  19.051  5.000  None  ATLAS  HKO  None
+OBS:      59357.391  orange-ATLAS  -0.980  0.654  nan  -0.724  None  ATLAS  HKO  None
+OBS:      59357.405  orange-ATLAS  0.762  0.690  19.170  5.000  None  ATLAS  HKO  None
+OBS:      59360.452  orange-ATLAS  -0.073  0.399  nan  -5.972  None  ATLAS  HKO  None
+OBS:      59360.455  orange-ATLAS  -3.667  0.690  nan  -0.204  None  ATLAS  HKO  Bad
+OBS:      59360.475  orange-ATLAS  0.236  0.235  20.366  5.000  None  ATLAS  HKO  None
+OBS:      59360.487  orange-ATLAS  0.399  0.290  20.040  5.000  None  ATLAS  HKO  None
+OBS:      59360.515  orange-ATLAS  0.508  0.690  19.272  5.000  None  ATLAS  HKO  None
+OBS:      59361.452  orange-ATLAS  0.109  0.726  19.402  5.000  None  ATLAS  HKO  None
+OBS:      59361.464  orange-ATLAS  22.184  6.971  16.935  0.341  None  ATLAS  HKO  Bad
+OBS:      59361.481  orange-ATLAS  0.545  0.871  19.051  5.000  None  ATLAS  HKO  None
+OBS:      59361.497  orange-ATLAS  -0.290  0.980  nan  -3.664  None  ATLAS  HKO  None
+OBS:      59362.474  orange-ATLAS  0.508  0.871  19.064  5.000  None  ATLAS  HKO  None
+OBS:      59362.481  orange-ATLAS  0.254  1.053  18.967  5.000  None  ATLAS  HKO  None
+OBS:      59362.486  orange-ATLAS  0.036  1.089  19.002  5.000  None  ATLAS  HKO  None
+OBS:      59362.503  orange-ATLAS  0.182  1.198  18.857  5.000  None  ATLAS  HKO  None
+OBS:      59363.425  orange-ATLAS  -1.452  0.545  nan  -0.407  None  ATLAS  HKO  None
+OBS:      59363.453  orange-ATLAS  1.779  0.617  18.900  5.000  None  ATLAS  HKO  None
+OBS:      59363.457  orange-ATLAS  1.271  0.690  18.991  5.000  None  ATLAS  HKO  None
+OBS:      59363.472  orange-ATLAS  -0.145  0.690  nan  -5.157  None  ATLAS  HKO  None
+OBS:      59367.377  orange-ATLAS  0.145  0.399  19.979  5.000  None  ATLAS  HKO  None
+OBS:      59367.380  orange-ATLAS  0.654  0.436  19.569  5.000  None  ATLAS  HKO  None
+OBS:      59367.409  orange-ATLAS  0.508  0.363  19.791  5.000  None  ATLAS  HKO  None
+OBS:      59367.420  orange-ATLAS  0.399  0.327  19.951  5.000  None  ATLAS  HKO  None
+OBS:      59369.505  orange-ATLAS  0.254  0.363  19.979  5.000  None  ATLAS  HKO  None
+OBS:      59369.516  orange-ATLAS  0.145  0.363  20.071  5.000  None  ATLAS  HKO  None
+OBS:      59369.525  orange-ATLAS  0.327  0.472  19.697  5.000  None  ATLAS  HKO  None
+OBS:      59369.530  orange-ATLAS  0.327  0.363  19.922  5.000  None  ATLAS  HKO  None
+OBS:      59371.407  orange-ATLAS  -0.145  0.399  nan  -2.986  None  ATLAS  HKO  None
+OBS:      59371.410  orange-ATLAS  -1.089  0.399  nan  -0.398  None  ATLAS  HKO  None
+OBS:      59371.428  orange-ATLAS  -0.807  0.195  nan  -0.262  None  ATLAS  HKO  None
+OBS:      59371.443  orange-ATLAS  -1.307  0.363  nan  -0.302  None  ATLAS  HKO  None
+OBS:      59371.449  orange-ATLAS  -0.581  0.399  nan  -0.746  None  ATLAS  HKO  None
+OBS:      59373.366  cyan-ATLAS  -0.290  0.254  nan  -0.950  None  ATLAS  HKO  None
+OBS:      59373.379  cyan-ATLAS  -0.871  0.218  nan  -0.271  None  ATLAS  HKO  None
+OBS:      59373.402  cyan-ATLAS  -0.617  0.218  nan  -0.383  None  ATLAS  HKO  None
+OBS:      59373.418  cyan-ATLAS  -1.017  0.182  nan  -0.194  None  ATLAS  HKO  None
+OBS:      59377.356  cyan-ATLAS  -0.545  0.254  nan  -0.507  None  ATLAS  HKO  None
+OBS:      59377.360  cyan-ATLAS  -0.290  0.218  nan  -0.814  None  ATLAS  HKO  None
+OBS:      59377.370  cyan-ATLAS  0.109  0.218  20.594  5.000  None  ATLAS  HKO  None
+OBS:      59377.379  cyan-ATLAS  -0.073  0.218  nan  -3.257  None  ATLAS  HKO  None
+OBS:      59381.360  orange-ATLAS  0.073  0.363  20.137  5.000  None  ATLAS  HKO  None
+OBS:      59381.369  orange-ATLAS  -0.726  0.327  nan  -0.489  None  ATLAS  HKO  None
+OBS:      59381.376  orange-ATLAS  -0.290  0.363  nan  -1.357  None  ATLAS  HKO  None
+OBS:      59381.386  orange-ATLAS  0.690  0.363  19.675  5.000  None  ATLAS  HKO  None
+OBS:      59383.340  orange-ATLAS  -0.145  0.545  nan  -4.072  None  ATLAS  HKO  None
+OBS:      59383.343  orange-ATLAS  -0.290  0.508  nan  -1.900  None  ATLAS  HKO  None
+OBS:      59383.376  orange-ATLAS  -0.654  0.581  nan  -0.965  None  ATLAS  HKO  None
+OBS:      59383.404  orange-ATLAS  0.654  0.436  19.569  5.000  None  ATLAS  HKO  None
+OBS:      59385.415  orange-ATLAS  0.799  0.762  19.076  5.000  None  ATLAS  HKO  None
+OBS:      59385.419  orange-ATLAS  -1.198  1.053  nan  -0.954  None  ATLAS  HKO  None
+OBS:      59385.445  orange-ATLAS  -1.343  0.581  nan  -0.470  None  ATLAS  HKO  None
+OBS:      59385.461  orange-ATLAS  0.399  0.762  19.227  5.000  None  ATLAS  HKO  None
+OBS:      59387.355  orange-ATLAS  1.525  1.234  18.504  5.000  None  ATLAS  HKO  None
+OBS:      59387.358  orange-ATLAS  -1.888  1.307  nan  -0.752  None  ATLAS  HKO  Bad
+OBS:      59387.365  orange-ATLAS  -2.687  1.271  nan  -0.514  None  ATLAS  HKO  Bad
+OBS:      59387.378  orange-ATLAS  1.443  0.817  18.824  5.000  None  ATLAS  HKO  None
+OBS:      59387.396  orange-ATLAS  1.380  1.089  18.632  5.000  None  ATLAS  HKO  None
+OBS:      59388.350  orange-ATLAS  0.073  0.617  19.589  5.000  None  ATLAS  HKO  None
+OBS:      59388.353  orange-ATLAS  0.472  0.690  19.287  5.000  None  ATLAS  HKO  None
+OBS:      59388.360  orange-ATLAS  0.073  0.726  19.419  5.000  None  ATLAS  HKO  None
+OBS:      59388.394  orange-ATLAS  -1.743  0.799  nan  -0.498  None  ATLAS  HKO  None
+OBS:      59389.343  orange-ATLAS  -2.396  0.799  nan  -0.362  None  ATLAS  HKO  None
+OBS:      59389.352  orange-ATLAS  -0.799  0.726  nan  -0.987  None  ATLAS  HKO  None
+OBS:      59389.358  orange-ATLAS  -1.271  0.762  nan  -0.651  None  ATLAS  HKO  None
+OBS:      59389.371  orange-ATLAS  0.254  0.726  19.335  5.000  None  ATLAS  HKO  None
+OBS:      59390.358  orange-ATLAS  0.218  1.888  18.376  5.000  None  ATLAS  HKO  Bad
+OBS:      59390.362  orange-ATLAS  -0.290  2.360  nan  -8.822  None  ATLAS  HKO  Bad
+OBS:      59390.367  orange-ATLAS  2.251  1.997  18.010  5.000  None  ATLAS  HKO  Bad
+OBS:      59390.380  orange-ATLAS  1.017  2.796  17.867  5.000  None  ATLAS  HKO  Bad
+OBS:      59391.342  orange-ATLAS  1.271  0.617  19.064  5.000  None  ATLAS  HKO  None
+OBS:      59391.346  orange-ATLAS  1.234  0.726  18.967  5.000  None  ATLAS  HKO  None
+OBS:      59391.352  orange-ATLAS  1.743  0.581  19.697  0.362  None  ATLAS  HKO  None
+OBS:      59391.363  orange-ATLAS  -0.436  0.472  nan  -1.176  None  ATLAS  HKO  None
+OBS:      59392.380  orange-ATLAS  1.017  0.654  19.115  5.000  None  ATLAS  HKO  None
+OBS:      59392.414  orange-ATLAS  2.759  0.508  19.198  0.200  None  ATLAS  HKO  None
+OBS:      59392.418  orange-ATLAS  1.706  0.545  19.720  0.347  None  ATLAS  HKO  None
+OBS:      59392.425  orange-ATLAS  1.198  0.617  19.089  5.000  None  ATLAS  HKO  None
+OBS:      59393.360  orange-ATLAS  5.010  0.399  18.550  0.087  None  ATLAS  HKO  None
+OBS:      59393.370  orange-ATLAS  4.466  0.436  18.675  0.106  None  ATLAS  HKO  None
+OBS:      59393.376  orange-ATLAS  3.703  0.436  18.878  0.128  None  ATLAS  HKO  None
+OBS:      59393.379  orange-ATLAS  4.466  0.436  18.675  0.106  None  ATLAS  HKO  None
+OBS:      59397.439  orange-ATLAS  8.362  0.229  17.994  0.030  None  ATLAS  HKO  None
+OBS:      59401.373  orange-ATLAS  9.915  0.178  17.809  0.019  None  ATLAS  HKO  None
+OBS:      59403.340  cyan-ATLAS  10.828  0.190  17.714  0.019  None  ATLAS  HKO  None
+OBS:      59407.299  cyan-ATLAS  10.270  0.759  17.771  0.080  None  ATLAS  HKO  None
+OBS:      59413.306  orange-ATLAS  11.715  0.257  17.628  0.024  None  ATLAS  HKO  None
+OBS:      59415.317  orange-ATLAS  12.625  0.727  17.547  0.063  None  ATLAS  HKO  None
+OBS:      59417.348  orange-ATLAS  10.606  0.422  17.736  0.043  None  ATLAS  HKO  None
+OBS:      59419.328  orange-ATLAS  11.522  0.436  17.646  0.041  None  ATLAS  HKO  None
+OBS:      59424.286  cyan-ATLAS  7.911  0.149  18.054  0.020  None  ATLAS  HKO  None
+OBS:      59425.327  cyan-ATLAS  7.537  0.136  18.107  0.020  None  ATLAS  HKO  None
+OBS:      59427.332  orange-ATLAS  10.094  0.472  17.790  0.051  None  ATLAS  HKO  Bad
+OBS:      59429.313  cyan-ATLAS  6.683  0.181  18.238  0.029  None  ATLAS  HKO  None
+OBS:      59431.311  orange-ATLAS  9.220  0.243  17.888  0.029  None  ATLAS  HKO  None
+OBS:      59433.300  cyan-ATLAS  5.610  0.205  18.428  0.040  None  ATLAS  HKO  Bad
+OBS:      59435.310  orange-ATLAS  9.756  0.271  17.827  0.030  None  ATLAS  HKO  None
+OBS:      59437.262  cyan-ATLAS  5.648  0.192  18.420  0.037  None  ATLAS  HKO  None
+OBS:      59439.265  orange-ATLAS  9.022  0.271  17.912  0.033  None  ATLAS  HKO  None
+OBS:      59441.301  orange-ATLAS  7.676  0.239  18.087  0.034  None  ATLAS  HKO  None
+OBS:      59445.250  orange-ATLAS  7.267  0.298  18.147  0.045  None  ATLAS  HKO  None
+OBS:      59449.317  orange-ATLAS  7.273  0.373  18.146  0.056  None  ATLAS  HKO  None
+OBS:      59451.285  orange-ATLAS  6.668  0.304  18.240  0.049  None  ATLAS  HKO  None
+OBS:      59453.241  orange-ATLAS  6.777  0.185  18.222  0.030  None  ATLAS  HKO  None
+OBS:      59455.245  cyan-ATLAS  3.720  0.288  18.874  0.084  None  ATLAS  HKO  None
+OBS:      59457.298  orange-ATLAS  5.055  0.720  18.541  0.155  None  ATLAS  HKO  None
+OBS:      59461.263  orange-ATLAS  5.665  0.206  18.417  0.039  None  ATLAS  HKO  None
+OBS:      59465.265  orange-ATLAS  5.586  0.175  18.432  0.034  None  ATLAS  HKO  None
+OBS:      59475.230  orange-ATLAS  3.649  0.551  18.895  0.164  None  ATLAS  HKO  None
+OBS:      59481.231  orange-ATLAS  5.693  0.378  18.412  0.072  None  ATLAS  HKO  None
+OBS:      59483.228  orange-ATLAS  3.267  0.250  19.015  0.083  None  ATLAS  HKO  None
+OBS:      59393.360  orange  3688.077  326.097  18.583  0.096  None  ATLAS  HKO  None
+OBS:      59587.645  g  9.724  146.606  25.030  15.077  None  Pan-STARRS2  GPC2  None
+OBS:      59587.648  r  344.099  149.137  21.158  0.433  None  Pan-STARRS2  GPC2  None
+OBS:      59588.653  g  -20.598  102.766  nan  -5.417  None  Pan-STARRS2  GPC2  None
+OBS:      59588.655  z  536.928  194.948  20.675  0.363  None  Pan-STARRS2  GPC2  None
+OBS:      59592.659  i  -799.125  519.856  nan  -0.706  None  Pan-STARRS2  GPC2  None
+OBS:      59592.662  r  -724.623  348.763  nan  -0.523  None  Pan-STARRS2  GPC2  None
+OBS:      59596.638  r  320.521  146.029  21.235  0.456  None  Pan-STARRS2  GPC2  None
+OBS:      59596.641  z  525.000  226.206  20.700  0.431  None  Pan-STARRS2  GPC2  None
+OBS:      59598.625  r  228.489  197.101  21.603  0.863  None  Pan-STARRS2  GPC2  None
+OBS:      59598.628  z  303.619  384.499  21.294  1.266  None  Pan-STARRS2  GPC2  None
+OBS:      59599.640  r  275.079  102.380  21.401  0.372  None  Pan-STARRS2  GPC2  None
+OBS:      59599.643  i  290.599  99.801  21.342  0.343  None  Pan-STARRS2  GPC2  None
+OBS:      59600.623  r  308.868  166.591  21.276  0.539  None  Pan-STARRS2  GPC2  None
+OBS:      59600.625  z  628.411  203.879  20.504  0.324  None  Pan-STARRS2  GPC2  None
+OBS:      59601.642  i  237.321  460.418  21.562  1.940  None  Pan-STARRS2  GPC2  None
+OBS:      59602.650  z  278.458  370.748  21.388  1.331  None  Pan-STARRS2  GPC2  None
+OBS:      59608.605  g  -179.042  213.779  nan  -1.296  None  Pan-STARRS2  GPC2  None
+OBS:      59608.607  r  69.953  261.947  22.888  3.745  None  Pan-STARRS2  GPC2  None
+OBS:      59612.630  i  23.211  231.810  24.086  9.987  None  Pan-STARRS2  GPC2  None
+OBS:      59612.633  g  67.235  140.885  22.931  2.095  None  Pan-STARRS2  GPC2  None
+OBS:      59615.629  r  211.225  198.688  21.688  0.941  None  Pan-STARRS2  GPC2  None
+OBS:      59621.640  r  84.902  224.260  22.678  2.641  None  Pan-STARRS2  GPC2  None
+OBS:      59621.642  i  -54.051  350.695  nan  -7.044  None  Pan-STARRS2  GPC2  None
+OBS:      59624.617  z  345.170  205.079  21.155  0.594  None  Pan-STARRS2  GPC2  None
+OBS:      59624.620  r  262.884  169.689  21.451  0.645  None  Pan-STARRS2  GPC2  None
+OBS:      59627.613  z  478.719  451.144  20.800  0.942  None  Pan-STARRS2  GPC2  None
+OBS:      59635.538  z  436.074  101.849  20.901  0.254  None  Pan-STARRS2  GPC2  None
+OBS:      59638.586  g  -302.677  217.040  nan  -0.779  None  Pan-STARRS2  GPC2  None
+OBS:      59638.589  i  105.800  211.883  22.439  2.003  None  Pan-STARRS2  GPC2  None
+OBS:      59646.571  i  -332.240  450.504  nan  -1.472  None  Pan-STARRS2  GPC2  None
+OBS:      59646.574  g  56.541  93.445  23.119  1.653  None  Pan-STARRS2  GPC2  None
+OBS:      59652.535  z  190.463  416.974  21.800  2.189  None  Pan-STARRS2  GPC2  None
+OBS:      59652.537  r  96.306  158.722  22.541  1.648  None  Pan-STARRS2  GPC2  None
+OBS:      59654.529  i  -342.898  337.129  nan  -1.067  None  Pan-STARRS2  GPC2  None
+OBS:      59654.532  r  -100.857  287.214  nan  -3.092  None  Pan-STARRS2  GPC2  None
+OBS:      59655.526  z  437.263  210.228  20.898  0.481  None  Pan-STARRS2  GPC2  None
+OBS:      59655.529  r  188.941  102.819  21.809  0.544  None  Pan-STARRS2  GPC2  None
+OBS:      59672.480  r  -132.597  184.139  nan  -1.508  None  Pan-STARRS2  GPC2  None
+OBS:      59672.483  g  -84.050  218.289  nan  -2.820  None  Pan-STARRS2  GPC2  None
+OBS:      59677.463  g  77.460  114.338  22.777  1.476  None  Pan-STARRS2  GPC2  None
+OBS:      59677.466  z  279.381  334.371  21.384  1.197  None  Pan-STARRS2  GPC2  None
+OBS:      59681.482  r  63.941  121.316  22.985  1.897  None  Pan-STARRS2  GPC2  None
+OBS:      59681.485  z  -50.812  277.208  nan  -5.923  None  Pan-STARRS2  GPC2  None
+OBS:      59682.478  i  19.372  182.758  24.282  9.434  None  Pan-STARRS2  GPC2  None
+OBS:      59682.481  r  47.909  192.373  23.299  4.015  None  Pan-STARRS2  GPC2  None
+OBS:      59683.471  z  330.094  518.493  21.203  1.571  None  Pan-STARRS2  GPC2  None
+OBS:      59684.477  r  139.195  213.535  22.141  1.534  None  Pan-STARRS2  GPC2  None
+OBS:      59684.479  i  -102.393  206.504  nan  -2.190  None  Pan-STARRS2  GPC2  None
+OBS:      59695.438  r  -15.353  238.752  nan  -16.884  None  Pan-STARRS2  GPC2  None
+OBS:      59695.441  i  55.234  185.015  23.145  3.350  None  Pan-STARRS2  GPC2  None
+OBS:      59699.420  z  1286.165  871.004  19.727  0.677  None  Pan-STARRS2  GPC2  None
+OBS:      59699.423  r  180.308  1098.464  21.860  6.092  None  Pan-STARRS2  GPC2  None
+OBS:      59708.417  i  76.778  150.613  22.787  1.962  None  Pan-STARRS2  GPC2  None
+OBS:      59710.374  i  -352.874  350.293  nan  -1.078  None  Pan-STARRS2  GPC2  None
+OBS:      59710.377  r  -207.526  276.415  nan  -1.446  None  Pan-STARRS2  GPC2  None
+OBS:      59711.381  r  59.204  123.009  23.069  2.078  None  Pan-STARRS2  GPC2  None
+OBS:      59711.385  z  44.437  239.090  23.381  5.380  None  Pan-STARRS2  GPC2  None
+OBS:      59717.357  i  -6.189  198.236  nan  -34.774  None  Pan-STARRS2  GPC2  None
+OBS:      59717.360  r  30.579  184.163  23.787  6.023  None  Pan-STARRS2  GPC2  None
+OBS:      59722.363  r  0.216  191.129  29.164  884.667  None  Pan-STARRS2  GPC2  None
+OBS:      59722.366  z  26.539  331.985  23.940  12.509  None  Pan-STARRS2  GPC2  None
+OBS:      59729.343  r  52.054  317.197  23.209  6.094  None  Pan-STARRS2  GPC2  None
+OBS:      59729.346  z  1085.865  1467.956  19.911  1.352  None  Pan-STARRS2  GPC2  None
+OBS:      59735.318  z  -129.088  300.267  nan  -2.525  None  Pan-STARRS2  GPC2  None
+OBS:      59735.322  r  -39.703  137.882  nan  -3.771  None  Pan-STARRS2  GPC2  None
+OBS:      59737.315  i  -174.350  262.607  nan  -1.635  None  Pan-STARRS2  GPC2  None
+OBS:      59737.318  r  -46.558  248.809  nan  -5.802  None  Pan-STARRS2  GPC2  None
+OBS:      59738.320  r  -89.094  138.095  nan  -1.683  None  Pan-STARRS2  GPC2  None
+OBS:      59738.323  z  82.761  255.918  22.705  3.092  None  Pan-STARRS2  GPC2  None
+OBS:      59756.273  z  -89.490  134.129  nan  -1.627  None  Pan-STARRS2  GPC2  None
+# END: 

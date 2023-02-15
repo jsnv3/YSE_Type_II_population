@@ -1,0 +1,351 @@
+# CREATED_DATE: 2021-10-06T21:36:56.619Z
+# MODIFIED_DATE: 2022-10-22T06:12:02.054Z
+# STATUS: Following
+# OBS_GROUP: Unknown
+# NON_DETECT_BAND: ZTF-Cam - r-ZTF
+# BEST_SPEC_CLASS: SN II
+# PHOTO_CLASS: None
+# CONTEXT_CLASS: SN
+# BEST_SPECTRUM: None
+# HOST: Host: UGC02119; (02:37:58.69, -01:50:38.62)
+# ABS_MAG_PEAK_BAND: None
+# ANTARES_CLASSIFICATION: None
+# INTERNAL_SURVEY: None
+# NAME: 2021aaqn
+# RA: 39.49244873139382
+# DEC: -1.8314536016419727
+# RA_ERR: None
+# DEC_ERR: None
+# DISC_DATE: 2021-10-06T00:00:00Z
+# REDSHIFT: 0.028
+# REDSHIFT_ERR: None
+# REDSHIFT_SOURCE: None
+# NON_DETECT_DATE: 2021-10-02T09:58:30Z
+# NON_DETECT_LIMIT: 20.4892
+# MW_EBV: 0.034
+# ABS_MAG_PEAK: None
+# ABS_MAG_PEAK_DATE: None
+# POSTAGE_STAMP_FILE: 11JYSEhfl/59493/1023758180014953100_59493.543_120159257_75_target.jpeg
+# POSTAGE_STAMP_REF: 11JYSEhfl/59493/1023758180014953100_59493.543_120159257_75_ref.jpeg
+# POSTAGE_STAMP_DIFF: 11JYSEhfl/59493/1023758180014953100_59493.543_120159257_75_diff.jpeg
+# POSTAGE_STAMP_FILE_FITS: 11JYSEhfl/59493/1023758180014953100_59493.543_120159257_75_target.fits
+# POSTAGE_STAMP_REF_FITS: 11JYSEhfl/59493/1023758180014953100_59493.543_120159257_75_ref.fits
+# POSTAGE_STAMP_DIFF_FITS: 11JYSEhfl/59493/1023758180014953100_59493.543_120159257_75_diff.fits
+# K2_VALIDATED: None
+# K2_MSG: None
+# TNS_SPEC_CLASS: SN II
+# POINT_SOURCE_PROBABILITY: None
+# ALT_STATUS: CONFIRMED
+# SLUG: 2021aaqn
+# REAL_BOGUS_SCORE: 0.999957
+# HAS_HST: True
+# HAS_SPITZER: None
+# HAS_CHANDRA: True
+# TAGS: [10, 29, 30, 33, 59, 83, 86, 88]
+
+VARLIST:  MJD        FLT  FLUXCAL   FLUXCALERR    MAG     MAGERR     MAGSYS   TELESCOPE    INSTRUMENT   DQ
+OBS:      59446.596  r  -24.404  55.793  nan  -2.482  None  Pan-STARRS1  GPC1  None
+OBS:      59446.599  z  -132.133  64.621  nan  -0.531  None  Pan-STARRS1  GPC1  None
+OBS:      59448.549  i  45.726  85.047  23.350  1.860  None  Pan-STARRS1  GPC1  None
+OBS:      59448.552  r  40.721  83.161  23.475  2.042  None  Pan-STARRS1  GPC1  None
+OBS:      59462.584  r  -16.061  112.878  nan  -7.631  None  Pan-STARRS1  GPC1  None
+OBS:      59462.587  g  -33.581  205.232  nan  -6.636  None  Pan-STARRS1  GPC1  None
+OBS:      59466.585  g  -45.201  47.850  nan  -1.149  None  Pan-STARRS1  GPC1  None
+OBS:      59466.587  i  -1.069  61.998  nan  -62.967  None  Pan-STARRS1  GPC1  None
+OBS:      59475.570  z  166.339  876.652  21.948  5.270  None  Pan-STARRS1  GPC1  None
+OBS:      59475.573  r  -85.916  489.645  nan  -6.188  None  Pan-STARRS1  GPC1  None
+OBS:      59477.556  r  -104.722  233.686  nan  -2.423  None  Pan-STARRS1  GPC1  None
+OBS:      59477.559  i  -89.757  253.764  nan  -3.070  None  Pan-STARRS1  GPC1  None
+OBS:      59484.569  z  44.019  298.308  23.391  6.777  None  Pan-STARRS1  GPC1  None
+OBS:      59484.572  r  108.935  168.442  22.407  1.546  None  Pan-STARRS1  GPC1  None
+OBS:      59487.500  g  5.693  42.065  25.612  7.389  None  Pan-STARRS1  GPC1  None
+OBS:      59487.503  z  -120.097  95.048  nan  -0.859  None  Pan-STARRS1  GPC1  None
+OBS:      59490.532  i  -114.044  135.890  nan  -1.294  None  Pan-STARRS1  GPC1  None
+OBS:      59490.535  g  -58.569  94.423  nan  -1.750  None  Pan-STARRS1  GPC1  None
+OBS:      59493.541  r  1693.169  71.689  19.428  0.042  None  Pan-STARRS1  GPC1  None
+OBS:      59493.544  g  2067.357  82.080  19.211  0.040  None  Pan-STARRS1  GPC1  None
+OBS:      59500.510  z  4926.981  346.353  18.268  0.070  None  Pan-STARRS1  GPC1  None
+OBS:      59500.513  g  4644.691  176.298  18.333  0.038  None  Pan-STARRS1  GPC1  None
+OBS:      59504.422  i  5349.834  269.914  18.179  0.050  None  Pan-STARRS1  GPC1  None
+OBS:      59504.425  r  5181.472  222.405  18.214  0.043  None  Pan-STARRS1  GPC1  None
+OBS:      59518.430  g  2809.113  84.502  18.878  0.030  None  Pan-STARRS1  GPC1  None
+OBS:      59524.431  r  4395.160  144.645  18.392  0.033  None  Pan-STARRS1  GPC1  None
+OBS:      59524.433  g  2678.314  213.884  18.930  0.080  None  Pan-STARRS1  GPC1  None
+OBS:      59529.468  g  2209.322  86.996  19.139  0.039  None  Pan-STARRS1  GPC1  None
+OBS:      59529.470  i  4156.209  118.653  18.453  0.029  None  Pan-STARRS1  GPC1  None
+OBS:      59539.454  z  3526.415  215.505  18.632  0.061  None  Pan-STARRS1  GPC1  None
+OBS:      59539.457  r  3533.881  196.825  18.629  0.056  None  Pan-STARRS1  GPC1  None
+OBS:      59542.416  i  3449.569  171.029  18.656  0.050  None  Pan-STARRS1  GPC1  None
+OBS:      59542.419  r  3500.882  195.019  18.640  0.056  None  Pan-STARRS1  GPC1  None
+OBS:      59544.413  g  1370.070  96.997  19.658  0.071  None  Pan-STARRS1  GPC1  None
+OBS:      59544.416  z  3684.715  166.119  18.584  0.045  None  Pan-STARRS1  GPC1  None
+OBS:      59804.589  r  105.869  107.303  22.438  1.014  None  Pan-STARRS1  GPC1  None
+OBS:      59804.592  y  270.073  572.222  21.421  2.119  None  Pan-STARRS1  GPC1  None
+OBS:      59813.593  r  -41.893  190.392  nan  -4.934  None  Pan-STARRS1  GPC1  None
+OBS:      59813.596  g  195.749  136.302  21.771  0.696  None  Pan-STARRS1  GPC1  None
+OBS:      59816.567  g  45.040  88.884  23.366  1.973  None  Pan-STARRS1  GPC1  None
+OBS:      59816.570  i  102.593  160.611  22.472  1.566  None  Pan-STARRS1  GPC1  None
+OBS:      59820.619  r  -36.799  188.512  nan  -5.562  None  Pan-STARRS1  GPC1  None
+OBS:      59820.622  g  -6.287  227.370  nan  -39.268  None  Pan-STARRS1  GPC1  None
+OBS:      59822.585  g  16.857  79.934  24.433  4.742  None  Pan-STARRS1  GPC1  None
+OBS:      59822.588  i  55.314  67.440  23.143  1.219  None  Pan-STARRS1  GPC1  None
+OBS:      59827.576  g  24.503  63.073  24.027  2.574  None  Pan-STARRS1  GPC1  None
+OBS:      59827.579  y  109.039  628.994  22.406  5.769  None  Pan-STARRS1  GPC1  None
+OBS:      59832.621  r  23.947  332.227  24.052  13.874  None  Pan-STARRS1  GPC1  None
+OBS:      59832.624  i  46.949  378.699  23.321  8.066  None  Pan-STARRS1  GPC1  None
+OBS:      59839.574  g  70.984  63.051  22.872  0.888  None  Pan-STARRS1  GPC1  None
+OBS:      59839.577  y  29.597  332.274  23.822  11.227  None  Pan-STARRS1  GPC1  None
+OBS:      59844.566  r  38.874  51.918  23.526  1.336  None  Pan-STARRS1  GPC1  None
+OBS:      59844.569  g  114.380  59.251  22.354  0.518  None  Pan-STARRS1  GPC1  None
+OBS:      59847.629  g  -27.720  123.284  nan  -4.829  None  Pan-STARRS1  GPC1  None
+OBS:      59847.632  i  -17.059  145.360  nan  -9.252  None  Pan-STARRS1  GPC1  None
+OBS:      59848.570  r  25.799  58.212  23.971  2.256  None  Pan-STARRS1  GPC1  None
+OBS:      59848.573  g  76.870  69.535  22.786  0.905  None  Pan-STARRS1  GPC1  None
+OBS:      59851.546  i  -0.690  100.858  nan  -158.743  None  Pan-STARRS1  GPC1  None
+OBS:      59851.549  g  -36.146  63.185  nan  -1.898  None  Pan-STARRS1  GPC1  None
+OBS:      59854.556  g  -1.060  54.838  nan  -56.192  None  Pan-STARRS1  GPC1  None
+OBS:      59854.559  i  3.036  83.355  26.294  27.459  None  Pan-STARRS1  GPC1  None
+OBS:      59867.494  r  15.617  216.360  24.516  13.854  None  Pan-STARRS1  GPC1  None
+OBS:      59867.496  i  37.975  199.603  23.551  5.256  None  Pan-STARRS1  GPC1  None
+OBS:      59870.422  g  57.886  68.218  23.094  1.178  None  Pan-STARRS1  GPC1  None
+OBS:      59870.424  i  94.792  87.158  22.558  0.919  None  Pan-STARRS1  GPC1  None
+OBS:      59873.491  i  137.452  205.939  22.155  1.498  None  Pan-STARRS1  GPC1  None
+OBS:      59873.494  g  -176.742  138.409  nan  -0.850  None  Pan-STARRS1  GPC1  None
+OBS:      59494.281  r-ZTF  3287.175  218.189  18.708  0.072  None  P48  ZTF-Cam  None
+OBS:      59494.362  g-ZTF  3470.490  646.486  18.649  0.202  None  P48  ZTF-Cam  None
+OBS:      59498.358  r-ZTF  4635.743  243.399  18.335  0.057  None  P48  ZTF-Cam  None
+OBS:      59498.414  g-ZTF  4322.359  458.317  18.411  0.115  None  P48  ZTF-Cam  None
+OBS:      59503.339  g-ZTF  4319.042  518.729  18.412  0.130  None  P48  ZTF-Cam  None
+OBS:      59503.358  r-ZTF  5008.519  292.160  18.251  0.063  None  P48  ZTF-Cam  None
+OBS:      59505.226  g-ZTF  4091.998  563.861  18.470  0.150  None  P48  ZTF-Cam  None
+OBS:      59505.359  r-ZTF  5290.206  332.254  18.191  0.068  None  P48  ZTF-Cam  None
+OBS:      59517.270  g-ZTF  2820.746  287.649  18.874  0.111  None  P48  ZTF-Cam  None
+OBS:      59517.353  r-ZTF  4334.898  251.769  18.408  0.063  None  P48  ZTF-Cam  None
+OBS:      59521.275  r-ZTF  4222.154  288.994  18.436  0.074  None  P48  ZTF-Cam  None
+OBS:      59521.302  g-ZTF  2621.607  218.988  18.954  0.091  None  P48  ZTF-Cam  None
+OBS:      59523.273  r-ZTF  4492.112  241.511  18.369  0.058  None  P48  ZTF-Cam  None
+OBS:      59523.317  g-ZTF  2419.764  233.433  19.041  0.105  None  P48  ZTF-Cam  None
+OBS:      59525.277  r-ZTF  4238.660  197.764  18.432  0.051  None  P48  ZTF-Cam  None
+OBS:      59525.322  g-ZTF  2314.092  239.701  19.089  0.112  None  P48  ZTF-Cam  None
+OBS:      59527.275  r-ZTF  3968.050  178.645  18.504  0.049  None  P48  ZTF-Cam  None
+OBS:      59527.296  g-ZTF  2162.391  249.431  19.163  0.125  None  P48  ZTF-Cam  None
+OBS:      59493.541  r  1706.082  62.854  19.420  0.040  None  Pan-STARRS1  GPC1  None
+OBS:      59493.586  w  1770.109  32.607  19.380  0.020  None  Pan-STARRS1  GPC1  None
+OBS:      59464.527  orange-ATLAS  -0.033  0.150  nan  -4.984  None  ATLAS  HKO  None
+OBS:      59466.521  cyan-ATLAS  -0.133  0.144  nan  -1.170  None  ATLAS  HKO  None
+OBS:      59470.505  cyan-ATLAS  -0.163  0.172  nan  -1.145  None  ATLAS  HKO  None
+OBS:      59474.480  orange-ATLAS  0.073  0.654  19.530  5.000  None  ATLAS  HKO  Bad
+OBS:      59474.507  orange-ATLAS  0.330  0.230  20.279  5.000  None  ATLAS  HKO  None
+OBS:      59477.445  orange-ATLAS  4.291  3.230  17.436  5.000  None  ATLAS  HKO  None
+OBS:      59478.423  orange-ATLAS  0.267  0.784  19.254  5.000  None  ATLAS  HKO  None
+OBS:      59484.473  orange-ATLAS  -0.108  0.339  nan  -3.418  None  ATLAS  HKO  None
+OBS:      59486.483  orange-ATLAS  -0.100  0.224  nan  -2.438  None  ATLAS  HKO  None
+OBS:      59488.556  orange-ATLAS  0.132  0.277  20.342  5.000  None  ATLAS  HKO  None
+OBS:      59490.476  orange-ATLAS  0.135  0.202  20.628  5.000  None  ATLAS  HKO  None
+OBS:      59490.500  orange-ATLAS  0.218  0.399  19.922  5.000  None  ATLAS  HKO  Bad
+OBS:      59492.471  orange-ATLAS  -0.178  0.615  nan  -3.752  None  ATLAS  HKO  None
+OBS:      59493.427  orange-ATLAS  1.441  0.213  19.903  0.160  None  ATLAS  HKO  None
+OBS:      59494.470  orange-ATLAS  3.760  0.265  18.862  0.077  None  ATLAS  HKO  None
+OBS:      59496.459  orange-ATLAS  5.155  0.280  18.520  0.059  None  ATLAS  HKO  None
+OBS:      59498.463  orange-ATLAS  6.318  0.204  18.298  0.035  None  ATLAS  HKO  None
+OBS:      59500.410  orange-ATLAS  6.636  0.271  18.245  0.044  None  ATLAS  HKO  None
+OBS:      59501.467  orange-ATLAS  7.218  0.208  18.154  0.031  None  ATLAS  HKO  None
+OBS:      59504.416  orange-ATLAS  -8.786  33.439  nan  -4.132  None  ATLAS  HKO  Bad
+OBS:      59512.476  orange-ATLAS  5.387  0.339  18.472  0.068  None  ATLAS  HKO  None
+OBS:      59516.455  orange-ATLAS  5.687  0.226  18.413  0.043  None  ATLAS  HKO  None
+OBS:      59518.459  cyan-ATLAS  3.817  0.172  18.846  0.049  None  ATLAS  HKO  None
+OBS:      59520.446  orange-ATLAS  5.427  0.248  18.464  0.050  None  ATLAS  HKO  None
+OBS:      59522.446  cyan-ATLAS  3.811  0.186  18.847  0.053  None  ATLAS  HKO  None
+OBS:      59524.380  orange-ATLAS  5.646  0.281  18.421  0.054  None  ATLAS  HKO  None
+OBS:      59526.456  cyan-ATLAS  3.741  0.186  18.868  0.054  None  ATLAS  HKO  None
+OBS:      59530.388  orange-ATLAS  5.804  0.427  18.391  0.080  None  ATLAS  HKO  None
+OBS:      59532.325  orange-ATLAS  4.882  0.539  18.579  0.120  None  ATLAS  HKO  None
+OBS:      59538.477  orange-ATLAS  3.905  0.980  18.821  0.273  None  ATLAS  HKO  None
+OBS:      59540.381  orange-ATLAS  1.831  9.601  16.584  5.000  None  ATLAS  HKO  None
+OBS:      59542.382  orange-ATLAS  4.308  0.245  18.714  0.062  None  ATLAS  HKO  None
+OBS:      59544.393  orange-ATLAS  4.154  0.301  18.754  0.079  None  ATLAS  HKO  None
+OBS:      59546.401  orange-ATLAS  4.453  0.195  18.678  0.048  None  ATLAS  HKO  None
+OBS:      59494.033  up  4194.310  109.910  18.444  0.029  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.041  gp  3970.210  159.832  18.503  0.044  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.042  rp  2659.877  157.652  18.938  0.064  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.043  ip  2589.449  217.528  18.967  0.091  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.534  up  4741.053  145.840  18.310  0.033  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.627  up  4292.502  86.111  18.419  0.022  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.631  gp  4081.728  90.201  18.473  0.024  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.632  rp  3311.535  84.263  18.700  0.028  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.633  ip  2633.616  122.001  18.949  0.050  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.677  up  4744.435  347.742  18.309  0.080  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.750  up  4404.401  138.935  18.390  0.034  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.754  gp  3953.324  101.728  18.507  0.028  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.755  rp  3121.963  136.389  18.764  0.047  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.756  ip  2983.686  187.630  18.813  0.068  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.898  up  4730.072  108.406  18.313  0.025  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.903  gp  4342.356  119.824  18.405  0.030  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.904  rp  3405.848  152.015  18.669  0.049  None  Siding_Spring_1m  Sinistro  None
+OBS:      59494.905  ip  3507.848  201.303  18.637  0.062  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.034  up  4499.568  134.042  18.367  0.032  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.039  gp  4388.304  136.977  18.394  0.034  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.040  rp  3794.481  145.096  18.552  0.042  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.041  ip  3357.156  180.336  18.685  0.058  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.157  up  4484.912  89.992  18.370  0.022  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.162  gp  4028.247  110.928  18.487  0.030  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.163  rp  3326.485  172.867  18.695  0.056  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.164  ip  3342.666  191.846  18.690  0.062  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.358  up  4410.993  147.261  18.388  0.036  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.362  gp  4107.770  143.031  18.466  0.038  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.363  rp  3333.308  182.409  18.693  0.059  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.364  ip  3343.224  311.715  18.690  0.101  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.516  up  4288.034  101.481  18.419  0.026  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.520  gp  4066.581  93.658  18.477  0.025  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.522  rp  3393.443  111.026  18.674  0.035  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.523  ip  3596.601  153.533  18.611  0.046  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.848  up  4826.453  144.200  18.291  0.032  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.852  gp  4453.083  171.471  18.378  0.042  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.853  rp  3642.520  182.756  18.597  0.054  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.854  ip  3355.730  272.803  18.686  0.088  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.991  up  4527.416  87.943  18.360  0.021  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.996  gp  4641.982  136.574  18.334  0.032  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.997  rp  4086.389  152.777  18.471  0.041  None  Siding_Spring_1m  Sinistro  None
+OBS:      59495.998  ip  3553.176  184.548  18.624  0.056  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.114  up  4257.217  93.317  18.428  0.024  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.119  gp  4457.872  143.129  18.377  0.035  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.120  rp  3612.200  177.874  18.605  0.053  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.121  ip  3622.056  211.231  18.603  0.063  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.266  up  4577.877  185.369  18.348  0.044  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.270  gp  4296.545  161.326  18.417  0.041  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.271  rp  3963.085  155.349  18.505  0.043  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.272  ip  3355.303  211.097  18.686  0.068  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.461  up  4625.244  114.072  18.337  0.027  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.466  gp  4305.787  126.452  18.414  0.032  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.467  rp  3898.148  149.183  18.523  0.042  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.468  ip  3833.302  220.202  18.541  0.062  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.851  up  4279.319  204.118  18.421  0.052  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.855  gp  4752.303  178.624  18.308  0.041  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.856  rp  4086.183  171.387  18.472  0.046  None  Siding_Spring_1m  Sinistro  None
+OBS:      59496.857  ip  3961.365  263.847  18.506  0.072  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.103  up  4476.628  106.092  18.372  0.026  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.107  gp  4711.578  130.108  18.317  0.030  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.108  rp  4375.877  231.628  18.398  0.058  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.109  ip  3476.207  292.129  18.648  0.091  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.332  up  4304.267  87.035  18.415  0.022  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.336  gp  4358.198  104.525  18.402  0.026  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.338  rp  4339.197  142.283  18.407  0.036  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.339  ip  3568.190  204.818  18.619  0.062  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.852  up  4262.914  206.927  18.426  0.053  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.856  gp  5089.420  177.625  18.233  0.038  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.857  rp  4318.939  157.508  18.411  0.040  None  Siding_Spring_1m  Sinistro  None
+OBS:      59497.858  ip  4389.964  223.936  18.394  0.055  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.076  up  4648.235  115.253  18.332  0.027  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.080  gp  5026.154  125.655  18.247  0.027  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.081  rp  4570.986  175.071  18.350  0.042  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.082  ip  4705.391  192.976  18.319  0.044  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.316  up  4132.759  79.053  18.459  0.021  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.320  gp  4618.035  98.045  18.339  0.023  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.321  rp  4434.642  137.235  18.383  0.034  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.322  ip  4572.244  165.958  18.350  0.039  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.821  up  4132.518  396.790  18.459  0.104  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.825  gp  4737.939  355.771  18.311  0.082  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.826  rp  4936.904  383.822  18.266  0.084  None  Siding_Spring_1m  Sinistro  None
+OBS:      59498.827  ip  4856.023  363.748  18.284  0.081  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.040  up  4396.038  107.362  18.393  0.026  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.043  gp  5053.468  134.763  18.241  0.029  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.044  rp  4660.005  123.907  18.329  0.029  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.045  ip  4827.342  175.712  18.291  0.040  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.262  up  4593.360  219.591  18.345  0.052  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.266  gp  4510.474  149.003  18.364  0.036  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.267  rp  5075.955  189.988  18.237  0.041  None  Siding_Spring_1m  Sinistro  None
+OBS:      59499.268  ip  3967.787  326.274  18.504  0.089  None  Siding_Spring_1m  Sinistro  None
+OBS:      59500.664  up  3627.147  85.037  18.601  0.025  None  Siding_Spring_1m  Sinistro  None
+OBS:      59500.668  gp  4536.616  96.428  18.358  0.023  None  Siding_Spring_1m  Sinistro  None
+OBS:      59500.669  rp  4671.830  123.416  18.326  0.029  None  Siding_Spring_1m  Sinistro  None
+OBS:      59500.670  ip  4943.186  202.271  18.265  0.044  None  Siding_Spring_1m  Sinistro  None
+OBS:      59501.970  up  3654.266  144.298  18.593  0.043  None  Siding_Spring_1m  Sinistro  None
+OBS:      59501.973  gp  4745.212  157.077  18.309  0.036  None  Siding_Spring_1m  Sinistro  None
+OBS:      59501.974  rp  5045.957  184.140  18.243  0.040  None  Siding_Spring_1m  Sinistro  None
+OBS:      59501.975  ip  4639.633  219.659  18.334  0.051  None  Siding_Spring_1m  Sinistro  None
+OBS:      59504.201  gp  4441.391  146.843  18.381  0.036  None  Siding_Spring_1m  Sinistro  None
+OBS:      59504.205  rp  4432.943  198.260  18.383  0.049  None  Siding_Spring_1m  Sinistro  None
+OBS:      59504.210  ip  4947.467  139.413  18.264  0.031  None  Siding_Spring_1m  Sinistro  None
+OBS:      59505.157  up  10836.640  10836.640  17.413  1.086  None  Siding_Spring_1m  Sinistro  Bad
+OBS:      59505.160  gp  6662.162  623.257  17.941  0.102  None  Siding_Spring_1m  Sinistro  None
+OBS:      59505.161  rp  4325.103  610.436  18.410  0.153  None  Siding_Spring_1m  Sinistro  None
+OBS:      59505.162  ip  5573.596  684.131  18.134  0.133  None  Siding_Spring_1m  Sinistro  None
+OBS:      59506.459  up  19797.101  19797.101  16.759  1.086  None  Siding_Spring_1m  Sinistro  Bad
+OBS:      59506.462  gp  4806.929  754.109  18.296  0.170  None  Siding_Spring_1m  Sinistro  None
+OBS:      59506.463  rp  4137.843  682.990  18.458  0.179  None  Siding_Spring_1m  Sinistro  None
+OBS:      59506.464  ip  5755.689  1050.678  18.100  0.198  None  Siding_Spring_1m  Sinistro  None
+OBS:      59508.598  up  2623.865  429.392  18.953  0.178  None  Siding_Spring_1m  Sinistro  None
+OBS:      59508.601  gp  4778.873  666.160  18.302  0.151  None  Siding_Spring_1m  Sinistro  None
+OBS:      59508.602  rp  7734.152  7734.152  17.779  1.086  None  Siding_Spring_1m  Sinistro  Bad
+OBS:      59508.603  ip  9036.086  9036.086  17.610  1.086  None  Siding_Spring_1m  Sinistro  Bad
+OBS:      59493.586  w  1767.340  31.472  19.382  0.019  None  Pan-STARRS1  GPC1  None
+OBS:      59493.599  w  1781.886  44.963  19.373  0.027  None  Pan-STARRS1  GPC1  None
+OBS:      59493.611  w  1882.088  48.798  19.313  0.028  None  Pan-STARRS1  GPC1  None
+OBS:      59493.624  w  1918.492  68.150  19.293  0.039  None  Pan-STARRS1  GPC1  None
+OBS:      59539.360  i  3735.597  160.392  18.569  0.047  None  Pan-STARRS1  GPC1  None
+OBS:      59539.372  i  3460.987  111.536  18.652  0.035  None  Pan-STARRS1  GPC1  None
+OBS:      59539.385  i  3729.409  91.866  18.571  0.027  None  Pan-STARRS1  GPC1  None
+OBS:      59539.398  i  3703.054  113.788  18.579  0.033  None  Pan-STARRS1  GPC1  None
+OBS:      59546.374  w  2799.497  37.932  18.882  0.015  None  Pan-STARRS1  GPC1  None
+OBS:      59546.385  w  2802.335  57.949  18.881  0.022  None  Pan-STARRS1  GPC1  None
+OBS:      59546.396  w  2819.421  39.340  18.875  0.015  None  Pan-STARRS1  GPC1  None
+OBS:      59546.407  w  2772.043  64.533  18.893  0.025  None  Pan-STARRS1  GPC1  None
+OBS:      59494.331  UVW1  2013.724  265.489  19.240  0.140  None  Swift  UVOT  None
+OBS:      59494.333  U  2910.717  379.040  18.840  0.140  None  Swift  UVOT  None
+OBS:      59494.334  B  2535.129  492.436  18.990  0.210  None  Swift  UVOT  None
+OBS:      59494.335  UVW2  2376.840  228.499  19.060  0.100  None  Swift  UVOT  None
+OBS:      59494.339  V  2831.392  2826.178  18.870  1.080  None  Swift  UVOT  Bad
+OBS:      59494.340  UVM2  1770.109  201.612  19.380  0.120  None  Swift  UVOT  None
+OBS:      59498.636  UVW1  1499.685  197.718  19.560  0.140  None  Swift  UVOT  None
+OBS:      59498.638  U  2805.434  390.920  18.880  0.150  None  Swift  UVOT  None
+OBS:      59498.640  UVW2  1028.016  126.293  19.970  0.130  None  Swift  UVOT  None
+OBS:      59498.644  V  3191.538  3185.660  18.740  1.080  None  Swift  UVOT  Bad
+OBS:      59498.644  UVM2  954.993  117.322  20.050  0.130  None  Swift  UVOT  None
+OBS:      59500.831  UVW1  1235.947  196.462  19.770  0.170  None  Swift  UVOT  None
+OBS:      59500.833  U  2679.168  422.283  18.930  0.170  None  Swift  UVOT  None
+OBS:      59500.834  B  3133.286  608.626  18.760  0.210  None  Swift  UVOT  None
+OBS:      59500.834  UVW2  380.189  84.674  21.050  0.240  None  Swift  UVOT  None
+OBS:      59500.838  V  3499.452  3493.007  18.640  1.080  None  Swift  UVOT  Bad
+OBS:      59500.838  UVM2  529.663  93.815  20.690  0.190  None  Swift  UVOT  None
+OBS:      59502.025  UVW1  765.597  177.507  20.290  0.250  None  Swift  UVOT  None
+OBS:      59502.026  U  1419.058  366.803  19.620  0.280  None  Swift  UVOT  None
+OBS:      59502.027  B  2355.049  652.010  19.070  0.300  None  Swift  UVOT  Bad
+OBS:      59502.027  UVW2  235.505  235.071  21.570  1.080  None  Swift  UVOT  Bad
+OBS:      59502.030  V  4207.266  4199.518  18.440  1.080  None  Swift  UVOT  Bad
+OBS:      59502.031  UVM2  316.228  84.895  21.250  0.290  None  Swift  UVOT  None
+OBS:      59506.205  UVW1  554.626  553.604  20.640  1.080  None  Swift  UVOT  Bad
+OBS:      59506.206  U  1570.363  449.194  19.510  0.310  None  Swift  UVOT  Bad
+OBS:      59506.207  B  2269.865  2265.685  19.110  1.080  None  Swift  UVOT  Bad
+OBS:      59506.207  UVW2  313.329  312.752  21.260  1.080  None  Swift  UVOT  Bad
+OBS:      59506.209  V  5546.257  5536.043  18.140  1.080  None  Swift  UVOT  Bad
+OBS:      59506.209  UVM2  258.226  257.750  21.470  1.080  None  Swift  UVOT  Bad
+OBS:      59513.844  UVW1  685.488  684.226  20.410  1.080  None  Swift  UVOT  Bad
+OBS:      59513.845  U  1527.566  1524.753  19.540  1.080  None  Swift  UVOT  Bad
+OBS:      59513.846  B  2937.650  948.301  18.830  0.350  None  Swift  UVOT  Bad
+OBS:      59513.846  UVW2  387.258  386.544  21.030  1.080  None  Swift  UVOT  Bad
+OBS:      59513.847  V  6426.877  6415.041  17.980  1.080  None  Swift  UVOT  Bad
+OBS:      59513.848  UVM2  356.451  355.795  21.120  1.080  None  Swift  UVOT  Bad
+OBS:      59515.573  UVW1  580.764  579.695  20.590  1.080  None  Swift  UVOT  Bad
+OBS:      59515.574  U  1380.384  445.601  19.650  0.350  None  Swift  UVOT  Bad
+OBS:      59515.574  B  963.829  962.054  20.040  1.080  None  Swift  UVOT  Bad
+OBS:      59515.574  UVW2  328.095  327.491  21.210  1.080  None  Swift  UVOT  Bad
+OBS:      59515.576  V  5649.370  5638.966  18.120  1.080  None  Swift  UVOT  Bad
+OBS:      59515.577  UVM2  313.329  312.752  21.260  1.080  None  Swift  UVOT  Bad
+OBS:      59518.687  UVW1  310.456  309.884  21.270  1.080  None  Swift  UVOT  Bad
+OBS:      59518.690  U  711.214  709.904  20.370  1.080  None  Swift  UVOT  Bad
+OBS:      59518.691  B  1458.814  470.919  19.590  0.350  None  Swift  UVOT  Bad
+OBS:      59518.692  UVW2  170.608  170.294  21.920  1.080  None  Swift  UVOT  Bad
+OBS:      59518.696  V  3104.560  3098.842  18.770  1.080  None  Swift  UVOT  Bad
+OBS:      59518.696  UVM2  158.489  158.197  22.000  1.080  None  Swift  UVOT  Bad
+OBS:      59750.095  UVW1  293.765  293.224  21.330  1.080  None  Swift  UVOT  Bad
+OBS:      59750.098  U  602.560  601.450  20.550  1.080  None  Swift  UVOT  Bad
+OBS:      59750.100  B  1247.384  1245.086  19.760  1.080  None  Swift  UVOT  Bad
+OBS:      59750.102  UVW2  144.544  144.278  22.100  1.080  None  Swift  UVOT  Bad
+OBS:      59750.108  V  3162.278  3156.454  18.750  1.080  None  Swift  UVOT  Bad
+OBS:      59750.110  UVM2  380.189  379.489  21.050  1.080  None  Swift  UVOT  Bad
+OBS:      59494.459  orange  2870.781  415.122  18.855  0.157  None  ATLAS  HKO  None
+OBS:      59799.610  z  107.129  143.335  22.425  1.338  None  Pan-STARRS2  GPC2  None
+OBS:      59799.613  r  36.280  61.012  23.601  1.682  None  Pan-STARRS2  GPC2  None
+OBS:      59821.000  F814W  29.376  1.082  23.830  0.040  None  HST  WFC3  None
+OBS:      59821.006  F555W  8.241  0.380  25.210  0.050  None  HST  WFC3  None
+# END: 
