@@ -90,8 +90,8 @@ OBS:      58844.658  z  2537.932  82.985  18.989  0.036  None  Pan-STARRS1  GPC1
 OBS:      58844.679  y  2631.480  351.591  18.950  0.145  None  Pan-STARRS1  GPC1  None
 OBS:      58847.664  z  1774.843  113.487  19.377  0.069  None  Pan-STARRS1  GPC1  None
 OBS:      58847.669  z  1871.027  127.790  19.320  0.074  None  Pan-STARRS1  GPC1  None
-OBS:      58852.308  B  7181.995  7181.995  17.859  1.086  None  Nickel  Direct/2Kx2K  Bad
-OBS:      58852.312  V  9181.206  9181.206  17.593  1.086  None  Nickel  Direct/2Kx2K  Bad
-OBS:      58852.316  r  5064.284  195.582  18.239  0.042  None  Nickel  Direct/2Kx2K  None
-OBS:      58852.319  i  5635.896  208.551  18.123  0.040  None  Nickel  Direct/2Kx2K  None
+OBS:      58852.308  B-N  7181.995  7181.995  17.859  1.086  None  Nickel  Direct/2Kx2K  Bad
+OBS:      58852.312  V-N  9181.206  9181.206  17.593  1.086  None  Nickel  Direct/2Kx2K  Bad
+OBS:      58852.316  r-N 5064.284  195.582  18.239  0.042  None  Nickel  Direct/2Kx2K  None
+OBS:      58852.319  i-N  5635.896  208.551  18.123  0.040  None  Nickel  Direct/2Kx2K  None
 # END: 
