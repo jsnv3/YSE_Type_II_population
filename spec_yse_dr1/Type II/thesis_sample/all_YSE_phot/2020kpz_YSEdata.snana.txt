@@ -427,7 +427,7 @@ OBS:      59953.620  r  -165.276  325.632  nan  -2.139  None  Pan-STARRS1  GPC1 
 OBS:      59953.621  z  -2.040  384.483  nan  -204.623  None  Pan-STARRS1  GPC1  None
 OBS:      59978.563  r  165.814  407.219  21.951  2.456  None  Pan-STARRS1  GPC1  None
 OBS:      59978.564  z  -168.131  615.277  nan  -3.973  None  Pan-STARRS1  GPC1  None
-OBS:      59036.252  orange  2654.606  488.996  18.940  0.200  None  ATLAS  HKO  None
+OBS:      59036.252  orange-ATLAS  2654.606  488.996  18.940  0.200  None  ATLAS  HKO  None
 OBS:      59057.483  G  4325.138  796.720  18.410  0.200  None  Gaia  Gaia-Photometric  None
 OBS:      59191.551  r-N  1508.968  1508.968  19.553  1.086  None  Nickel  Direct/2Kx2K  Bad
 OBS:      59265.374  r-ZTF  950.167  191.287  20.055  0.219  None  P48  ZTF-Cam  None

@@ -269,7 +269,7 @@ OBS:      59900.221  i  -95.235  177.638  nan  -2.025  None  Pan-STARRS1  GPC1  
 OBS:      59900.224  g  -56.009  76.351  nan  -1.480  None  Pan-STARRS1  GPC1  None
 OBS:      59908.213  g  -32.838  190.954  nan  -6.314  None  Pan-STARRS1  GPC1  None
 OBS:      59908.216  r  114.068  207.892  22.357  1.823  None  Pan-STARRS1  GPC1  None
-OBS:      59113.462  orange  2230.489  330.751  19.129  0.161  None  ATLAS  HKO  None
+OBS:      59113.462  orange-ATLAS  2230.489  330.751  19.129  0.161  None  ATLAS  HKO  None
 OBS:      59112.500  w  2108.628  58.264  19.190  0.030  None  Pan-STARRS1  GPC1  None
 OBS:      59112.551  g  2582.260  214.051  18.970  0.090  None  Pan-STARRS1  GPC1  None
 OBS:      59143.288  w  1287.775  80.074  19.725  0.068  None  Pan-STARRS1  GPC1  None
