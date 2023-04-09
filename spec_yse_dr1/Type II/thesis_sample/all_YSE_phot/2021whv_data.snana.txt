@@ -152,7 +152,7 @@ OBS:      59487.237  orange-ATLAS  2.865  0.253  19.157  0.096  None  ATLAS  HKO
 OBS:      59489.234  orange-ATLAS  2.559  0.402  19.280  0.170  None  ATLAS  HKO  None
 OBS:      59491.233  orange-ATLAS  2.341  0.300  19.377  0.139  None  ATLAS  HKO  None
 OBS:      59497.221  orange-ATLAS  2.550  0.488  19.284  0.208  None  ATLAS  HKO  None
-OBS:      59445.246  orange  1980.615  311.941  19.258  0.171  None  ATLAS  HKO  None
+OBS:      59445.246  orange-ATLAS  1980.615  311.941  19.258  0.171  None  ATLAS  HKO  None
 OBS:      59621.633  z  348.790  280.600  21.144  0.804  None  Pan-STARRS2  GPC2  None
 OBS:      59621.636  r  181.783  182.792  21.851  1.006  None  Pan-STARRS2  GPC2  None
 OBS:      59624.623  r  147.203  97.119  22.080  0.660  None  Pan-STARRS2  GPC2  None
@@ -262,5 +262,5 @@ OBS:      59797.271  i  -16.009  165.843  nan  -11.248  None  Pan-STARRS2  GPC2 
 OBS:      59797.274  r  3.744  124.807  26.067  33.334  None  Pan-STARRS2  GPC2  None
 OBS:      59801.278  r  95.000  199.850  22.556  2.104  None  Pan-STARRS2  GPC2  None
 OBS:      59801.281  i  -36.398  270.382  nan  -8.065  None  Pan-STARRS2  GPC2  None
-OBS:      59445.246  Unknown  1980.615  311.941  19.258  0.171  None  Unknown  Unknown  None
+
 # END: 
