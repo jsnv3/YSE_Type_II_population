@@ -299,9 +299,8 @@ OBS:      59824.246  i  110.678  178.226  22.390  1.610  None  Pan-STARRS1  GPC1
 OBS:      58866.655  g  1819.701  150.841  19.350  0.090  None  Pan-STARRS1  GPC1  None
 OBS:      58941.490  i  1056.818  136.271  19.940  0.140  None  Pan-STARRS1  GPC1  None
 OBS:      58941.527  w  937.562  77.717  20.070  0.090  None  Pan-STARRS1  GPC1  None
-OBS:      58866.644  orange  1614.359  242.361  19.480  0.163  None  ATLAS  HKO  None
+OBS:      58866.644  orange-ATLAS  1614.359  242.361  19.480  0.163  None  ATLAS  HKO  None
 OBS:      58871.486  V  1097.951  1097.951  19.899  1.086  None  Siding_Spring_1m  Sinistro  Bad
-OBS:      58875.431  Unknown  1616.457  51.411  19.479  0.035  None  Siding_Spring_1m  Sinistro  None
 OBS:      58875.435  V  968.068  968.068  20.035  1.086  None  Siding_Spring_1m  Sinistro  Bad
 OBS:      58863.453  g-ZTF  1725.679  0.000  19.408  0.000  None  P48  ZTF-Cam  None
 OBS:      58872.448  g-ZTF  1836.538  304.473  19.340  0.180  None  P48  ZTF-Cam  None
