@@ -565,56 +565,57 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     # test_y is only used if mean = True
     # but I still need it to exist either way
     test_y = []
-    test_times = [] 
-    use_mean = filter_use_mean[key]
-    if use_mean == 1:
-        template = generate_template(ufilts_in_angstrom, sn_type)
-        if verbose:
-            print('Fitting Template...')
-        f_stretch, t_shift, t_stretch = fit_template(ufilts_in_angstrom,
-                                                     template, wv_effs,
-                                                     wv_corr, fluxes, times,
-                                                     errs, z)
+    test_times = []
+    for key, value in filter_use_mean:         
+        use_mean = filter_use_mean[value]
+        if use_mean == 1:
+            template = generate_template(ufilts_in_angstrom, sn_type)
+            if verbose:
+                print('Fitting Template...')
+            f_stretch, t_shift, t_stretch = fit_template(ufilts_in_angstrom,
+                                                        template, wv_effs,
+                                                        wv_corr, fluxes, times,
+                                                        errs, z)
 
-        # George needs the mean function to be in this format  
-        #template as mean function
-        class snModel(Model):
-            def get_value(self, param):
-                t = (param[:, 0] * 1./t_stretch) + t_shift
-                wv = param[:, 1]
-                return np.asarray([template(*p)[0] for p in zip(t, wv)]) \
-                    + f_stretch
+            # George needs the mean function to be in this format  
+            #template as mean function
+            class snModel(Model):
+                def get_value(self, param):
+                    t = (param[:, 0] * 1./t_stretch) + t_shift
+                    wv = param[:, 1]
+                    return np.asarray([template(*p)[0] for p in zip(t, wv)]) \
+                        + f_stretch
 
-        # Get Test data so that the template can be plotted
-        mean = snModel()
-        for i in ufilts_in_angstrom:
-            test_wv = np.full((1, int((np.ceil(np.max(times)) -
-                                       np.floor(np.min(times))))), i)
-            test_times = np.arange(int(np.floor(np.min(times))+1),
-                                   int(np.ceil(np.max(times))+1))
-            test_x = np.vstack((test_times, test_wv)).T
-            test_y.append(mean.get_value(test_x))
-        test_y = np.asarray(test_y) 
-    
-    elif use_mean == 2:
-        if verbose:
-            print('Using linear spline...')
-        #linear spline as mean function 
-        class snModel_linear(Model):
-            def get_value(self, param):                
-                return np.asarray([linear_spline(t) for linear_spline in self.linear_fits]) 
-        mean = snModel_linear()  
-    
-    elif use_mean == 3:
-        if verbose:
-            print('Using cubic spline...')
-        class snModel_cubic(Model):
-            def get_value(self, param):
-                return np.asarray([cubic_spline(t) for cubic_spline in self.cubic_fits])
-        mean = snModel_cubic()
+            # Get Test data so that the template can be plotted
+            mean = snModel()
+            for i in ufilts_in_angstrom:
+                test_wv = np.full((1, int((np.ceil(np.max(times)) -
+                                        np.floor(np.min(times))))), i)
+                test_times = np.arange(int(np.floor(np.min(times))+1),
+                                    int(np.ceil(np.max(times))+1))
+                test_x = np.vstack((test_times, test_wv)).T
+                test_y.append(mean.get_value(test_x))
+            test_y = np.asarray(test_y) 
         
-    else:
-        mean = 0     
+        elif use_mean == 2:
+            if verbose:
+                print('Using linear spline...')
+            #linear spline as mean function 
+            class snModel_linear(Model):
+                def get_value(self, param):                
+                    return np.asarray([linear_spline(t) for linear_spline in self.linear_fits]) 
+            mean = snModel_linear()  
+        
+        elif use_mean == 3:
+            if verbose:
+                print('Using cubic spline...')
+            class snModel_cubic(Model):
+                def get_value(self, param):
+                    return np.asarray([cubic_spline(t) for cubic_spline in self.cubic_fits])
+            mean = snModel_cubic()
+            
+        else:
+            mean = 0     
 
     # Set up gp
     kernel = np.var(lc[:, 1]) \
@@ -1127,7 +1128,7 @@ def main():
 
     snname = ('.').join(args.snfile.split('.')[: -1]).split('/')[-1]
 
-    lc, wv_corr, flux_corr, my_filters = read_in_photometry(args.snfile,
+    lc, wv_corr, flux_corr, my_filters, filter_mean_functions, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters  = read_in_photometry(args.snfile,
                                                             args.dm,
                                                             args.redshift,
                                                             args.start,
@@ -1143,7 +1144,7 @@ def main():
         print('Using ' + str(sn_type) + ' template.')
 
     dense_lc, test_data, test_times = interpolate(lc, wv_corr, sn_type,
-                                                  mean, args.redshift,
+                                                  mean, filter_mean_functions, filter_use_mean, args.redshift,
                                                   args.verbose)
     lc = lc.T
 
