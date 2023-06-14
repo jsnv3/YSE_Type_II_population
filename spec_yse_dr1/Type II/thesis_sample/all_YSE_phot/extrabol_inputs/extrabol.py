@@ -152,6 +152,9 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     
     #generate settings file if the file doesn't exist yet 
     #use template by default, can change to cubic/linear 
+    filter_mean_functions = {}
+    filter_use_mean = {}
+    
     if settings is False:
         with open("settings.txt", 'w') as f:
             for filter in np.unique(photometry_data[:,3]):
@@ -1068,9 +1071,9 @@ def main():
     parser.add_argument('--T_max', dest='T_max',  help='Temperature prior \
                                                         for black body fits',
                         type=float, default=40000.)
-    parser.add_argument('--settings', dest = 'settings file', help = 'Use a settings file \
+    parser.add_argument('--settings',action='store_true', help = 'Use a settings file \
                         to customize which mean function \
-                        to use for each passband', type = bool, default = False)
+                        to use for each passband', default = True)
 
     args = parser.parse_args()
 
