@@ -83,7 +83,7 @@ def chi_square(dat, model, uncertainty):
 
 
 def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
-                       use_wc, verbose, settings = False):
+                       use_wc, verbose, settings = True):
     '''
     Read in SN file
 
@@ -164,9 +164,9 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     #create dictionary for filters and mean functions to use 
     if settings is True:
         with open("settings.txt", "r") as f:
-            filter_mean_functions = {i.split()[0]:i.split()[1] for i in f}
-            filter_use_mean = {i.split()[0]:int(i.split()[2]) for i in f}
-    
+            lines = f.readlines()
+        filter_mean_functions = {i.split()[0]:i.split()[1] for i in lines}
+        filter_use_mean = {i.split()[0]:int(i.split()[2]) for i in lines}
     
     #loop through the dictionary and create splines 
     cubic_filters = [] 
@@ -174,7 +174,8 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     linear_filters = [] 
     linear_fits = [] 
     template_filters = []
-    for key, value in filter_mean_functions.items(): 
+    for key in filter_mean_functions: 
+        value = filter_mean_functions[key]
         if value == 'cubic': 
             data_time = photometry_data[:,0]
             data_mag = photometry_data[:,1]
@@ -276,6 +277,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     my_filters = my_filters[gis]
 
     lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs))
+    
 
     return lc, wv_corr, flux_corr, my_filters, filter_mean_functions, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters 
 
@@ -377,7 +379,7 @@ def fit_template(wv, template_to_fit, filts, wv_corr, flux, time,
     Parameters
     ----------
     wv : numpy.array
-        wavelenght of filters in angstroms
+        wavelength of filters in angstroms
     template_to_fit : RectBivariateSpline object
         interpolated template
     filts : numpy.array
@@ -515,7 +517,7 @@ def test(lc, wv_corr, z):
     return best_temp
 
 
-def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_functions, filter_use_mean):
+def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_functions, filter_use_mean:dict[str:int]):
     '''
     Interpolate the LC using a 2D Gaussian Process (GP)
 
@@ -566,8 +568,8 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     # but I still need it to exist either way
     test_y = []
     test_times = []
-    for key, value in filter_use_mean:         
-        use_mean = filter_use_mean[value]
+    for key in filter_use_mean:   
+        use_mean = filter_use_mean[key]
         if use_mean == 1:
             template = generate_template(ufilts_in_angstrom, sn_type)
             if verbose:
@@ -1012,7 +1014,6 @@ def write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
 
 
 def main():
-
     default_data = pkg_resources.resource_filename(
                    'extrabol.example', 'SN2010bc.dat'
                    )
@@ -1082,12 +1083,12 @@ def main():
     sn_type = args.mean
     try:
         sn_type = int(sn_type)
-        mean = False
+        mean_gp = False
         if sn_type != 0:
             print('Template request not valid. Assuming mean function of 0.')
     except ValueError:
         sn_type = sn_type
-        mean = True
+        mean_gp = True
 
     # If redshift or ebv aren't specified by the user,
     # we read them in from the file here
@@ -1125,9 +1126,7 @@ def main():
 
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
-
     snname = ('.').join(args.snfile.split('.')[: -1]).split('/')[-1]
-
     lc, wv_corr, flux_corr, my_filters, filter_mean_functions, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters  = read_in_photometry(args.snfile,
                                                             args.dm,
                                                             args.redshift,
@@ -1144,7 +1143,7 @@ def main():
         print('Using ' + str(sn_type) + ' template.')
 
     dense_lc, test_data, test_times = interpolate(lc, wv_corr, sn_type,
-                                                  mean, filter_mean_functions, filter_use_mean, args.redshift,
+                                                  mean_gp, filter_mean_functions, filter_use_mean, args.redshift,
                                                   args.verbose)
     lc = lc.T
 
