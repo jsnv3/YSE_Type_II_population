@@ -158,15 +158,18 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     if settings is False:
         with open("settings.txt", 'w') as f:
             for filter in np.unique(photometry_data[:,3]):
-                f.write(f"{filter} \t template \t 0 \n")
+                f.write(f"{filter} \t 1 \n")
     
     #read in settings file if the file exists 
     #create dictionary for filters and mean functions to use 
     if settings is True:
         with open("settings.txt", "r") as f:
             lines = f.readlines()
-        filter_mean_functions = {i.split()[0]:i.split()[1] for i in lines}
-        filter_use_mean = {i.split()[0]:int(i.split()[2]) for i in lines}
+            print([i.split()[0] for i in lines])
+            print([i.split()[1] for i in lines])
+            print([i.split()[2] for i in lines])
+        filter_use_mean = {i.split()[0]:int(i.split()[1]) for i in lines}
+        
     
     #loop through the dictionary and create splines 
     cubic_filters = [] 
@@ -517,7 +520,7 @@ def test(lc, wv_corr, z):
     return best_temp
 
 
-def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_functions, filter_use_mean:dict[str:int]):
+def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean):
     '''
     Interpolate the LC using a 2D Gaussian Process (GP)
 
@@ -546,7 +549,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     test_times : numpy.array
         A set of time values to plot the template data against
     '''
-
+    
     lc = lc.T
 
     times = lc[:, 0]
@@ -568,7 +571,10 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     # but I still need it to exist either way
     test_y = []
     test_times = []
-    for key in filter_use_mean:   
+    #print("Enter Interpolate, filter_use_mean", filter_use_mean)
+    #sys.exit(-1)
+    
+    for key in filter_use_mean:
         use_mean = filter_use_mean[key]
         if use_mean == 1:
             template = generate_template(ufilts_in_angstrom, sn_type)
@@ -597,7 +603,8 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                                     int(np.ceil(np.max(times))+1))
                 test_x = np.vstack((test_times, test_wv)).T
                 test_y.append(mean.get_value(test_x))
-            test_y = np.asarray(test_y) 
+
+
         
         elif use_mean == 2:
             if verbose:
@@ -661,7 +668,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
         dense_fluxes[:, int(jj)] = pred[gind]
         dense_errs[:, int(jj)] = np.sqrt(pred_var[gind])
     dense_lc = np.dstack((dense_fluxes, dense_errs))
-
+    test_y = np.array(test_y)
     return dense_lc, test_y, test_times
 
 
@@ -766,7 +773,7 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
 
 
 def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
-            outdir, sn_type, test_times, use_mean, show_template, linear_fits, cubic_fits):
+            outdir, sn_type, test_times, use_mean, show_template, linear_fits=None, cubic_fits=None):
     '''
     Plot the GP-interpolate LC and save
 
@@ -806,6 +813,8 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     wv_colors = (wvs-np.min(wvs)) / (np.max(wvs)-np.min(wvs))
 
     # Plot interpolation, template, and error (shaded areas)
+    print("Plotting Templates")
+    print("use_mean", use_mean)
     for jj in np.arange(len(wv_colors)):
         plt.plot(plot_times, -dense_lc[:, jj, 0], color=cm(wv_colors[jj]),
                  label=my_filters[jj].split('/')[-1])
@@ -815,12 +824,14 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
                          color=cm(wv_colors[jj]))  # Template curves
         elif use_mean ==2:
             if show_template:
-                for i, linear_fit in np.enumerate(linear_fits):
-                    plt.plot(plot_times, linear_fit, label = 'linear spline') 
+                if linear_fits is not None:
+                    for i, linear_fit in np.enumerate(linear_fits):
+                        plt.plot(plot_times, linear_fit, label = 'linear spline') 
         elif use_mean == 3:
             if show_template:
-                for i, cubic_fit in np.enumerate(cubic_fits):
-                    plt.plot(plot_times, cubic_fits, label = 'cubic spline')
+                if cubic_fits is not None:
+                    for i, cubic_fit in np.enumerate(cubic_fits):
+                        plt.plot(plot_times, cubic_fits, label = 'cubic spline')
         else:
             continue
         plt.fill_between(plot_times,
@@ -1079,7 +1090,9 @@ def main():
 
     args = parser.parse_args()
 
-    # We need to know if an sn template is being used for gp
+    # We need to know if an sn template is being used for gp 
+    
+    #mean_gp used to be just mean 
     sn_type = args.mean
     try:
         sn_type = int(sn_type)
@@ -1136,15 +1149,17 @@ def main():
                                                             args.wvcorr,
                                                             args.verbose)
 
+    print("filter_use_mean", filter_use_mean)
+
     # Test which template fits the data best
     if sn_type == 'test':
         sn_type = test(lc, wv_corr, args.redshift)
     if args.verbose:
         print('Using ' + str(sn_type) + ' template.')
-
+        
+    
     dense_lc, test_data, test_times = interpolate(lc, wv_corr, sn_type,
-                                                  mean_gp, filter_mean_functions, filter_use_mean, args.redshift,
-                                                  args.verbose)
+                                                  mean_gp, args.redshift, args.verbose, filter_use_mean)
     lc = lc.T
 
     wvs, wvind = np.unique(lc[:, 2], return_index=True)
@@ -1169,8 +1184,9 @@ def main():
     if args.plot:
         if args.verbose:
             print('Making plots in ' + args.outdir)
+
         plot_gp(lc, dense_lc, snname, flux_corr, ufilts, wvs, test_data,
-                args.outdir, sn_type, test_times, mean, args.template)
+                args.outdir, sn_type, test_times, args.mean, args.template)
         plot_bb_ev(lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
                    args.outdir, sn_type)
         plot_bb_bol(lc, bol_lum, bol_err, snname, args.outdir, sn_type)
