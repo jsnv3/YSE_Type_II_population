@@ -153,12 +153,11 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     name, ind = np.unique(my_filters, return_index = True)
     name_ind = name[np.argsort(ind)]
     filt_wv_eff = dict(zip(name_ind, wv_idx))
-    print('in loading data')
+
     
     
     #generate settings file if the file doesn't exist yet 
     #use template by default, can change to cubic/linear 
-    filter_mean_functions = {}
     filter_use_mean = {}
     
     if settings is False:
@@ -180,9 +179,9 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     linear_filters = [] 
     linear_fits = [] 
     template_filters = []
-    for key in filter_mean_functions: 
-        value = filter_mean_functions[key]
-        if value == 'cubic': 
+    for key in filter_use_mean: 
+        value = filter_use_mean[key]
+        if value == 2: 
             data_time = photometry_data[:,0]
             data_mag = photometry_data[:,1]
             sorted_idx = np.argsort(data_time)
@@ -194,7 +193,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
             cubic_fits.append(cubic_y)
             cubic_filters.append(key)
     
-        elif value == 'linear':
+        elif value == 1:
             data_time = photometry_data[:,0]
             data_mag = photometry_data[:,1]
             sorted_idx = np.argsort(data_time)
@@ -285,7 +284,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs))
     
 
-    return lc, wv_corr, flux_corr, my_filters, filter_mean_functions, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters, filt_wv_eff 
+    return lc, wv_corr, flux_corr, my_filters, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters, filt_wv_eff 
 
 
 
@@ -555,7 +554,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
         A set of time values to plot the template data against
     '''
     
-    lc = lc.T
+    lc = lc.T 
 
     times = lc[:, 0]
     fluxes = lc[:, 1]
@@ -578,15 +577,12 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
     test_times = []
     #print("Enter Interpolate, filter_use_mean", filter_use_mean)
     #sys.exit(-1)
-    print(filt_wv_eff)
-    print(ufilts_in_angstrom)
-    print('filters above')
     # Set up gp
     kernel = np.var(lc[:, 1]) \
         * george.kernels.ExpSquaredKernel([50, 0.5], ndim=2)
     for key in filter_use_mean:
-        use_mean = filter_use_mean[key]
-        if use_mean == 1:
+        gp_mf = filter_use_mean[key]
+        if gp_mf == 1:
             template = generate_template(ufilts_in_angstrom, sn_type)
             if verbose:
                 print('Fitting Template...')
@@ -617,7 +613,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
             gp = george.GP(kernel, mean=snModel()) 
                 
         
-        elif use_mean == 2:
+        elif gp_mf == 2:
             if verbose:
                 print(f'Using linear spline for {key}...')
             #linear spline as mean function 
@@ -628,7 +624,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
             mean = snModel_linear()
             gp = george.GP(kernel, mean = snModel_linear())
         
-        elif use_mean == 3:
+        elif gp_mf == 3:
             if verbose:
                 print(f'Using cubic spline for {key}...')
             #cubic spline as mean funciton 
@@ -652,14 +648,10 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
 
     def neg_ln_like(p):
         gp.set_parameter_vector(p)
-        print(-gp.log_likelihood(lc[:,1]))
-        print('log likelihood')
         return -gp.log_likelihood(lc[:, 1])
 
     def grad_neg_ln_like(p):
         gp.set_parameter_vector(p)
-        print(-gp.grad_log_likelihood(lc[:,1]))
-        print('neg ln')
         return -gp.grad_log_likelihood(lc[:, 1])
 
     # Optomize gp parameters
@@ -1155,7 +1147,7 @@ def main():
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
     snname = ('.').join(args.snfile.split('.')[: -1]).split('/')[-1]
-    lc, wv_corr, flux_corr, my_filters, filter_mean_functions, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters, filt_wv_eff  = read_in_photometry(args.snfile,
+    lc, wv_corr, flux_corr, my_filters, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters, filt_wv_eff  = read_in_photometry(args.snfile,
                                                             args.dm,
                                                             args.redshift,
                                                             args.start,
@@ -1164,14 +1156,15 @@ def main():
                                                             args.wvcorr,
                                                             args.verbose)
 
-    print("filter_use_mean", filter_use_mean)
+
 
 
     # Test which template fits the data best
-    if sn_type == 'test':
-        sn_type = test(lc, wv_corr, args.redshift)
-    if args.verbose:
-        print('Using ' + str(sn_type) + ' template.')
+    if sn_type != 0:        
+        if sn_type == 'test':
+            sn_type = test(lc, wv_corr, args.redshift)
+        if args.verbose:
+            print('Using ' + str(sn_type) + ' template.')
         
     
     dense_lc, test_data, test_times = interpolate(lc, wv_corr, sn_type,
