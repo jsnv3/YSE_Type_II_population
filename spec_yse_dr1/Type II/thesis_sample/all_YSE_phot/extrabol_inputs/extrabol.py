@@ -26,7 +26,7 @@ c = 2.99792458E10  # cm / s
 sigsb = 5.6704e-5  # erg / cm^2 / s / K^4
 h = 6.62607E-27
 ang_to_cm = 1e-8
-k_B = 1.38064852E-16  # cm^2 * g / s^2 / K 
+k_B = 1.38064852E-16  # cm^2 * g / s^2 / K
 
 
 def bbody(lam, T, R):
@@ -83,7 +83,7 @@ def chi_square(dat, model, uncertainty):
 
 
 def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
-                       use_wc, verbose, settings = True):
+                       use_wc, verbose, settings):
     '''
     Read in SN file
 
@@ -104,12 +104,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     mwebv : float
         Extinction to be removed
     use_wc : bool
-        If True, use redshift corrected wv for extinction correction 
-    settings : bool 
-        False by default, will generate a file with every filter and the type of mean function 
-        to use 
-        if True, will read the settings file and create a dictionary with key/value pairings of 
-        filter and mean functions to use 
+        If True, use redshift corrected wv for extinction correction
 
     Output
     ------
@@ -122,8 +117,20 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     my_filters : list
         List of filter names
     '''
+    try:
+        with open(settings, 'r') as f:
+            lines = f.readlines()
+        filter_mean_function = {i.split()[0]:(i.split()[1]) for i in lines}
+        filters_in_settings = [i.split()[0] for i in lines]
+        print(filters_in_settings)
+        print('filters in settings file')
+    
+    except FileNotFoundError:
+        print("settings.txt file not found")
+        filter_mean_function = {} 
+        filters_in_settings = [] 
 
-    photometry_data = np.loadtxt(filename, dtype=str, skiprows=2)
+    photometry_data = np.loadtxt(filename, dtype=str, skiprows=2) 
 
     # Extract key information into seperate arrays
     phases = np.asarray(photometry_data[:, 0], dtype=float)
@@ -148,68 +155,39 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         width_effs.append(widthEffs[gind][0])
         my_filters.append(ufilt)
     wv_effs = np.asarray(wv_effs) 
+    
+    # map filter names to effective wavelengths  
     wv, idx = np.unique(wv_effs, return_index = True)
     wv_idx = wv[np.argsort(idx)]
     name, ind = np.unique(my_filters, return_index = True)
     name_ind = name[np.argsort(ind)]
-    filt_wv_eff = dict(zip(name_ind, wv_idx))
-
+    filter_name_to_effwv = dict(zip(name_ind, wv_idx))
     
-    
-    #generate settings file if the file doesn't exist yet 
-    #use template by default, can change to cubic/linear 
-    filter_use_mean = {}
-    
-    if settings is False:
-        with open("settings.txt", 'w') as f:
-            for filter in np.unique(photometry_data[:,3]):
-                f.write(f"{filter} \t 1 \n")
-    
-    #read in settings file if the file exists 
-    #create dictionary for filters and mean functions to use 
-    if settings is True:
-        with open("settings.txt", "r") as f:
-            lines = f.readlines()
-        filter_use_mean = {i.split()[0]:int(i.split()[1]) for i in lines}
-        
-    
-    #loop through the dictionary and create splines 
-    cubic_filters = [] 
-    cubic_fits = []
-    linear_filters = [] 
+    #create splines + keep track of which filters use template and 0 as mf
     linear_fits = [] 
-    template_filters = []
-    for key in filter_use_mean: 
-        value = filter_use_mean[key]
-        if value == 2: 
-            data_time = photometry_data[:,0]
-            data_mag = photometry_data[:,1]
-            sorted_idx = np.argsort(data_time)
-            sorted_time = data_time[sorted_idx]
-            sorted_mag = data_mag[sorted_idx]
+    cubic_fits = []
+    template_filters = [] 
+    zero_filters = [] 
+    for key, value in filter_mean_function.items():
+        data_times = photometry_data[:,0]
+        data_mags = photometry_data[:,1]
+        sorted_idx = np.argsort(data_times)
+        sorted_time = data_times[sorted_idx].astype('float')
+        unique_time, idx = np.unique(sorted_time, return_index = True)
+        sorted_time = sorted_time[idx]
+        sorted_mag = data_mags[sorted_idx].astype('float')
+        sorted_mag = sorted_mag[idx]
+        if value == 'linear':
+            linear_spline = interp.interp1d(sorted_time, sorted_mag, kind = 'linear')
+            linear_fits.append(linear_spline)
+        elif value =='cubic':
             cubic_spline = interp.CubicSpline(sorted_time, sorted_mag)
-            cubic_x = np.linspace(sorted_time[0], sorted_time[-1], 1000)
-            cubic_y = cubic_spline(cubic_x)
-            cubic_fits.append(cubic_y)
-            cubic_filters.append(key)
-    
-        elif value == 1:
-            data_time = photometry_data[:,0]
-            data_mag = photometry_data[:,1]
-            sorted_idx = np.argsort(data_time)
-            sorted_time = data_time[sorted_time]
-            sorted_mag = data_mag[sorted_time]
-            linear_spline = interp.interp1d(sorted_time, sorted_mag, 
-            kind='linear')
-            linear_x = np.linspace(sorted_time[0], sorted_time[-1], 1000)
-            linear_y = linear_spline(linear_x)
-            linear_fits.append(linear_y)
-            linear_filters.append(key) 
-        
-        else:
+            cubic_fits.append(cubic_spline)
+        elif value == 'template':
             template_filters.append(key)
-             
-            
+        else:
+            zero_filters.append(key)
+    
 
     # Convert brightness data to flux
     zpts = []
@@ -246,7 +224,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     wv_effs = wv_effs - wv_corr
     fluxes = np.asarray(fluxes) - flux_corr
 
-    # Eliminate any data points below threshold snr
+    # Eliminate any data points bellow threshold snr
     gis = []
     for i in np.arange(len(phases)):
         if (1/errs[i]) >= snr:
@@ -261,7 +239,10 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     width_effs = width_effs[gis]
     my_filters = np.asarray(my_filters)
     my_filters = my_filters[gis]
-
+    print(np.unique(my_filters))
+    print('unique filters')
+    if not np.array_equal(np.unique(my_filters), filters_in_settings):
+        print("Settings file filters do not match filters in data.")
     # Set the peak flux to t=0
     peak_i = np.argmax(fluxes)
     phases = np.asarray(phases) - phases[peak_i]
@@ -282,15 +263,13 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     my_filters = my_filters[gis]
 
     lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs))
-    
 
-    return lc, wv_corr, flux_corr, my_filters, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters, filt_wv_eff 
-
+    return lc, wv_corr, flux_corr, my_filters, filter_mean_function, linear_fits, cubic_fits, template_filters, zero_filters
 
 
 def generate_template(filter_wv, sn_type):
     '''
-    Prepare and interpolate SN Template
+    Prepare and interpolate SN1a Template
 
     Parameters
     ----------
@@ -304,13 +283,11 @@ def generate_template(filter_wv, sn_type):
     temp_interped : RectBivariateSpline object
         interpolated template
     '''
-    if sn_type != 0:
-        my_template_file = pkg_resources.resource_filename(
-                        'extrabol.template_bank', 'smoothed_sn' +
-                        sn_type + '.npz'
-                        ) 
-    
-    
+
+    my_template_file = pkg_resources.resource_filename(
+                       'extrabol.template_bank', 'smoothed_sn' +
+                       sn_type + '.npz'
+                       )
     template = np.load(my_template_file)
     temp_times = template['time']
     temp_wavelength = template['wavelength']
@@ -373,7 +350,7 @@ def generate_template(filter_wv, sn_type):
         temp_f_lambda_u[:, i] = 2.5 * np.log10((wv**2) * temp_f_lambda_u[:, i])
 
     temp_interped = interp.RectBivariateSpline(temp_times_u, temp_wavelength_u,
-                                            temp_f_lambda_u)
+                                               temp_f_lambda_u)
 
     return temp_interped
 
@@ -386,7 +363,7 @@ def fit_template(wv, template_to_fit, filts, wv_corr, flux, time,
     Parameters
     ----------
     wv : numpy.array
-        wavelength of filters in angstroms
+        wavelenght of filters in angstroms
     template_to_fit : RectBivariateSpline object
         interpolated template
     filts : numpy.array
@@ -524,7 +501,7 @@ def test(lc, wv_corr, z):
     return best_temp
 
 
-def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, linear_fits, cubic_fits, filt_wv_eff):
+def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function, linear_fits = None, cubic_fits = None):
     '''
     Interpolate the LC using a 2D Gaussian Process (GP)
 
@@ -536,13 +513,17 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
         mean of wavelengths, needed to find wavelenght in angstroms
     sn_type : string
         type of supernova template being used for GP mean function
-    use_mean : float
-        if 0, use 0 as GP mean function
-        if 1, use template as GP mean function
-        if 2, use linear spline as GP mean function
-        if 3, use cubic spline as GP mean function
+    use_mean : bool
+        If True, use a template for GP mean function
+        If False, use 0 as GP mean function
     z : float
         redshift
+    filter_mean_function : dictionary 
+        holds filters as keys and the mean function to be used as values 
+    linear_fits : list 
+        holds linear splines for each filter 
+    cubic_fits : list 
+        holds cubic splines for each filter 
 
     Output
     ------
@@ -553,16 +534,18 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
     test_times : numpy.array
         A set of time values to plot the template data against
     '''
-    
-    lc = lc.T 
+
+    lc = lc.T
 
     times = lc[:, 0]
+    print(times)
+    print('times in interpolate')
     fluxes = lc[:, 1]
     wv_effs = lc[:, 2]
     errs = lc[:, 3]
     stacked_data = np.vstack([times, wv_effs]).T
     ufilts = np.unique(lc[:, 2])
-    ufilts_in_angstrom = ufilts * 1000.0 + wv_corr
+    ufilts_in_angstrom = ufilts*1000.0 + wv_corr
     nfilts = len(ufilts)
     x_pred = np.zeros((int((np.ceil(np.max(times)) -
                             np.floor(np.min(times)))+1)*nfilts, 2))
@@ -575,75 +558,72 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
     # but I still need it to exist either way
     test_y = []
     test_times = []
-    #print("Enter Interpolate, filter_use_mean", filter_use_mean)
-    #sys.exit(-1)
+    
+    # Set up gp 
+    kernel = np.var(lc[:, 1]) \
+        * george.kernels.ExpSquaredKernel([50, 0.5], ndim=2)    
+    if not use_mean:
+        mean = 0 
+        gp = george.GP(kernel, mean = 0)
+    else:
+        for key, value in filter_mean_function.items():
+            if value == 'template':
+                template = generate_template(ufilts_in_angstrom, sn_type)
+                if verbose:
+                    print('Fitting Template...')
+                f_stretch, t_shift, t_stretch = fit_template(ufilts_in_angstrom, template, wv_effs,
+                                                             wv_corr, fluxes, times, errs,
+                                                             z)
+                # George needs the mean function to be in this format 
+                # template as mean function 
+                class snModel(Model):
+                    def get_value(self, param):
+                        t = (param[:,0] * 1./t_stretch) + t_shift
+                        wv = param[:,1]
+                        return np.asarray([template(*p)[0] for p in zip(t,wv)]) + f_stretch
+                # Get test data so that the template can be plotted 
+                mean = snModel()
+                for i in ufilts_in_angstrom:
+                    test_wv = np.full((1, int((np.ceil(np.max(times)) -
+                                            np.floor(np.min(times))))), i)
+                    test_times = np.arange(int(np.floor(np.min(times))+1),
+                                        int(np.ceil(np.max(times))+1))
+                    test_x = np.vstack((test_times, test_wv)).T
+                    test_y.append(mean.get_value(test_x)) 
+                print(f'Using template for {key}...')    
+                gp = george.GP(kernel, mean=snModel()) 
+            elif value =='linear':
+                if verbose:
+                    print(f'Using linear spline for {key}...')
+                #linear spline as mean function 
+                class snModel_linear(Model):
+                    def get_value(self, param):
+                        t = (param[:,0])
+                        return np.asarray([linear_spline(t) for linear_spline in linear_fits])
+                mean = snModel_linear()
+                gp = george.GP(kernel, mean = snModel_linear())
+            elif value == 'cubic':
+                if verbose:
+                    print(f'Using cubic spline for {key}...')
+                #cubic spline as mean function 
+                class snModel_cubic(Model):
+                    def get_value(self, param):
+                        t = (param[:,0])
+                        return np.asarray([cubic_spline(t) for cubic_spline in cubic_fits])
+                mean = snModel_cubic()
+                gp = george.GP(kernel, mean = snModel_cubic())
+            else:
+                mean = 0 
+                gp = george.GP(kernel, mean = 0)
+                print(f'Using 0 as mean function for {key}')
+                
+            
+
     # Set up gp
     kernel = np.var(lc[:, 1]) \
         * george.kernels.ExpSquaredKernel([50, 0.5], ndim=2)
-    for key in filter_use_mean:
-        gp_mf = filter_use_mean[key]
-        if gp_mf == 1:
-            template = generate_template(ufilts_in_angstrom, sn_type)
-            if verbose:
-                print('Fitting Template...')
-            f_stretch, t_shift, t_stretch = fit_template(ufilts_in_angstrom,
-                                                        template, wv_effs,
-                                                        wv_corr, fluxes, times,
-                                                        errs, z)
-
-            # George needs the mean function to be in this format  
-            #template as mean function
-            class snModel(Model):
-                def get_value(self, param):
-                    t = (param[:, 0] * 1./t_stretch) + t_shift
-                    wv = param[:, 1]
-                    return np.asarray([template(*p)[0] for p in zip(t, wv)]) \
-                        + f_stretch
-
-            # Get Test data so that the template can be plotted
-            mean = snModel()
-            for i in ufilts_in_angstrom:
-                test_wv = np.full((1, int((np.ceil(np.max(times)) -
-                                        np.floor(np.min(times))))), i)
-                test_times = np.arange(int(np.floor(np.min(times))+1),
-                                    int(np.ceil(np.max(times))+1))
-                test_x = np.vstack((test_times, test_wv)).T
-                test_y.append(mean.get_value(test_x)) 
-            print(f'Using template for {key}...')    
-            gp = george.GP(kernel, mean=snModel()) 
-                
-        
-        elif gp_mf == 2:
-            if verbose:
-                print(f'Using linear spline for {key}...')
-            #linear spline as mean function 
-            class snModel_linear(Model):
-                def get_value(self, param):
-                    t = (param[:,0])                
-                    return np.asarray([linear_spline(t) for linear_spline in linear_fits]) 
-            mean = snModel_linear()
-            gp = george.GP(kernel, mean = snModel_linear())
-        
-        elif gp_mf == 3:
-            if verbose:
-                print(f'Using cubic spline for {key}...')
-            #cubic spline as mean funciton 
-            class snModel_cubic(Model):
-                def get_value(self, param):
-                    t = (param[:,0])
-                    return np.asarray([cubic_spline(t) for cubic_spline in cubic_fits])
-            mean = snModel_cubic()
-            gp = george.GP(kernel, mean = snModel_cubic())
-            
-        else:
-            mean = 0 
-            gp = george.GP(kernel, mean = 0)
-            print(f'Using 0 as mean function for {key}...')   
-    
-    
-         
-         
-
+    if not use_mean:
+        gp = george.GP(kernel, mean=0)
     gp.compute(stacked_data, lc[:, -2])
 
     def neg_ln_like(p):
@@ -675,7 +655,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_use_mean, lin
         dense_fluxes[:, int(jj)] = pred[gind]
         dense_errs[:, int(jj)] = np.sqrt(pred_var[gind])
     dense_lc = np.dstack((dense_fluxes, dense_errs))
-    test_y = np.array(test_y)
+
     return dense_lc, test_y, test_times
 
 
@@ -780,7 +760,7 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
 
 
 def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
-            outdir, sn_type, test_times, use_mean, show_template, linear_fits, cubic_fits):
+            outdir, sn_type, test_times, mean, show_template, cubic_fits = None, linear_fits = None):
     '''
     Plot the GP-interpolate LC and save
 
@@ -804,8 +784,8 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
         Type of sn template used for GP mean function
     test_times : numpy array
         Time values for sn template to be plotted against
-    use_mean : float
-        same as before, 0 means GP mean function is 0, 1 means template, 2 means linear spline, 3 means cubic spline
+    mean : bool
+        Whether or not a non-zero mean function is being used in GP
     show_template : bool
         Whether or not the sn template is plotted
 
@@ -820,27 +800,22 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     wv_colors = (wvs-np.min(wvs)) / (np.max(wvs)-np.min(wvs))
 
     # Plot interpolation, template, and error (shaded areas)
-    print("Plotting Templates")
-    print("use_mean", use_mean)
     for jj in np.arange(len(wv_colors)):
         plt.plot(plot_times, -dense_lc[:, jj, 0], color=cm(wv_colors[jj]),
                  label=my_filters[jj].split('/')[-1])
-        if use_mean == 1:
+        if mean:
             if show_template:
                 plt.plot(test_times, -(test_data[jj, :] + flux_corr), '--',
                          color=cm(wv_colors[jj]))  # Template curves
-        elif use_mean ==2:
-            if show_template:
-                if linear_fits is not None:
-                    for i, linear_fit in np.enumerate(linear_fits):
-                        plt.plot(plot_times, linear_fit, label = 'linear spline') 
-        elif use_mean == 3:
-            if show_template:
-                if cubic_fits is not None:
-                    for i, cubic_fit in np.enumerate(cubic_fits):
-                        plt.plot(plot_times, cubic_fits, label = 'cubic spline')
-        else:
-            continue
+        if mean:
+            if cubic_fits is not None:
+                spline_x = np.linspace(plot_times[0], plot_times[-1], 1000)
+                spline_y = cubic_fits[jj](spline_x)
+                plt.plot(spline_x, -spline_y, '-', color = cm(wv_colors[jj]))
+            if linear_fits is not None:
+                spline_x = np.linspace(plot_times[0], plot_times[-1], 1000)
+                spline_y = linear_fits[jj](spline_x)
+                plt.plot(spline_x, -spline_y, '-.', color = cm(wv_colors[jj]))
         plt.fill_between(plot_times,
                          -dense_lc[:, jj, 0] - dense_lc[:, jj, 1],
                          -dense_lc[:, jj, 0] + dense_lc[:, jj, 1],
@@ -858,13 +833,9 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
 
         plt.plot(x, y, 'o', color=cm(wv_colors[i]))
         plt.errorbar(x, y, yerr=yerr, fmt='none', color=cm(wv_colors[i]))
-           
-    if use_mean == 1:
+
+    if mean:
         plt.title(snname + ' using sn' + sn_type + ' template')
-    elif use_mean == 2:
-        plt.title(snname + 'using linear spline' )
-    elif use_mean == 3:
-        plt.title(snname + 'using cubic spline')
     else:
         plt.title(snname + ' Light Curves')
     plt.legend()
@@ -1032,6 +1003,7 @@ def write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
 
 
 def main():
+
     default_data = pkg_resources.resource_filename(
                    'extrabol.example', 'SN2010bc.dat'
                    )
@@ -1091,24 +1063,20 @@ def main():
     parser.add_argument('--T_max', dest='T_max',  help='Temperature prior \
                                                         for black body fits',
                         type=float, default=40000.)
-    parser.add_argument('--settings',action='store_true', help = 'Use a settings file \
-                        to customize which mean function \
-                        to use for each passband', default = True)
+    parser.add_argument('--settings', dest='settings', type=str, default = 'settings.txt', help='Settings file name')
 
     args = parser.parse_args()
 
-    # We need to know if an sn template is being used for gp 
-     
-    sn_type = args.mean 
-    print(f"using a {sn_type} sn")
+    # We need to know if an sn template is being used for gp
+    sn_type = args.mean
     try:
         sn_type = int(sn_type)
-        mean_gp = False
+        mean = False
         if sn_type != 0:
             print('Template request not valid. Assuming mean function of 0.')
     except ValueError:
         sn_type = sn_type
-        mean_gp = True
+        mean = True
 
     # If redshift or ebv aren't specified by the user,
     # we read them in from the file here
@@ -1146,29 +1114,28 @@ def main():
 
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
+
     snname = ('.').join(args.snfile.split('.')[: -1]).split('/')[-1]
-    lc, wv_corr, flux_corr, my_filters, filter_use_mean, cubic_filters, cubic_fits, linear_filters, linear_fits, template_filters, filt_wv_eff  = read_in_photometry(args.snfile,
+
+    lc, wv_corr, flux_corr, my_filters, filter_mean_function, linear_fits, cubic_fits, template_filters, zero_filters = read_in_photometry(args.snfile,
                                                             args.dm,
                                                             args.redshift,
                                                             args.start,
                                                             args.end, args.snr,
                                                             args.ebv,
                                                             args.wvcorr,
-                                                            args.verbose)
-
-
-
+                                                            args.verbose, 
+                                                            args.settings)
 
     # Test which template fits the data best
-    if sn_type != 0:        
-        if sn_type == 'test':
-            sn_type = test(lc, wv_corr, args.redshift)
-        if args.verbose:
-            print('Using ' + str(sn_type) + ' template.')
-        
-    
+    if sn_type == 'test':
+        sn_type = test(lc, wv_corr, args.redshift)
+    if args.verbose:
+        print('Using ' + str(sn_type) + ' template.')
+
     dense_lc, test_data, test_times = interpolate(lc, wv_corr, sn_type,
-                                                  mean_gp, args.redshift, args.verbose, filter_use_mean, linear_fits, cubic_fits, filt_wv_eff)
+                                                  mean, args.redshift,
+                                                  args.verbose, filter_mean_function, linear_fits, cubic_fits)
     lc = lc.T
 
     wvs, wvind = np.unique(lc[:, 2], return_index=True)
@@ -1193,9 +1160,8 @@ def main():
     if args.plot:
         if args.verbose:
             print('Making plots in ' + args.outdir)
-
         plot_gp(lc, dense_lc, snname, flux_corr, ufilts, wvs, test_data,
-                args.outdir, sn_type, test_times, args.mean, args.template)
+                args.outdir, sn_type, test_times, mean, args.template)
         plot_bb_ev(lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
                    args.outdir, sn_type)
         plot_bb_bol(lc, bol_lum, bol_err, snname, args.outdir, sn_type)
