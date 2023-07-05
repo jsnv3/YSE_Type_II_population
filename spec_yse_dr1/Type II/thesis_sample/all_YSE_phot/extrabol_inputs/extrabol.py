@@ -122,11 +122,9 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
             lines = f.readlines()
         filter_mean_function = {i.split()[0]:(i.split()[1]) for i in lines}
         filters_in_settings = [i.split()[0] for i in lines]
-        print(filters_in_settings)
-        print('filters in settings file')
     
     except FileNotFoundError:
-        print("settings.txt file not found")
+        print("settings.txt file not found, using 0 as mean function...")
         filter_mean_function = {} 
         filters_in_settings = [] 
 
@@ -156,39 +154,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         my_filters.append(ufilt)
     wv_effs = np.asarray(wv_effs) 
     
-    # map filter names to effective wavelengths  
-    wv, idx = np.unique(wv_effs, return_index = True)
-    wv_idx = wv[np.argsort(idx)]
-    name, ind = np.unique(my_filters, return_index = True)
-    name_ind = name[np.argsort(ind)]
-    filter_name_to_effwv = dict(zip(name_ind, wv_idx))
     
-    #create splines + keep track of which filters use template and 0 as mf
-    linear_fits = [] 
-    cubic_fits = []
-    template_filters = [] 
-    zero_filters = [] 
-    for key, value in filter_mean_function.items():
-        data_times = photometry_data[:,0]
-        data_mags = photometry_data[:,1]
-        sorted_idx = np.argsort(data_times)
-        sorted_time = data_times[sorted_idx].astype('float')
-        unique_time, idx = np.unique(sorted_time, return_index = True)
-        sorted_time = sorted_time[idx]
-        sorted_mag = data_mags[sorted_idx].astype('float')
-        sorted_mag = sorted_mag[idx]
-        if value == 'linear':
-            linear_spline = interp.interp1d(sorted_time, sorted_mag, kind = 'linear')
-            linear_fits.append(linear_spline)
-        elif value =='cubic':
-            cubic_spline = interp.CubicSpline(sorted_time, sorted_mag)
-            cubic_fits.append(cubic_spline)
-        elif value == 'template':
-            template_filters.append(key)
-        else:
-            zero_filters.append(key)
-    
-
     # Convert brightness data to flux
     zpts = []
     fluxes = []
@@ -222,9 +188,9 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     wv_corr = np.mean(wv_effs / (1.+redshift))
     flux_corr = np.min(fluxes) - 1.0
     wv_effs = wv_effs - wv_corr
-    fluxes = np.asarray(fluxes) - flux_corr
+    fluxes = np.asarray(fluxes) - flux_corr 
 
-    # Eliminate any data points bellow threshold snr
+    # Eliminate any data points below threshold snr
     gis = []
     for i in np.arange(len(phases)):
         if (1/errs[i]) >= snr:
@@ -239,8 +205,6 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     width_effs = width_effs[gis]
     my_filters = np.asarray(my_filters)
     my_filters = my_filters[gis]
-    print(np.unique(my_filters))
-    print('unique filters')
     if not np.array_equal(np.unique(my_filters), filters_in_settings):
         print("Settings file filters do not match filters in data.")
     # Set the peak flux to t=0
@@ -260,7 +224,44 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     wv_effs = wv_effs[gis]
     errs = errs[gis]
     width_effs = width_effs[gis]
-    my_filters = my_filters[gis]
+    my_filters = my_filters[gis] 
+    
+    # map filter names to effective wavelengths 
+    wv_eff_in_angstroms = wv_effs + wv_corr
+    wv, idx = np.unique(wv_eff_in_angstroms, return_index = True)
+    wv_idx = wv[np.argsort(idx)]
+    name, ind = np.unique(my_filters, return_index = True)
+    name_ind = name[np.argsort(ind)]
+    filter_name_to_effwv = dict(zip(name_ind, wv_idx))
+
+    
+    #create splines + keep track of which filters use template and 0 as mf
+    linear_fits = {} 
+    cubic_fits = {}
+    template_filters = [] 
+    zero_filters = [] 
+    for key, value in filter_mean_function.items():
+        data_times = phases
+        data_mags = fluxes
+        sorted_idx = np.argsort(data_times)
+        sorted_time = data_times[sorted_idx].astype('float')
+        unique_time, tidx = np.unique(sorted_time, return_index = True)
+        sorted_time = sorted_time[tidx]
+        sorted_mag = data_mags[sorted_idx].astype('float')
+        sorted_mag = sorted_mag[tidx]
+        if value == 'linear':
+            wl = filter_name_to_effwv[key]
+            linear_fits[wl] = interp.interp1d(sorted_time, sorted_mag, kind = 'linear')
+        elif value =='cubic':
+            cubic_spline = interp.CubicSpline(sorted_time, sorted_mag)
+            cubic_fits[filter_name_to_effwv[key]] = cubic_spline
+        elif value == 'template':
+            template_filters.append(key)
+        else:
+            zero_filters.append(key)
+    print(linear_fits)
+    print('linear fits')
+
 
     lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs))
 
@@ -269,7 +270,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
 
 def generate_template(filter_wv, sn_type):
     '''
-    Prepare and interpolate SN1a Template
+    Prepare and interpolate SN Template
 
     Parameters
     ----------
@@ -363,7 +364,7 @@ def fit_template(wv, template_to_fit, filts, wv_corr, flux, time,
     Parameters
     ----------
     wv : numpy.array
-        wavelenght of filters in angstroms
+        wavelength of filters in angstroms
     template_to_fit : RectBivariateSpline object
         interpolated template
     filts : numpy.array
@@ -510,7 +511,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     lc : numpy.array
         LC array
     wv_corr : float
-        mean of wavelengths, needed to find wavelenght in angstroms
+        mean of wavelengths, needed to find wavelength in angstroms
     sn_type : string
         type of supernova template being used for GP mean function
     use_mean : bool
@@ -539,13 +540,14 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
 
     times = lc[:, 0]
     print(times)
-    print('times in interpolate')
+    print('interp times')
     fluxes = lc[:, 1]
     wv_effs = lc[:, 2]
+    wv_effs_plus_corr = wv_effs * 1000 + wv_corr 
     errs = lc[:, 3]
     stacked_data = np.vstack([times, wv_effs]).T
     ufilts = np.unique(lc[:, 2])
-    ufilts_in_angstrom = ufilts*1000.0 + wv_corr
+    ufilts_in_angstrom = ufilts*1000.0 + wv_corr 
     nfilts = len(ufilts)
     x_pred = np.zeros((int((np.ceil(np.max(times)) -
                             np.floor(np.min(times)))+1)*nfilts, 2))
@@ -598,8 +600,13 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                 #linear spline as mean function 
                 class snModel_linear(Model):
                     def get_value(self, param):
-                        t = (param[:,0])
-                        return np.asarray([linear_spline(t) for linear_spline in linear_fits])
+                        splines_l = [] 
+                        for datapoint in param:
+                            t = datapoint[0]
+                            wv = datapoint[1] * 1000.0 + wv_corr
+                            spline_fit = linear_fits[wv]
+                            splines_l.append(spline_fit(t))
+                        return np.asarray(splines_l)
                 mean = snModel_linear()
                 gp = george.GP(kernel, mean = snModel_linear())
             elif value == 'cubic':
@@ -617,13 +624,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                 gp = george.GP(kernel, mean = 0)
                 print(f'Using 0 as mean function for {key}')
                 
-            
 
-    # Set up gp
-    kernel = np.var(lc[:, 1]) \
-        * george.kernels.ExpSquaredKernel([50, 0.5], ndim=2)
-    if not use_mean:
-        gp = george.GP(kernel, mean=0)
     gp.compute(stacked_data, lc[:, -2])
 
     def neg_ln_like(p):
@@ -1067,7 +1068,7 @@ def main():
 
     args = parser.parse_args()
 
-    # We need to know if an sn template is being used for gp
+    # We need to know if a sn template is being used for gp
     sn_type = args.mean
     try:
         sn_type = int(sn_type)
