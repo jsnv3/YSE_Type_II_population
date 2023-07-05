@@ -556,11 +556,11 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     print('ufilt') 
     nfilts = len(ufilts)
     x_pred = np.zeros((int((np.ceil(np.max(times)) -
-                            np.floor(np.min(times)))+1)*nfilts, 2))
+                            np.floor(np.min(times))))*nfilts, 2))
     dense_fluxes = np.zeros((int((np.ceil(np.max(times)) -
-                                  np.floor(np.min(times)))+1), nfilts))
+                                  np.floor(np.min(times)))), nfilts))
     dense_errs = np.zeros((int((np.ceil(np.max(times)) -
-                                np.floor(np.min(times)))+1), nfilts))
+                                np.floor(np.min(times)))), nfilts))
 
     # test_y is only used if mean = True
     # but I still need it to exist either way
@@ -677,9 +677,8 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                                         np.max(times))):
         x_pred[jj*nfilts: jj*nfilts+nfilts, 0] = [time] * nfilts
         x_pred[jj*nfilts: jj*nfilts+nfilts, 1] = ufilts
-    print(x_pred)
-    print('x pred')
-    print(len(x_pred))
+    print('lc shape: ', lc[:,1].shape)
+    print('x pred: ', x_pred.shape)
 
     # Run gp to estimate interpolation
     pred, pred_var = gp.predict(lc[:, 1], x_pred, return_var=True)
