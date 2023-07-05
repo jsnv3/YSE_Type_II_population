@@ -153,7 +153,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         width_effs.append(widthEffs[gind][0])
         my_filters.append(ufilt)
     wv_effs = np.asarray(wv_effs) 
-    
+
     
     # Convert brightness data to flux
     zpts = []
@@ -189,7 +189,6 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     flux_corr = np.min(fluxes) - 1.0
     wv_effs = wv_effs - wv_corr
     fluxes = np.asarray(fluxes) - flux_corr 
-
     # Eliminate any data points below threshold snr
     gis = []
     for i in np.arange(len(phases)):
@@ -227,12 +226,15 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     my_filters = my_filters[gis] 
     
     # map filter names to effective wavelengths 
+    print(np.unique(my_filters))
     wv_eff_in_angstroms = wv_effs + wv_corr
+    print(np.unique(wv_eff_in_angstroms))
     wv, idx = np.unique(wv_eff_in_angstroms, return_index = True)
     wv_idx = wv[np.argsort(idx)]
     name, ind = np.unique(my_filters, return_index = True)
     name_ind = name[np.argsort(ind)]
     filter_name_to_effwv = dict(zip(name_ind, wv_idx))
+    print(filter_name_to_effwv)
 
     
     #create splines + keep track of which filters use template and 0 as mf
@@ -245,7 +247,11 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         data_mags = fluxes
         sorted_idx = np.argsort(data_times)
         sorted_time = data_times[sorted_idx].astype('float')
+        print(len(sorted_time))
+        print('len sorted time')
         unique_time, tidx = np.unique(sorted_time, return_index = True)
+        print(len(unique_time))
+        print('len unique time')
         sorted_time = sorted_time[tidx]
         sorted_mag = data_mags[sorted_idx].astype('float')
         sorted_mag = sorted_mag[tidx]
@@ -537,17 +543,17 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     '''
 
     lc = lc.T
-
     times = lc[:, 0]
     print(times)
     print('interp times')
     fluxes = lc[:, 1]
-    wv_effs = lc[:, 2]
-    wv_effs_plus_corr = wv_effs * 1000 + wv_corr 
+    wv_effs = lc[:, 2] 
     errs = lc[:, 3]
     stacked_data = np.vstack([times, wv_effs]).T
     ufilts = np.unique(lc[:, 2])
     ufilts_in_angstrom = ufilts*1000.0 + wv_corr 
+    print(ufilts_in_angstrom)
+    print('ufilt') 
     nfilts = len(ufilts)
     x_pred = np.zeros((int((np.ceil(np.max(times)) -
                             np.floor(np.min(times)))+1)*nfilts, 2))
@@ -601,12 +607,28 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                 class snModel_linear(Model):
                     def get_value(self, param):
                         splines_l = [] 
+                        wv_list = [] 
+                        t_list = [] 
                         for datapoint in param:
                             t = datapoint[0]
-                            wv = datapoint[1] * 1000.0 + wv_corr
-                            spline_fit = linear_fits[wv]
-                            splines_l.append(spline_fit(t))
+                            wv = datapoint[1] * 1000.0 + wv_corr 
+                            wv_list.append(wv)
+                            spline_fit = linear_fits.get(wv)
+                            if spline_fit is not None:
+                                splines_l.append(spline_fit(t))
+                                t_list.append(t)
+                            else:
+                                print(f"no spline for {wv} at time {t}")
+                                continue
+                        # print(t_list)
+                        # print(len(t_list))
+                        # print('length of t_list')
+                        print('splines_l:', splines_l)
+                        print(len(splines_l))
+                        print('t list:', t_list)
+                        print(len(t_list))
                         return np.asarray(splines_l)
+
                 mean = snModel_linear()
                 gp = george.GP(kernel, mean = snModel_linear())
             elif value == 'cubic':
@@ -615,8 +637,13 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                 #cubic spline as mean function 
                 class snModel_cubic(Model):
                     def get_value(self, param):
-                        t = (param[:,0])
-                        return np.asarray([cubic_spline(t) for cubic_spline in cubic_fits])
+                        splines_c = [] 
+                        for datapoint in param:
+                            t = datapoint[0]
+                            wv = datapoint[1] * 1000. + wv_corr
+                            spline_fit = cubic_fits[wv]
+                            splines_c.append(spline_fit(t))
+                        return np.asarray(splines_c)
                 mean = snModel_cubic()
                 gp = george.GP(kernel, mean = snModel_cubic())
             else:
@@ -642,10 +669,17 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     gp.set_parameter_vector(result.x)
 
     # Populate arrays with time and wavelength values to be fed into gp
-    for jj, time in enumerate(np.arange(int(np.floor(np.min(times))),
-                                        int(np.ceil(np.max(times)))+1)):
+    print(int(np.floor(np.min(times))))
+    print('min')
+    print(int(np.ceil(np.max(times)))) 
+    print('max')
+    for jj, time in enumerate(np.arange(np.min(times),
+                                        np.max(times))):
         x_pred[jj*nfilts: jj*nfilts+nfilts, 0] = [time] * nfilts
         x_pred[jj*nfilts: jj*nfilts+nfilts, 1] = ufilts
+    print(x_pred)
+    print('x pred')
+    print(len(x_pred))
 
     # Run gp to estimate interpolation
     pred, pred_var = gp.predict(lc[:, 1], x_pred, return_var=True)
