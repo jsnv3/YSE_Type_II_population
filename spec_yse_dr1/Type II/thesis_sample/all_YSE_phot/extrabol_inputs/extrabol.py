@@ -827,7 +827,7 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     ------
     '''
     plot_times = np.arange(int(np.floor(np.min(lc[:, 0]))),
-                           (int(np.ceil(np.max(lc[:, 0])))+1))
+                           (int(np.ceil(np.max(lc[:, 0])))))
 
     # Import a color map to make the plots look pretty
     cm = plt.get_cmap('rainbow')
@@ -839,14 +839,14 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
                  label=my_filters[jj].split('/')[-1])
         if mean:
             if show_template:
-                plt.plot(test_times, -(test_data[jj, :] + flux_corr), '--',
+                if len(test_data) > 0:
+                    plt.plot(test_times, -(test_data[jj, :] + flux_corr), '--',
                          color=cm(wv_colors[jj]))  # Template curves
-        if mean:
-            if cubic_fits is not None:
+            elif cubic_fits is not None:
                 spline_x = np.linspace(plot_times[0], plot_times[-1], 1000)
                 spline_y = cubic_fits[jj](spline_x)
                 plt.plot(spline_x, -spline_y, '-', color = cm(wv_colors[jj]))
-            if linear_fits is not None:
+            elif linear_fits is not None:
                 spline_x = np.linspace(plot_times[0], plot_times[-1], 1000)
                 spline_y = linear_fits[jj](spline_x)
                 plt.plot(spline_x, -spline_y, '-.', color = cm(wv_colors[jj]))
@@ -869,7 +869,7 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
         plt.errorbar(x, y, yerr=yerr, fmt='none', color=cm(wv_colors[i]))
 
     if mean:
-        plt.title(snname + ' using sn' + sn_type + ' template')
+        plt.title(snname + ' using sn' + sn_type)
     else:
         plt.title(snname + ' Light Curves')
     plt.legend()
@@ -909,7 +909,7 @@ def plot_bb_ev(lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_type):
     ------
     '''
     interp_times = np.arange(int(np.floor(np.min(lc[:, 0]))),
-                             int(np.ceil(np.max(lc[:, 0])))+1)
+                             int(np.ceil(np.max(lc[:, 0]))))
     fig, axarr = plt.subplots(2, 1, sharex=True)
 
     axarr[0].plot(interp_times, Tarr / 1.e3, color='k')
@@ -954,7 +954,7 @@ def plot_bb_bol(lc, bol_lum, bol_err, snname, outdir, sn_type):
     ------
     '''
     plot_times = np.arange(int(np.floor(np.min(lc[:, 0]))),
-                           int(np.ceil(np.max(lc[:, 0])))+1)
+                           int(np.ceil(np.max(lc[:, 0]))))
 
     plt.plot(plot_times, bol_lum, color='k')
     plt.fill_between(plot_times, bol_lum-bol_err, bol_lum+bol_err,
@@ -1008,7 +1008,7 @@ def write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
     '''
 
     times = np.arange(int(np.floor(np.min(lc[:, 0]))),
-                      int(np.ceil(np.max(lc[:, 0])))+1)
+                      int(np.ceil(np.max(lc[:, 0]))))
     dense_lc = np.reshape(dense_lc, (len(dense_lc), -1))
     dense_lc = np.hstack((np.reshape(-times, (len(times), 1)), dense_lc))
     tabledata = np.stack((Tarr / 1e3, Terr_arr / 1e3, Rarr / 1e15,
