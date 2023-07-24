@@ -236,7 +236,8 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     name_ind = name[np.argsort(ind)]
     filter_name_to_effwv = dict(zip(name_ind, wv_idx))
     print('filter to effwv:', filter_name_to_effwv)
-
+    filter_keys = [filter_name_to_effwv.keys()] 
+    ufilt 
     
     #create splines + keep track of which filters use template and 0 as mf
     linear_fits = {} 
@@ -265,7 +266,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
             
     
 
-
+    print('myi filters :', my_filters)
     lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs, 
                     my_filters))
 
@@ -545,18 +546,21 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
 
     lc = lc.T
     times = lc[:, 0].astype('float64')
+    print('time shape:', times.shape)
     fluxes = lc[:, 1].astype('float64')
     wv_effs = lc[:, 2].astype('float64')
     errs = lc[:, 3].astype('float64')
     filters = lc[:,5]
     stacked_data = np.vstack([times, wv_effs]).T
-    ufilts = np.unique(wv_effs)
-    unique_filter_names = np.unique(filters)
+    ufilts = np.unique(wv_effs) 
+    print("ufilt:", ufilts)
+    unique_filter_names = np.unique(filters) 
+    
     ufilts_in_angstrom = ufilts*1000.0 + wv_corr  
     nfilts = len(ufilts) 
     x_pred = np.zeros((int((np.ceil(np.max(times)) -
-                            np.floor(np.min(times))))*nfilts, 2))
-
+                            np.floor(np.min(times)))), 2))
+    print('shape x_pred:', x_pred.shape)
     dense_fluxes = np.zeros((int((np.ceil(np.max(times)) -
                                   np.floor(np.min(times)))), nfilts))
     dense_errs = np.zeros((int((np.ceil(np.max(times)) -
@@ -572,17 +576,20 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
         * george.kernels.ExpSquaredKernel([50, 0.5], ndim=2)  
         
     dense_lc_list = [] 
-          
+    key_count = 0 
+    key_count_to_filter = {} 
     if not use_mean:
         mean = 0 
         gp = george.GP(kernel, mean = 0)
     else:
-        for key, value in filter_mean_function.items(): 
+        for key in unique_filter_names:
+            value = filter_mean_function[key] 
             this_filter_wv = filter_name_to_effwv[key]  
             this_filter_ind = np.where(filters == key)
             this_filter_stacked = stacked_data[this_filter_ind]
             this_filter_fluxes = fluxes[this_filter_ind]
-            this_filter_errs = errs[this_filter_ind]           
+            this_filter_errs = errs[this_filter_ind] 
+            print('key', key)          
             if value == 'template':
                 template = generate_template(ufilts_in_angstrom, sn_type)
                 if verbose:
@@ -664,29 +671,24 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                             jac=grad_neg_ln_like)
             gp.set_parameter_vector(result.x)
             # Populate arrays with time and wavelength values to be fed into gp
-            for jj, time in enumerate(np.arange(np.min(times),
-                                                np.max(times))):
-                x_pred[jj*nfilts: jj*nfilts+nfilts, 0] = [time] * nfilts
-                x_pred[jj*nfilts: jj*nfilts+nfilts, 1] = ufilts
+            x_pred[:, 0] = np.arange(np.min(times), np.max(times))
+            x_pred[:, 1] = ufilts[key_count]
 
             # Run gp to estimate interpolation
             pred, pred_var = gp.predict(this_filter_fluxes, x_pred, return_var=True)
 
-            # Populate dense_lc with newly gp-predicted values
-            for jj in np.arange(nfilts):                    
-                gind = np.where(np.abs(x_pred[:, 1]-ufilts[jj]) < epsilon)[0]
-                dense_fluxes[:, int(jj)] = pred[gind]
-                dense_errs[:, int(jj)] = np.sqrt(pred_var[gind])
-            dense_lc = np.dstack((dense_fluxes, dense_errs)) 
-            dense_lc_list.append(dense_lc)
-    dense_lc_array  = np.array(dense_lc_list)
-    print(dense_lc_array)
-    print('shape dense_lc_array:', dense_lc_array.shape) 
+            # Populate dense_lc with newly gp-predicted values                    
+            gind = np.where(np.abs(x_pred[:, 1]-ufilts[key_count]) < epsilon)[0]
+            dense_fluxes[:, key_count] = pred[gind]
+            dense_errs[:, key_count] = np.sqrt(pred_var[gind]) 
+            key_count += 1 
+            
+        dense_lc = np.dstack((dense_fluxes, dense_errs)) 
 
-    return dense_lc_array, test_y, test_times
+    return dense_lc, test_y, test_times, ufilts
 
 
-def fit_bb(dense_lc_array, wvs, use_mcmc, T_max):
+def fit_bb(dense_lc, ufilts, use_mcmc, T_max):
     '''
     Fit a series of BBs to the GP LC
     Adapted from superbol, Nicholl, M. 2018, RNAAS)
@@ -710,21 +712,23 @@ def fit_bb(dense_lc_array, wvs, use_mcmc, T_max):
         BB temperature error array (cm)
     '''
 
-    T_arr = np.zeros(len(dense_lc_array))
-    R_arr = np.zeros(len(dense_lc_array))
-    Terr_arr = np.zeros(len(dense_lc_array))
-    Rerr_arr = np.zeros(len(dense_lc_array))
+    T_arr = np.zeros(len(dense_lc))
+    R_arr = np.zeros(len(dense_lc))
+    Terr_arr = np.zeros(len(dense_lc))
+    Rerr_arr = np.zeros(len(dense_lc))
     prior_fit = (9000, 1e15) 
 
-    for i, datapoint in enumerate(dense_lc_array ):
-        fnu = 10.**((-datapoint[:,:, 0]+48.6) / -2.5)
-        ferr = datapoint[:,:, 1]
+    for i in range(dense_lc.shape[1]):
+        # wvidx = np.where(dense_lc[:,1] == )
+        datapoint = dense_lc[:, i, :]
+        fnu = 10.**((-datapoint[:,0]+48.6) / -2.5)
+        ferr = datapoint[:, 1]
         fnu = fnu * 4. * np.pi * (3.086e19)**2
-        fnu_err = np.abs(0.921034 * 10.**(0.4*datapoint[:,:, 0] - 19.44)) \
+        fnu_err = np.abs(0.921034 * 10.**(0.4*datapoint[:,0] - 19.44)) \
             * ferr * 4. * np.pi * (3.086e19)**2
 
-        flam = fnu*c / (wvs*ang_to_cm)**2
-        flam_err = fnu_err*c / (wvs*ang_to_cm)**2
+        flam = fnu*c / (ufilts[i]*ang_to_cm)**2
+        flam_err = fnu_err*c / (ufilts[i]*ang_to_cm)**2
 
         if use_mcmc:
             def log_likelihood(params, lam, f, f_err):
@@ -747,7 +751,7 @@ def fit_bb(dense_lc_array, wvs, use_mcmc, T_max):
             nwalkers = 16
             ndim = 2
             sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability,
-                                            args=[wvs, flam, flam_err])
+                                            args=[ufilts, flam, flam_err])
             T0 = 9000 + 1000*np.random.rand(nwalkers)
             R0 = 1e15 + 1e14*np.random.rand(nwalkers)
             p0 = np.vstack([T0, R0])
@@ -770,7 +774,7 @@ def fit_bb(dense_lc_array, wvs, use_mcmc, T_max):
             try:
                 print(f'flam_err: {flam_err.shape}')
                 print(f'flam: {flam.shape}')
-                BBparams, covar = curve_fit(bbody, wvs, flam, maxfev=10000,
+                BBparams, covar = curve_fit(bbody, ufilts[i], flam, maxfev=10000,
                                             p0=prior_fit, sigma=flam_err,
                                             bounds=(0, [T_max, np.inf]))
                 # Get temperature and radius, with errors, from fit
@@ -830,7 +834,7 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
 
     # Plot interpolation, template, and error (shaded areas)
     for jj in np.arange(len(wv_colors)):
-        plt.plot(plot_times, -dense_lc_array[:, jj, 0], color=cm(wv_colors[jj]),
+        plt.plot(plot_times, -dense_lc[:, jj, 0], color=cm(wv_colors[jj]),
                  label=my_filters[jj].split('/')[-1])
         if mean:
             if show_template:
@@ -1165,22 +1169,23 @@ def main():
     if args.verbose:
         print('Using ' + str(sn_type) + ' template.')
 
-    dense_lc_array, test_data, test_times = interpolate(lc, wv_corr, sn_type,
+    dense_lc, test_data, test_times, ufilts = interpolate(lc, wv_corr, sn_type,
                                                   mean, args.redshift,
                                                   args.verbose, filter_mean_function, filter_name_to_effwv, linear_fits, cubic_fits)
     lc = lc.T
 
-    wvs, wvind = np.unique(lc[:, 2].astype('float64'), return_index=True)
+    wvs, wvind, wvrev = np.unique(lc[:, 2].astype('float64'), return_index=True, return_inverse = True)
     wvs = wvs*1000.0 + wv_corr
+    
     my_filters = np.asarray(my_filters)
-    ufilts = my_filters[wvind]
-
+    ufilters = my_filters[wvind]
+    effwv = wvs[wvrev].astype('float64')
     # Converts to AB magnitudes
-    dense_lc_array[:, :, 0] += flux_corr
+    dense_lc[:, :, 0] += flux_corr
 
     if args.verbose:
         print('Fitting Blackbodies, this may take a few minutes...')
-    Tarr, Rarr, Terr_arr, Rerr_arr = fit_bb(dense_lc_array, wvs, args.mc, args.T_max)
+    Tarr, Rarr, Terr_arr, Rerr_arr = fit_bb(dense_lc, ufilts, args.mc, args.T_max)
 
     # Calculate bolometric luminosity and error
     bol_lum = 4. * np.pi * Rarr**2 * sigsb * Tarr**4
@@ -1192,7 +1197,7 @@ def main():
     if args.plot:
         if args.verbose:
             print('Making plots in ' + args.outdir)
-        plot_gp(lc, dense_lc_array, snname, flux_corr, ufilts, wvs, test_data,
+        plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
                 args.outdir, sn_type, test_times, mean, args.template)
         plot_bb_ev(lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
                    args.outdir, sn_type)
@@ -1200,7 +1205,7 @@ def main():
 
     if args.verbose:
         print('Writing output to ' + args.outdir)
-    write_output(lc, dense_lc_array, Tarr, Terr_arr, Rarr, Rerr_arr,
+    write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
                  bol_lum, bol_err, my_filters, snname, args.outdir, sn_type)
     print('job completed')
 
