@@ -100,7 +100,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         filters_in_settings = [i.split()[0] for i in lines]
     
     except FileNotFoundError:
-        print("settings.txt file not found, using 0 as mean function...")
+        print("settings file not found, using 0 as mean function...")
         filter_mean_function = {} 
         filters_in_settings = [] 
         
@@ -181,10 +181,15 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     width_effs = np.asarray(width_effs)
     width_effs = width_effs[gis]
     my_filters = np.asarray(my_filters)
-    my_filters = my_filters[gis]
+    my_filters = my_filters[gis] 
+    print('unique filters:', np.unique(my_filters))
     
-    if settings:
-        if not np.array_equal(np.unique(my_filters), filters_in_settings):
+    if settings: 
+        settings_filters = set(filters_in_settings) 
+        my_filters_unique = set(np.unique(my_filters))
+        if settings_filters != my_filters_unique:
+            print(settings_filters)
+            print(my_filters_unique)
             sys.exit("Settings file filters do not match filters in dataset")
 
     # Set the peak flux to t=0
@@ -230,7 +235,8 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         unique_time, tidx = np.unique(sorted_time, return_index = True)
         sorted_time = sorted_time[tidx]
         sorted_mag = data_mags[sorted_idx].astype('float')
-        sorted_mag  = sorted_mag[tidx]
+        sorted_mag  = sorted_mag[tidx] 
+        
         if value == 'linear':
             wl = filter_name_to_effwv[key]
             linear_fits[wl] = interp.interp1d(sorted_time, sorted_mag, kind = 'linear')
@@ -550,14 +556,17 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     ufilts = np.unique(wv_effs)
     ufilts_in_angstrom = ufilts*1000.0 + wv_corr
     nfilts = len(ufilts) 
-    
-    length_of_times = len(np.arange(int(np.floor(np.min(times))),
-                           (int(np.ceil(np.max(times)))))) 
-    print("length of times:", length_of_times)
+    min_time = np.min(times)
+    print('min time:', min_time)
+    max_time = int(np.ceil(np.max(times)))
+    length_of_times = len(np.arange(np.min(times), np.max(times)))
+   
+    print('length of times:', length_of_times)
+    print(length_of_times)
     x_pred = np.zeros((length_of_times, 2)) 
-    print("x_pred:", x_pred) 
     print("len x_pred:", len(x_pred))
-    dense_fluxes = np.zeros((length_of_times, nfilts))
+    dense_fluxes = np.zeros((length_of_times, nfilts)) 
+    print('len dense_fluxes', len(dense_fluxes))
     dense_errs = np.zeros((length_of_times, nfilts))
 
     # test_y is only used if mean = True
@@ -671,7 +680,9 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                               jac = grad_neg_ln_like, 
                               bounds = bnds)
             gp.set_parameter_vector(result.x)
-            #Populate arrays with time and wavelength values to be fed into gp
+            #Populate arrays with time and wavelength values to be fed into gp 
+            print('arange length of times:', len(np.arange(min_time, max_time)))
+            print('arange array:', np.arange(min_time, max_time))
             x_pred[:, 0] = np.arange(np.min(times), np.max(times)) 
             x_pred[:, 1] = ufilts[key_count]
             
@@ -684,6 +695,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
             dense_errs[:, key_count] = np.sqrt(pred_var[gind])
             key_count += 1 
         dense_lc = np.dstack((dense_fluxes, dense_errs))
+        print('dense_lc:', dense_lc)
                                         
     return dense_lc, test_y, test_times, ufilts, ufilts_in_angstrom
 
@@ -827,10 +839,13 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     Output
     ------
     '''
-    plot_times = np.arange(int(np.floor(np.min(lc[:, 0].astype('float64')))),
-                           (int(np.ceil(np.max(lc[:, 0].astype('float64'))))))
+    min_time = np.min(lc[:,0].astype('float64'))
+    max_time = np.max(lc[:,0].astype('float64'))
+    plot_times = np.arange(min_time, max_time)
     
-    print("plot times:",plot_times)
+    print("len plot times:", len(plot_times)) 
+    print('plot times:', plot_times)
+    print('wvs', wvs)
 
     # Import a color map to make the plots look pretty
     cm = plt.get_cmap('rainbow')
@@ -839,7 +854,7 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     print('len wv colors:', len(wv_colors))
 
     # Plot interpolation, template, and error (shaded areas)
-    for jj in np.arange(len(wv_colors)):
+    for jj, wv in enumerate(wvs):
         plt.plot(plot_times, -dense_lc[:, jj, 0], color=cm(wv_colors[jj]),
                  label=my_filters[jj].split('/')[-1])
         if mean:
@@ -849,29 +864,38 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
                          color=cm(wv_colors[jj]))  # Template curves
                 elif linear_fits is not None:
                     spline_x = np.linspace(plot_times[0], plot_times[-1], 1000)
-                    spline_y = linear_fits[jj](spline_x)
-                    plt.plot(spline_x, spline_y, ':', color = cm(wv_colors[jj]))
+                    spline_y = -linear_fits[wv](spline_x)
+                    plt.plot(spline_x, spline_y, color = cm(wv_colors[jj]))
                 elif cubic_fits is not None:
                     spline_x = np.linspace(plot_times[0], plot_times[-1], 1000)
-                    spline_y = cubic_fits[jj](spline_x)
+                    spline_y = cubic_fits[wv](spline_x)
                     plt.plot(spline_x, spline_y, '-.', color = cm(wv_colors[jj]))
+                    ax = plt.gca()
         plt.fill_between(plot_times,
                          -dense_lc[:, jj, 0] - dense_lc[:, jj, 1],
                          -dense_lc[:, jj, 0] + dense_lc[:, jj, 1],
-                         color=cm(wv_colors[jj]), alpha=0.2)
+                         color=cm(wv_colors[jj]), alpha=0.2) 
+        print('interp y:', -dense_lc[:,jj,0])
+        
 
     # Plot original data points and error bars
-    for i, filt in enumerate(np.unique(lc[:, 2])):
-        gind = np.where(lc[:, 2] == filt)
-        x = lc[gind, 0].astype('float64')
+    print(np.unique(lc[:, 5]), "unique filters")
+    for i, filt in enumerate(np.unique(lc[:, 5])):
+        print('i:', i)
+        print('filt:', filt)
+        gind = np.where(lc[:, 5] == filt)
+        x = lc[gind, 0].astype('float64') 
         x = x.flatten()
+        print('x:', x)
         y = -lc[gind, 1].astype('float64') - flux_corr
         y = y.flatten()
         yerr = lc[gind, 3].astype('float64')
         yerr = yerr.flatten()
-
-        plt.plot(x, y, 'o', color=cm(wv_colors[i]))
-        plt.errorbar(x, y, yerr=yerr, fmt='none', color=cm(wv_colors[i]))
+        print('data y', y)
+        print('yerr:', yerr)
+        ax = plt.gca()
+        ax.plot(x, y, 'o', color=cm(wv_colors[i]), linestyle = 'dashed')
+        ax.errorbar(x, y, yerr=yerr, fmt='none', color=cm(wv_colors[i]))
 
     if mean:
         plt.title(snname + ' using sn' + sn_type)
@@ -913,17 +937,19 @@ def plot_bb_ev(lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_type):
     Output
     ------
     '''
-    interp_times = np.arange(int(np.floor(np.min(lc[:, 0].astype('float64')))),
-                             int(np.ceil(np.max(lc[:, 0].astype('float64')))))
+    min_time = np.min(lc[:,0].astype('float64'))
+    max_time = np.max(lc[:,0].astype('float64'))
+    plot_times = np.arange(min_time, max_time)
+    
     fig, axarr = plt.subplots(2, 1, sharex=True)
 
-    axarr[0].plot(interp_times, Tarr / 1.e3, color='k')
-    axarr[0].fill_between(interp_times, Tarr/1.e3 - Terr_arr/1.e3,
+    axarr[0].plot(plot_times, Tarr / 1.e3, color='k')
+    axarr[0].fill_between(plot_times, Tarr/1.e3 - Terr_arr/1.e3,
                           Tarr/1.e3 + Terr_arr/1.e3, color='k', alpha=0.2)
     axarr[0].set_ylabel('Temp. (1000 K)')
 
-    axarr[1].plot(interp_times, Rarr / 1e15, color='k')
-    axarr[1].fill_between(interp_times, Rarr/1e15 - Rerr_arr/1e15,
+    axarr[1].plot(plot_times, Rarr / 1e15, color='k')
+    axarr[1].fill_between(plot_times, Rarr/1e15 - Rerr_arr/1e15,
                           Rarr/1e15 + Rerr_arr/1e15, color='k', alpha=0.2)
     axarr[1].set_ylabel(r'Radius ($10^{15}$ cm)')
 
@@ -958,8 +984,9 @@ def plot_bb_bol(lc, bol_lum, bol_err, snname, outdir, sn_type):
     Output
     ------
     '''
-    plot_times = np.arange(int(np.floor(np.min(lc[:, 0].astype('float64')))),
-                           int(np.ceil(np.max(lc[:, 0].astype('float64')))))
+    min_time = np.min(lc[:,0].astype('float64'))
+    max_time = np.max(lc[:,0].astype('float64'))
+    plot_times = np.arange(min_time, max_time)
 
     plt.plot(plot_times, bol_lum, color='k')
     plt.fill_between(plot_times, bol_lum-bol_err, bol_lum+bol_err,
@@ -1012,9 +1039,9 @@ def write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
     ------
     '''
 
-    mintime = int(np.floor(np.min(lc[:,0].astype('float64'))))
-    maxtime = int(np.ceil(np.max(lc[:,0].astype('float64'))))
-    times = np.arange(mintime, maxtime)
+    min_time = np.min(lc[:,0].astype('float64'))
+    max_time = np.max(lc[:,0].astype('float64'))
+    times = np.arange(min_time, max_time)
     dense_lc = np.reshape(dense_lc, (len(dense_lc), -1))
     dense_lc = np.hstack((np.reshape(-times, (len(times), 1)), dense_lc))
     tabledata = np.stack((Tarr / 1e3, Terr_arr / 1e3, Rarr / 1e15,
