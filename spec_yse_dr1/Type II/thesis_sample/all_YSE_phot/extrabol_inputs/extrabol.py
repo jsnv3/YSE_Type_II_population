@@ -188,8 +188,8 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         settings_filters = set(filters_in_settings) 
         my_filters_unique = set(np.unique(my_filters))
         if settings_filters != my_filters_unique:
-            print(settings_filters)
-            print(my_filters_unique)
+            print('settings filters:', settings_filters)
+            print('dataset filters:', my_filters_unique)
             sys.exit("Settings file filters do not match filters in dataset")
 
     # Set the peak flux to t=0
@@ -222,37 +222,25 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     filter_name_to_effwv = dict(zip(name_ind, wv_idx))
     print('filter to effwv:', filter_name_to_effwv)
     
-    #create splines + keep track of which filters use template and 0 as mean function
-    linear_fits = {} 
-    cubic_fits = {}
+    #keep track of which filters use template and 0 as mean function
+    linear_filters = [] 
+    cubic_filters = []
     template_filters = [] 
     zero_filters = [] 
-    for key, value in filter_mean_function.items():
-        data_times = phases 
-        data_mags  = fluxes 
-        sorted_idx = np.argsort(data_times)
-        sorted_time = data_times[sorted_idx].astype('float')       
-        unique_time, tidx = np.unique(sorted_time, return_index = True)
-        sorted_time = sorted_time[tidx]
-        sorted_mag = data_mags[sorted_idx].astype('float')
-        sorted_mag  = sorted_mag[tidx] 
-        
+    for key, value in filter_mean_function.items():        
         if value == 'linear':
-            wl = filter_name_to_effwv[key]
-            linear_fits[wl] = interp.interp1d(sorted_time, sorted_mag, kind = 'linear')
+            linear_filters.append(key)
         elif value == 'cubic':
-            wl = filter_name_to_effwv[key]
-            cubic_fits[wl] = interp.CubicSpline(sorted_time, sorted_mag)
+            cubic_filters.append(key)
         elif value == 'template':
             template_filters.append(key)
         else:
             zero_filters.append(key)
 
     lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs, my_filters))
-    print('linear fit keys:', linear_fits.keys())
 
     return (lc, wv_corr, flux_corr, my_filters, filter_mean_function, filter_name_to_effwv, 
-linear_fits, cubic_fits)
+linear_filters, cubic_filters, template_filters)
     
 
 
@@ -515,7 +503,8 @@ def test(lc, wv_corr, z):
 
 
 def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function, 
-                filter_name_to_effwv, linear_fits = None, cubic_fits = None):
+                filter_name_to_effwv, linear_filters = None, cubic_filters = None, 
+                template_filters = None):
     '''
     Interpolate the LC using a 2D Gaussian Process (GP)
 
@@ -575,13 +564,64 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     test_times = [] 
     
     # Set up gp 
-    kernel = np.var(fluxes) \
-        * george.kernels.Matern32Kernel([12, 0.1], ndim=2) 
+    # kernel = np.var(fluxes) \
+    #     * george.kernels.Matern32Kernel([12, 0.1], ndim=2) 
     key_count = 0 
     if not use_mean:
         mean = 0 
         gp = george.GP(kernel, mean = 0)
     else:
+        #create lienar splines, set up and run GP 
+        for i, filt in enumerate(linear_filters):
+            idx = np.where(filters == filt)
+            x = times[idx]
+            y = fluxes[idx]
+            yerr = errs[idx]
+            kernel = np.var(y) * george.kernels.Matern32Kernel(1e6)
+            spline = interp.interp1d(x, y, kind = 'linear')
+            class snModel_linear:
+                def __init__(self, spline):
+                    self.spline = spline
+                def get_value(self, x):
+                    return self.spline(x)
+            mean = snModel_linear(spline)
+            gp = george.GP(mean = mean, kernel = kernel)
+            print('x shape:', x.shape)
+            print('yerr shape:', yerr.shape)
+            gp.compute(x, yerr)
+            x_pred = np.arange(np.min(x), np.max(x))
+            pred, pred_var = gp.predict(y, x_pred, return_var = True)
+            
+        #create cubic splines, set up and run GP         
+        for i, filt in enumerate(cubic_filters):
+            idx = np.where(filters == filt)
+            x = times[idx]
+            y = fluxes[idx]
+            yerr = errs[idx] 
+            sorted_idx = np.argsort(x)
+            sorted_time = x[sorted_idx]
+            sorted_mag = y[sorted_idx]
+            kernel = np.var(y) * george.kernels.Matern32kKernel(1e6)
+            cubic_spline = interp.Cubic_spline(sorted_time, sorted_mag)
+            class snModel_cubic:
+                def __init__(self, cubic_spline):
+                    self.cubic_spline = cubic_spline
+                def get_value(self, x):
+                    return self.cubic_spline(x)
+            mean = snModel_cubic(cubic_spline)
+            kernel = np.var(y) * george.kernels.Matern32Kernel(1e6)
+            gp = george.GP(mean = mean, kernel = kernel)
+            gp.compute(x, yerr)
+        for i, filt in enumerate(template_filters):
+            idx = np.where(filters == filt)
+            x = times[idx]
+            y = fluxes[idx]
+            yerr = errs[idx] 
+            kernel = np.var(fluxes) * george.kernels.Matern32Kernel([12, 0.1], ndim=2) 
+            f_stretch, t_shift, t_stretch = fit_template(ufilts_in_angstrom,
+                                                         template, wv_effs, 
+                                                         wv_corr, fluxes, times,
+                                                         errs, z)
         for key in unique_filter_names:
             value = filter_mean_function[key]
             this_filter_wv = filter_name_to_effwv[key]
@@ -623,26 +663,6 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                 gp = george.GP(kernel, mean = snModel())
                 gp.compute(this_filter_stacked, this_filter_errs)
                 
-            elif value == 'linear':
-                if verbose:
-                    print(f'Using linear spline for {key}')
-                #linear spline as mean function 
-                class snModel_linear(Model):
-                    def get_value(self, param):
-                        splines_l = [] 
-                        for datapoint in param:
-                            t = datapoint[0]
-                            wv = datapoint[1] * 1000.0 + wv_corr
-                            spline_fit = linear_fits.get(wv)
-                            if spline_fit is not None:
-                                splines_l.append(spline_fit(t))
-                            else:
-                                print(f"No spline for {wv} at time {t}")
-                                continue
-                        return np.asarray(splines_l)
-                mean = snModel_linear()
-                gp = george.GP(kernel, mean = snModel_linear())
-                gp.compute(this_filter_stacked, this_filter_errs)
                 
             elif value == 'cubic':
                 if verbose:
@@ -1182,7 +1202,7 @@ def main():
 
     snname = ('.').join(args.snfile.split('.')[: -1]).split('/')[-1]
 
-    lc, wv_corr, flux_corr, my_filters, filter_mean_function, filter_name_to_effwv, linear_fits, cubic_fits = read_in_photometry(args.snfile,
+    lc, wv_corr, flux_corr, my_filters, filter_mean_function, filter_name_to_effwv, linear_filters, cubic_filters, template_filters = read_in_photometry(args.snfile,
                                                             args.dm,
                                                             args.redshift,
                                                             args.start,
@@ -1200,7 +1220,8 @@ def main():
 
     dense_lc, test_data, test_times, ufilts, ufilts_in_angstrom = interpolate(lc, wv_corr, sn_type,
                                                   mean, args.redshift,
-                                                  args.verbose, filter_mean_function, filter_name_to_effwv, linear_fits, cubic_fits)
+                                                  args.verbose, filter_mean_function, filter_name_to_effwv, 
+                                                  linear_filters, cubic_filters, template_filters)
     lc = lc.T
     wvs, wvind, wvrev = np.unique(lc[:, 2].astype('float64'), return_index=True, return_inverse = True)
     wvs = wvs*1000.0 + wv_corr 
