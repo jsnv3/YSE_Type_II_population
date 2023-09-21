@@ -196,7 +196,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     # Set the peak flux to t=0
     peak_i = np.argmax(fluxes)
     if verbose:
-        print('Peak Luminosity occurrs at MJD',phases[peak_i])
+        print('Peak Luminosity occurrs at MJD:', phases[peak_i])
     phases = np.asarray(phases) - phases[peak_i]
 
     # Eliminate any data points outside of specified range
@@ -737,20 +737,27 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
     covar_arr = np.zeros(dense_lc.shape[1])
 
     prior_fit = (9000, 1e15)
-
+    full_wv = [] 
+    full_flux = [] 
+    full_err = [] 
+    
     for i in range(dense_lc.shape[1]):
         datapoint = dense_lc[:,i] 
         x_time = datapoint[0]
         flux = datapoint[1]
         fluxerr = datapoint[2]
         wavelength = datapoint[3]
+        full_wv.append(wavelength)
         fnu = 10.**((-flux +48.6) / -2.5) 
         ferr = fluxerr
         fnu = fnu * 4. * np.pi * (3.086e19)**2
         fnu_err = np.abs(0.921034 * 10.**(0.4*flux - 19.44)) \
             * ferr * 4. * np.pi * (3.086e19)**2
         flam = fnu * c / (wavelength * ang_to_cm) ** 2 
+        full_flux.append(flam)
         flam_err = fnu_err * c / (wavelength * ang_to_cm) ** 2 
+        full_err.append(flam_err)
+        
         print('wavelength:', wavelength)
         print('flam:', flam)
         print('flam_err:', flam_err)
@@ -799,8 +806,8 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
                 print('flam:', flam)
                 print('flam_err:', flam_err)
                 print('wavelength:', wavelength)
-                BBparams, covar = curve_fit(bbody, wavelength, flam, maxfev=10000,
-                                            p0=prior_fit, sigma=[flam_err],
+                BBparams, covar = curve_fit(bbody, full_wv, full_flux, maxfev=10000,
+                                            p0=prior_fit, sigma=full_err,
                                             bounds=(0, [T_max, np.inf]))
 
                 # Get temperature and radius, with errors, from fit
@@ -869,8 +876,8 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
         pred = dense_lc[1, idx]
         pred_var = dense_lc[2, idx]
         filter_colors[wavelength] = color
-        plt.plot(x_pred, pred, color = color, lw = 1.5, alpha = 0.5)
-        plt.fill_between(x_pred, pred - np.sqrt(pred_var), pred + np.sqrt(pred_var), color = 'k', alpha = 0.2)
+        plt.plot(x_pred, -pred, color = color, lw = 1.5, alpha = 0.5)
+        plt.fill_between(x_pred, -pred - np.sqrt(pred_var), -pred + np.sqrt(pred_var), color = 'k', alpha = 0.2)
         
 
     #plot original data + errorbars 
@@ -879,7 +886,7 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
         color = filter_colors[central_wv]
         idx = np.where(lc[:,5] == filt)
         x = lc[:,0].astype('float64')[idx]
-        y = lc[:,1].astype('float64')[idx]
+        y = -lc[:,1].astype('float64')[idx]
         yerr = lc[:,3].astype('float64')[idx]
         plt.errorbar(x, y, yerr = yerr, fmt = '.', capsize = 0, color = color, label = filt.split('/')[-1])
 
@@ -890,7 +897,7 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     plt.legend()
     plt.xlabel('Time(days)')
     plt.ylabel('Absolute Magnitudes')
-    #plt.gca().invert_yaxis()
+    plt.gca().invert_yaxis()
     plt.savefig(outdir + snname + '_' + str(sn_type) + '_gp.png')
     plt.clf()
 
@@ -923,10 +930,10 @@ def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_
     Output
     ------
     '''
-    #min_time = np.min(lc[:,0].astype('float64'))
-    #max_time = np.max(lc[:,0].astype('float64')) 
-    plot_times = dense_lc[0]
-    np.savetxt('times', plot_times)
+    min_time = np.min(lc[:,0].astype('float64'))
+    max_time = np.max(lc[:,0].astype('float64')) 
+    #plot_times = dense_lc[0]
+    plot_times = np.arange(min_time, max_time)
 
     print('len plot times:', len(plot_times))
     
@@ -973,16 +980,16 @@ def plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, outdir, sn_type):
     Output
     ------
     '''
-    # min_time = np.min(lc[:,0].astype('float64'))
-    # max_time = np.max(lc[:,0].astype('float64'))
+    min_time = np.min(lc[:,0].astype('float64'))
+    max_time = np.max(lc[:,0].astype('float64'))
     # time_length = len(bol_lum)
-    # plot_times = np.linspace(min_time, max_time, time_length)
-    times = dense_lc[0]
-    sorted_idx = np.argsort(times)
-    sorted_time = times[sorted_idx]
-    plot_times = sorted_time
+    plot_times = np.arange(min_time, max_time)
+    # times = dense_lc[0]
+    # sorted_idx = np.argsort(times)
+    # sorted_time = times[sorted_idx]
+    # plot_times = sorted_time
     
-    plt.plot(plot_times, bol_lum, color='k')
+    plt.plot(plot_times, bol_lum, 'k')
     plt.fill_between(plot_times, bol_lum-bol_err, bol_lum+bol_err,
                      color='k', alpha=0.2)
 
@@ -1122,7 +1129,7 @@ def main():
     parser.add_argument('--T_max', dest='T_max',  help='Temperature prior \
                                                         for black body fits',
                         type=float, default=40000.) 
-    parser.add_argument('--setings', dest = 'settings', type=str, default ='settings.txt', help = 'Settings file name')
+    parser.add_argument('--settings', dest = 'settings', type=str, default ='settings.txt', help = 'Settings file name')
 
     args = parser.parse_args()
 
