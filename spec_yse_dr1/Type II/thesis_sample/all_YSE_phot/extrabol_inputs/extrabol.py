@@ -47,7 +47,7 @@ def bbody(lam, T, R):
     L_lam in erg/s/cm
     '''
 
-    lam_cm = lam * ang_to_cm
+    lam_cm = np.array(lam) * ang_to_cm
     exponential = (h*c) / (lam_cm*k_B*T)
     blam = ((2.*np.pi*h*c**2) / (lam_cm**5)) / (np.exp(exponential)-1.)
     area = 4. * np.pi * R**2
@@ -638,8 +638,9 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
             kernel = np.var(y) * george.kernels.Matern32Kernel(1e6)
             gp = george.GP(mean = mean, kernel = kernel)
             gp.compute(x, yerr)
-        #fit templates to data 
         
+        
+        #fit templates to data 
         for i, filt in enumerate(template_filters): 
             template = generate_template(ufilts_in_angstrom, sn_type)
             if verbose:
@@ -741,6 +742,11 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
     full_flux = [] 
     full_err = [] 
     
+    #sort by time so blackbody fit is possible 
+    idx = np.argsort(dense_lc[0,:])
+    dense_lc = dense_lc[:, idx]
+    
+    
     for i in range(dense_lc.shape[1]):
         datapoint = dense_lc[:,i] 
         x_time = datapoint[0]
@@ -808,7 +814,14 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
                 print('wavelength:', wavelength)
                 BBparams, covar = curve_fit(bbody, full_wv, full_flux, maxfev=10000,
                                             p0=prior_fit, sigma=full_err,
-                                            bounds=(0, [T_max, np.inf]))
+                                            bounds=(0, [T_max, np.inf])) 
+                
+                fit_curve = bbody(full_wv, *BBparams)
+                
+                plt.figure()
+                plt.plot(full_wv, full_flux, color = 'k')
+                plt.plot(full_wv, fit_curve, label = 'fit')
+                plt.show()
 
                 # Get temperature and radius, with errors, from fit
                 T_arr[i] = BBparams[0]
@@ -823,9 +836,12 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
                 Terr_arr[i] = np.nan
                 Rerr_arr[i] = np.nan
                 covar_arr[i] = np.nan
-                
+                 
                 
         print('T_arr:', T_arr)
+        np.savetxt('flux', full_flux)
+        np.savetxt('wl', full_wv)
+        np.savetxt('err', full_err)
     return T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr
 
 
@@ -930,10 +946,15 @@ def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_
     Output
     ------
     '''
-    min_time = np.min(lc[:,0].astype('float64'))
-    max_time = np.max(lc[:,0].astype('float64')) 
+    #min_time = np.min(lc[:,0].astype('float64'))
+    #max_time = np.max(lc[:,0].astype('float64')) 
     #plot_times = dense_lc[0]
-    plot_times = np.arange(min_time, max_time)
+    #plot_times = np.arange(min_time, max_time)
+    
+    times = dense_lc[0]
+    sorted_idx = np.argsort(times)
+    sorted_time = times[sorted_idx]
+    plot_times = sorted_time
 
     print('len plot times:', len(plot_times))
     
@@ -980,14 +1001,14 @@ def plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, outdir, sn_type):
     Output
     ------
     '''
-    min_time = np.min(lc[:,0].astype('float64'))
-    max_time = np.max(lc[:,0].astype('float64'))
+    #min_time = np.min(lc[:,0].astype('float64'))
+    #max_time = np.max(lc[:,0].astype('float64'))
     # time_length = len(bol_lum)
-    plot_times = np.arange(min_time, max_time)
-    # times = dense_lc[0]
-    # sorted_idx = np.argsort(times)
-    # sorted_time = times[sorted_idx]
-    # plot_times = sorted_time
+    #plot_times = np.arange(min_time, max_time)
+    times = dense_lc[0]
+    sorted_idx = np.argsort(times)
+    sorted_time = times[sorted_idx]
+    plot_times = sorted_time
     
     plt.plot(plot_times, bol_lum, 'k')
     plt.fill_between(plot_times, bol_lum-bol_err, bol_lum+bol_err,
