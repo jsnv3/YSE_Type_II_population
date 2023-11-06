@@ -47,7 +47,7 @@ def bbody(lam, T, R):
     L_lam in erg/s/cm
     '''
 
-    lam_cm = np.array(lam) * ang_to_cm
+    lam_cm = lam * ang_to_cm
     exponential = (h*c) / (lam_cm*k_B*T)
     blam = ((2.*np.pi*h*c**2) / (lam_cm**5)) / (np.exp(exponential)-1.)
     area = 4. * np.pi * R**2
@@ -58,7 +58,7 @@ def bbody(lam, T, R):
 
 
 def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
-                       use_wc, verbose, settings):
+                       use_wc, verbose):
     '''
     Read in SN file
 
@@ -93,17 +93,9 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         List of filter names
     '''
 
-    try:
-        with open(settings, 'r') as f:
-            lines = f.readlines()
-        filter_mean_function = {i.split()[0]:(i.split()[1]) for i in lines}
-        filters_in_settings = [i.split()[0] for i in lines]
-    
-    except FileNotFoundError:
-        print("settings file not found, using 0 as mean function...")
-        filter_mean_function = {} 
-        filters_in_settings = [] 
-        
+    #if '.json' in filename:
+    #    # FOR ME: phases, mag, errs, filter
+    #else:
     photometry_data = np.loadtxt(filename, dtype=str, skiprows=2)
     # Extract key information into seperate arrays
     phases = np.asarray(photometry_data[:, 0], dtype=float)
@@ -125,7 +117,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     for ufilt in photometry_data[:, 3]:
         gind = np.where(filterIDs == ufilt)[0]
         if len(gind) == 0:
-            sys.exit(f'Cannot find {str(ufilt)} in SVO.')
+            sys.exit('Cannot find ' + str(ufilt) + ' in SVO.')
         wv_effs.append(wavelengthEffs[gind][0])
         width_effs.append(widthEffs[gind][0])
         my_filters.append(ufilt)
@@ -148,8 +140,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
         # This is easier on the Gaussian Process
         # 'fluxes' is also equivilant to the negative absolute magnitude
         flux = 2.5 * (np.log10(flux)-np.log10(3631.00))
-        fluxes.append(flux) 
-    
+        fluxes.append(flux)
 
     # Remove extinction
     if use_wc:
@@ -165,7 +156,7 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     wv_corr = np.mean(wv_effs / (1.+redshift))
     flux_corr = np.min(fluxes) - 1.0
     wv_effs = wv_effs - wv_corr
-    fluxes = np.asarray(fluxes) #- flux_corr
+    fluxes = np.asarray(fluxes) - flux_corr
 
     # Eliminate any data points bellow threshold snr
     gis = []
@@ -182,21 +173,12 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     width_effs = np.asarray(width_effs)
     width_effs = width_effs[gis]
     my_filters = np.asarray(my_filters)
-    my_filters = my_filters[gis] 
-    print('unique filters:', np.unique(my_filters))
-    
-    if settings: 
-        settings_filters = set(filters_in_settings) 
-        my_filters_unique = set(np.unique(my_filters))
-        if settings_filters != my_filters_unique:
-            print('settings filters:', settings_filters)
-            print('dataset filters:', my_filters_unique)
-            sys.exit("Settings file filters do not match filters in dataset")
+    my_filters = my_filters[gis]
 
     # Set the peak flux to t=0
     peak_i = np.argmax(fluxes)
     if verbose:
-        print('Peak Luminosity occurrs at MJD:', phases[peak_i])
+        print('Peak Luminosity occurrs at MJD',phases[peak_i])
     phases = np.asarray(phases) - phases[peak_i]
 
     # Eliminate any data points outside of specified range
@@ -212,37 +194,11 @@ def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
     wv_effs = wv_effs[gis]
     errs = errs[gis]
     width_effs = width_effs[gis]
-    my_filters = my_filters[gis] 
-    
-    #map filter names to effective wavelengths 
-    wv_eff_in_angstroms = wv_effs + wv_corr 
-    wv, idx = np.unique(wv_eff_in_angstroms, return_index = True)
-    wv_idx = wv[np.argsort(idx)]
-    name, ind = np.unique(my_filters, return_index = True)
-    name_ind = name[np.argsort(ind)]
-    filter_name_to_effwv = dict(zip(name_ind, wv_idx))
-    print('filter to effwv:', filter_name_to_effwv)
-    
-    #keep track of which filters use template and 0 as mean function
-    linear_filters = [] 
-    cubic_filters = []
-    template_filters = [] 
-    zero_filters = [] 
-    for key, value in filter_mean_function.items():        
-        if value == 'linear':
-            linear_filters.append(key)
-        elif value == 'cubic':
-            cubic_filters.append(key)
-        elif value == 'template':
-            template_filters.append(key)
-        else:
-            zero_filters.append(key)
+    my_filters = my_filters[gis]
 
-    lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs, my_filters))
+    lc = np.vstack((phases, fluxes, wv_effs / 1000., errs, width_effs))
 
-    return (lc, wv_corr, flux_corr, my_filters, filter_mean_function, filter_name_to_effwv, 
-linear_filters, cubic_filters, template_filters)
-    
+    return lc, wv_corr, flux_corr, my_filters
 
 
 def chi_square(dat, model, uncertainty):
@@ -503,9 +459,7 @@ def test(lc, wv_corr, z):
     return best_temp
 
 
-def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function, 
-                filter_name_to_effwv, linear_filters = None, cubic_filters = None, 
-                template_filters = None):
+def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose):
     '''
     Interpolate the LC using a 2D Gaussian Process (GP)
 
@@ -535,173 +489,93 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
 
     lc = lc.T
 
-    times = lc[: , 0].astype('float64')
-    fluxes = lc[: , 1].astype('float64')
-    flux_corr = np.min(fluxes) - 1 
-    wv_effs = lc[: , 2].astype('float64')
-    errs = lc[: , 3].astype('float64') 
-    filters = lc[: , 5 ] 
-    unique_filter_names = np.unique(filters) 
-    
+    times = lc[:, 0]
+    fluxes = lc[:, 1]
+    wv_effs = lc[:, 2]
+    errs = lc[:, 3]
     stacked_data = np.vstack([times, wv_effs]).T
-    ufilts = np.unique(wv_effs)
+    ufilts = np.unique(lc[:, 2])
     ufilts_in_angstrom = ufilts*1000.0 + wv_corr
-    nfilts = len(ufilts) 
-    min_time = np.min(times)
-    print('min time:', min_time)
-    max_time = int(np.ceil(np.max(times)))
-    length_of_times = len(np.arange(np.min(times), np.max(times)))
-   
-    print('length of times:', length_of_times)
-    print(length_of_times)
-    x_pred = np.zeros((length_of_times, 2)) 
-    print("len x_pred:", len(x_pred))
-    dense_fluxes = np.zeros((length_of_times, nfilts)) 
-    print('len dense_fluxes', len(dense_fluxes))
+    nfilts = len(ufilts)
+    length_of_times = len(np.arange(int(np.floor(np.min(lc[:, 0]))),
+                           (int(np.ceil(np.max(lc[:, 0])))+1),0.1))
+    x_pred = np.zeros((length_of_times*nfilts, 2))
+    dense_fluxes = np.zeros((length_of_times, nfilts))
     dense_errs = np.zeros((length_of_times, nfilts))
 
     # test_y is only used if mean = True
     # but I still need it to exist either way
     test_y = []
-    test_times = [] 
-    linear_results = {} 
-    dense_lc_list = [] 
-    # Set up gp 
-    # kernel = np.var(fluxes) \
-    #     * george.kernels.Matern32Kernel([12, 0.1], ndim=2) 
-    key_count = 0 
+    test_times = []
+    if use_mean:
+        template = generate_template(ufilts_in_angstrom, sn_type)
+        if verbose:
+            print('Fitting Template...')
+        f_stretch, t_shift, t_stretch = fit_template(ufilts_in_angstrom,
+                                                     template, wv_effs,
+                                                     wv_corr, fluxes, times,
+                                                     errs, z)
+
+        # George needs the mean function to be in this format
+        class snModel(Model):
+
+            def get_value(self, param):
+                t = (param[:, 0] * 1./t_stretch) + t_shift
+                wv = param[:, 1]
+                return np.asarray([template(*p)[0] for p in zip(t, wv)]) \
+                    + f_stretch
+
+        # Get Test data so that the template can be plotted
+        mean = snModel()
+        for i in ufilts_in_angstrom:
+            test_wv = np.full((1, length_of_times), i)
+            test_times = np.arange(int(np.floor(np.min(times))),
+                                   int(np.ceil(np.max(times))+1), 0.1)
+            test_x = np.vstack((test_times, test_wv)).T
+            test_y.append(mean.get_value(test_x))
+        test_y = np.asarray(test_y)
+
+    # Set up gp
+    kernel = np.var(lc[:, 1]) \
+        * george.kernels.Matern32Kernel([12, 0.1], ndim=2)
     if not use_mean:
-        mean = 0 
-        gp = george.GP(kernel, mean = 0)
+        gp = george.GP(kernel, mean=0)
     else:
-        #create linear splines, set up and run GP 
-        for i, filt in enumerate(linear_filters):
-            if verbose:
-                print(f'Using linear spline for {filt}')
-                
-            idx = np.where(filters == filt)
-            x = times[idx]
-            y = fluxes[idx]
-            yerr = errs[idx] 
-            central_wv = wv_effs[idx] * 1000 + wv_corr 
-            print('central wv:', central_wv[0])
-            kernel = np.var(y) * george.kernels.Matern32Kernel(1e6)
-            spline = interp.interp1d(x, y, kind = 'linear')
-            class snModel_linear:
-                def __init__(self, spline):
-                    self.spline = spline
-                def get_value(self, x):
-                    return self.spline(x)
-            mean = snModel_linear(spline)
-            gp = george.GP(mean = mean, kernel = kernel)
-            gp.compute(x, yerr)
-            x_pred = np.arange(np.min(x), np.max(x)) 
-            pred, pred_var = gp.predict(y, x_pred, return_var = True) 
-            #store interpolation for blackbody fitting and plotting later 
-            dense_fluxes = pred 
-            dense_errs = np.sqrt(pred_var) 
-            central_wv_array = np.repeat(central_wv[0], len(x_pred))
-            dense_lc_filtered = np.vstack((x_pred, dense_fluxes, dense_errs, central_wv_array)) 
-               
-            print('vstack shape:', dense_lc_filtered.shape)
-            linear_results[filt] = { 
-                'dense_lc_filtered':dense_lc_filtered
-            }
-                    
-        # extract dense_lc for each filter
-        for filter in linear_results.values():
-            dense_lc_individual = filter.get('dense_lc_filtered')
-            dense_lc_list.append(dense_lc_individual)
-        print('dense_lc_list len:', len(dense_lc_list))
-        # concatenate into one object 
-        dense_lc = np.hstack(dense_lc_list)
-        #print('dense_lc:', dense_lc)
-        print('dense_lc shape:', dense_lc.shape)    
-        
-        #create cubic splines, set up and run GP         
-        for i, filt in enumerate(cubic_filters):
-            idx = np.where(filters == filt)
-            x = times[idx]
-            y = fluxes[idx]
-            yerr = errs[idx] 
-            sorted_idx = np.argsort(x)
-            sorted_time = x[sorted_idx]
-            sorted_mag = y[sorted_idx]
-            kernel = np.var(y) * george.kernels.Matern32kKernel(1e6)
-            cubic_spline = interp.Cubic_spline(sorted_time, sorted_mag)
-            class snModel_cubic:
-                def __init__(self, cubic_spline):
-                    self.cubic_spline = cubic_spline
-                def get_value(self, x):
-                    return self.cubic_spline(x)
-            mean = snModel_cubic(cubic_spline)
-            kernel = np.var(y) * george.kernels.Matern32Kernel(1e6)
-            gp = george.GP(mean = mean, kernel = kernel)
-            gp.compute(x, yerr)
-        
-        
-        #fit templates to data 
-        for i, filt in enumerate(template_filters): 
-            template = generate_template(ufilts_in_angstrom, sn_type)
-            if verbose:
-                print(f'Fitting Template for {filt}')
-            idx = np.where(filters == filt)
-            x = times[idx]
-            y = fluxes[idx]
-            yerr = errs[idx] 
-            kernel = np.var(fluxes) * george.kernels.Matern32Kernel([12, 0.1], ndim=2) 
-            f_stretch, t_shift, t_stretch = fit_template(ufilts_in_angstrom,
-                                                         template, wv_effs, 
-                                                         wv_corr, fluxes, times,
-                                                         errs, z) 
-            # Geroge needs the mean function to be in this format 
-            class snModel(Model):
-                def get_value(self, param):
-                    t = (param[:,0] * 1./t_stretch) + t_shift 
-                    wv = param[:,1]
-                    return np.asarray([template(*p)] for p in zip(t, wv)) 
-                + f_stretch
-            # Get Test data so that the template can be plotted 
-            mean = snModel()
-            for i in ufilts_in_angstrom:
-                test_wv = np.full((1, length_of_times), i)
-                test_times = np.arange(int(np.floor(np.min(times))), int(np.ceil(np.max(times))+1))
-                test_x = np.vstack((test_times, test_wv)).T 
-                test_y.append(mean.get_value(test_x)) 
-            test_y = np.asarray(test_y)
-            gp = george.GP(kernel = kernel, mean = mean) 
-            
-            def neg_ln_like(p):
-                gp.set_parameter_vector(p)
-                return -gp.loglikelihood(fluxes)
-            def grad_neg_ln_like(p):
-                gp.set_parameter_vector(p)
-                return -gp.grad_log_likelihood(fluxes)
-            # Optimize gp paramters 
-            bnds = ((None, None), (None, None), (None, None))
-            result = minimize(neg_ln_like, 
-                              gp.get_parameter_vector(),
-                              jac = grad_neg_ln_like,
-                              bounds = bnds)
-            gp.set_parameter_vector(result.x)
-            #Populate arrays with time and wavelength values to be fed into gp 
-        #     print('arange length of times:', len(np.arange(min_time, max_time)))
-        #     print('arange array:', np.arange(min_time, max_time))
-        #     x_pred[:, 0] = np.arange(np.min(times), np.max(times)) 
-        #     x_pred[:, 1] = ufilts[key_count]
-            
-        #     # Run gp to estimate interpolation 
-        #     pred, pred_var = gp.predict(this_filter_fluxes, x_pred, return_var = True)
-            
-            # Populate dense_lc with newly gp-predicted values 
-        #     gind = np.where(np.abs(x_pred[:,1] - ufilts[key_count]) < epsilon)[0]
-        #     dense_fluxes[:, key_count] = pred[gind]
-        #     dense_errs[:, key_count] = np.sqrt(pred_var[gind])
-        #     key_count += 1 
-        # dense_lc = np.dstack((dense_fluxes, dense_errs))
-        print('dense_lc:', dense_lc)
-                                        
-    return dense_lc, test_y, test_times, ufilts, ufilts_in_angstrom
+        gp = george.GP(kernel, mean=snModel())
+    gp.compute(stacked_data, lc[:, -2])
+
+    def neg_ln_like(p):
+        gp.set_parameter_vector(p)
+        return -gp.log_likelihood(lc[:, 1])
+
+    def grad_neg_ln_like(p):
+        gp.set_parameter_vector(p)
+        return -gp.grad_log_likelihood(lc[:, 1])
+
+    # Optomize gp parameters
+    bnds = ((None, None), (None, None), (None, None))
+    result = minimize(neg_ln_like,
+                      gp.get_parameter_vector(),
+                      jac=grad_neg_ln_like,
+                      bounds = bnds)
+    gp.set_parameter_vector(result.x)
+
+    # Populate arrays with time and wavelength values to be fed into gp
+    for jj, time in enumerate(np.arange(int(np.floor(np.min(times))),
+                                        int(np.ceil(np.max(times)))+1, 0.1)):
+        x_pred[jj*nfilts: jj*nfilts+nfilts, 0] = [time] * nfilts
+        x_pred[jj*nfilts: jj*nfilts+nfilts, 1] = ufilts
+
+    # Run gp to estimate interpolation
+    pred, pred_var = gp.predict(lc[:, 1], x_pred, return_var=True)
+
+    # Populate dense_lc with newly gp-predicted values
+    for jj in np.arange(nfilts):
+        gind = np.where(np.abs(x_pred[:, 1]-ufilts[jj]) < epsilon)[0]
+        dense_fluxes[:, int(jj)] = pred[gind]
+        dense_errs[:, int(jj)] = np.sqrt(pred_var[gind])
+    dense_lc = np.dstack((dense_fluxes, dense_errs))
+    return dense_lc, test_y, test_times
 
 
 def fit_bb(dense_lc, wvs, use_mcmc, T_max):
@@ -727,46 +601,28 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
     Rerr_arr : numpy.array
         BB temperature error array (cm)
     '''
-    print('dense_lc[1]:', dense_lc.shape[1])
-    print('wvs', wvs)
-    print('len dense_lc:', len(dense_lc))
-    T_arr = np.zeros(dense_lc.shape[1])
-    print('len Tarr:', len(T_arr))
-    R_arr = np.zeros(dense_lc.shape[1])
-    Terr_arr = np.zeros(dense_lc.shape[1])
-    Rerr_arr = np.zeros(dense_lc.shape[1])
-    covar_arr = np.zeros(dense_lc.shape[1])
+
+    T_arr = np.zeros(len(dense_lc))
+    R_arr = np.zeros(len(dense_lc))
+    Terr_arr = np.zeros(len(dense_lc))
+    Rerr_arr = np.zeros(len(dense_lc))
+    covar_arr = np.zeros(len(dense_lc))
+    
+    print('len T_arr:', len(T_arr)) 
+    print('dense lc shape:', dense_lc.shape)
 
     prior_fit = (9000, 1e15)
-    full_wv = [] 
-    full_flux = [] 
-    full_err = [] 
-    
-    #sort by time so blackbody fit is possible 
-    idx = np.argsort(dense_lc[0,:])
-    dense_lc = dense_lc[:, idx]
-    
-    
-    for i in range(dense_lc.shape[1]):
-        datapoint = dense_lc[:,i] 
-        x_time = datapoint[0]
-        flux = datapoint[1]
-        fluxerr = datapoint[2]
-        wavelength = datapoint[3]
-        full_wv.append(wavelength)
-        fnu = 10.**((-flux +48.6) / -2.5) 
-        ferr = fluxerr
+
+    for i, datapoint in enumerate(dense_lc):
+        fnu = 10.**((-datapoint[:, 0]+48.6) / -2.5)
+        ferr = datapoint[:, 1]
         fnu = fnu * 4. * np.pi * (3.086e19)**2
-        fnu_err = np.abs(0.921034 * 10.**(0.4*flux - 19.44)) \
+        fnu_err = np.abs(0.921034 * 10.**(0.4*datapoint[:, 0] - 19.44)) \
             * ferr * 4. * np.pi * (3.086e19)**2
-        flam = fnu * c / (wavelength * ang_to_cm) ** 2 
-        full_flux.append(flam)
-        flam_err = fnu_err * c / (wavelength * ang_to_cm) ** 2 
-        full_err.append(flam_err)
-        
-        print('wavelength:', wavelength)
-        print('flam:', flam)
-        print('flam_err:', flam_err)
+
+        flam = fnu*c / (wvs*ang_to_cm)**2
+        flam_err = fnu_err*c / (wvs*ang_to_cm)**2 
+
 
         if use_mcmc:
             def log_likelihood(params, lam, f, f_err):
@@ -789,7 +645,7 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
             nwalkers = 16
             ndim = 2
             sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability,
-                                            args=[wavelength, flam, flam_err])
+                                            args=[wvs, flam, flam_err])
             T0 = 9000 + 1000*np.random.rand(nwalkers)
             R0 = 1e15 + 1e14*np.random.rand(nwalkers)
             p0 = np.vstack([T0, R0])
@@ -809,18 +665,13 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
         else:
 
             try:
-                print('flam:', flam)
-                print('flam_err:', flam_err)
-                print('wavelength:', wavelength)
-                BBparams, covar = curve_fit(bbody, full_wv, full_flux, maxfev=10000,
-                                            p0=prior_fit, sigma=full_err,
+                BBparams, covar = curve_fit(bbody, wvs, flam, maxfev=10000,
+                                            p0=prior_fit, sigma=flam_err,
                                             bounds=(0, [T_max, np.inf])) 
-                
-                fit_curve = bbody(full_wv, *BBparams)
-                
+                fit_curve = bbody(wvs, *BBparams)
                 plt.figure()
-                plt.plot(full_wv, full_flux, color = 'k')
-                plt.plot(full_wv, fit_curve, label = 'fit')
+                plt.plot(wvs, flam)
+                plt.plot(wvs, fit_curve, color = 'k')
                 plt.show()
 
                 # Get temperature and radius, with errors, from fit
@@ -836,18 +687,11 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
                 Terr_arr[i] = np.nan
                 Rerr_arr[i] = np.nan
                 covar_arr[i] = np.nan
-                 
-                
-        print('T_arr:', T_arr)
-        np.savetxt('flux', full_flux)
-        np.savetxt('wl', full_wv)
-        np.savetxt('err', full_err)
     return T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr
 
 
 def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
-            outdir, sn_type, test_times, mean, show_template, filter_name_to_effwv, linear_filters = None, 
-            cubic_filters = None):
+            outdir, sn_type, test_times, mean, show_template):
     '''
     Plot the GP-interpolate LC and save
 
@@ -879,35 +723,41 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     Output
     ------
     '''
-    #dictionary to assign filters a color 
-    filter_colors = {}
-    
-    #plot interpolation + errors 
-    plt.figure()
-    for i, wavelength in enumerate(wvs):
-        cmap = plt.get_cmap('tab10')
-        color = cmap(i)
-        idx = np.where(dense_lc[3] == wavelength)[0]
-        x_pred = dense_lc[0,idx] 
-        pred = dense_lc[1, idx]
-        pred_var = dense_lc[2, idx]
-        filter_colors[wavelength] = color
-        plt.plot(x_pred, -pred, color = color, lw = 1.5, alpha = 0.5)
-        plt.fill_between(x_pred, -pred - np.sqrt(pred_var), -pred + np.sqrt(pred_var), color = 'k', alpha = 0.2)
-        
+    plot_times = np.arange(int(np.floor(np.min(lc[:, 0]))),
+                           (int(np.ceil(np.max(lc[:, 0])))+1),0.1)
 
-    #plot original data + errorbars 
-    for i, filt in enumerate(linear_filters):
-        central_wv = filter_name_to_effwv[filt]
-        color = filter_colors[central_wv]
-        idx = np.where(lc[:,5] == filt)
-        x = lc[:,0].astype('float64')[idx]
-        y = -lc[:,1].astype('float64')[idx]
-        yerr = lc[:,3].astype('float64')[idx]
-        plt.errorbar(x, y, yerr = yerr, fmt = '.', capsize = 0, color = color, label = filt.split('/')[-1])
+    # Import a color map to make the plots look pretty
+    cm = plt.get_cmap('rainbow')
+    wv_colors = (wvs-np.min(wvs)) / (np.max(wvs)-np.min(wvs))
+
+    # Plot interpolation, template, and error (shaded areas)
+    for jj in np.arange(len(wv_colors)):
+        plt.plot(plot_times, -dense_lc[:, jj, 0], color=cm(wv_colors[jj]),
+                 label=my_filters[jj].split('/')[-1])
+        if mean:
+            if show_template:
+                plt.plot(test_times, -(test_data[jj, :] + flux_corr), '--',
+                         color=cm(wv_colors[jj]))  # Template curves
+        plt.fill_between(plot_times,
+                         -dense_lc[:, jj, 0] - dense_lc[:, jj, 1],
+                         -dense_lc[:, jj, 0] + dense_lc[:, jj, 1],
+                         color=cm(wv_colors[jj]), alpha=0.2)
+
+    # Plot original data points and error bars
+    for i, filt in enumerate(np.unique(lc[:, 2])):
+        gind = np.where(lc[:, 2] == filt)
+        x = lc[gind, 0]
+        x = x.flatten()
+        y = -lc[gind, 1] - flux_corr
+        y = y.flatten()
+        yerr = lc[gind, 3]
+        yerr = yerr.flatten()
+
+        plt.plot(x, y, 'o', color=cm(wv_colors[i]))
+        plt.errorbar(x, y, yerr=yerr, fmt='none', color=cm(wv_colors[i]))
 
     if mean:
-        plt.title(snname + ' using sn' + sn_type)
+        plt.title(snname + ' using sn' + sn_type + ' template')
     else:
         plt.title(snname + ' Light Curves')
     plt.legend()
@@ -920,7 +770,7 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
     return 1
 
 
-def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_type):
+def plot_bb_ev(lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_type):
     '''
     Plot the BB temperature and radius as a function of time
 
@@ -946,27 +796,18 @@ def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_
     Output
     ------
     '''
-    #min_time = np.min(lc[:,0].astype('float64'))
-    #max_time = np.max(lc[:,0].astype('float64')) 
-    #plot_times = dense_lc[0]
-    #plot_times = np.arange(min_time, max_time)
-    
-    times = dense_lc[0]
-    sorted_idx = np.argsort(times)
-    sorted_time = times[sorted_idx]
-    plot_times = sorted_time
-
-    print('len plot times:', len(plot_times))
-    
+    interp_times = np.arange(int(np.floor(np.min(lc[:, 0]))),
+                             int(np.ceil(np.max(lc[:, 0])))+1, 0.1)
     fig, axarr = plt.subplots(2, 1, sharex=True)
-
-    axarr[0].plot(plot_times, Tarr / 1.e3, color='k')
-    axarr[0].fill_between(plot_times, Tarr/1.e3 - Terr_arr/1.e3,
+    print('len interp_times:', len(interp_times))
+    print('len Tarr:', len(Tarr))
+    axarr[0].plot(interp_times, Tarr / 1.e3, color='k')
+    axarr[0].fill_between(interp_times, Tarr/1.e3 - Terr_arr/1.e3,
                           Tarr/1.e3 + Terr_arr/1.e3, color='k', alpha=0.2)
     axarr[0].set_ylabel('Temp. (1000 K)')
 
-    axarr[1].plot(plot_times, Rarr / 1e15, color='k')
-    axarr[1].fill_between(plot_times, Rarr/1e15 - Rerr_arr/1e15,
+    axarr[1].plot(interp_times, Rarr / 1e15, color='k')
+    axarr[1].fill_between(interp_times, Rarr/1e15 - Rerr_arr/1e15,
                           Rarr/1e15 + Rerr_arr/1e15, color='k', alpha=0.2)
     axarr[1].set_ylabel(r'Radius ($10^{15}$ cm)')
 
@@ -979,7 +820,7 @@ def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_
     return 1
 
 
-def plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, outdir, sn_type):
+def plot_bb_bol(lc, bol_lum, bol_err, snname, outdir, sn_type):
     '''
     Plot the BB bolometric luminosity as a function of time
 
@@ -1001,16 +842,10 @@ def plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, outdir, sn_type):
     Output
     ------
     '''
-    #min_time = np.min(lc[:,0].astype('float64'))
-    #max_time = np.max(lc[:,0].astype('float64'))
-    # time_length = len(bol_lum)
-    #plot_times = np.arange(min_time, max_time)
-    times = dense_lc[0]
-    sorted_idx = np.argsort(times)
-    sorted_time = times[sorted_idx]
-    plot_times = sorted_time
-    
-    plt.plot(plot_times, bol_lum, 'k')
+    plot_times = np.arange(int(np.floor(np.min(lc[:, 0]))),
+                           int(np.ceil(np.max(lc[:, 0])))+1, 0.1)
+
+    plt.plot(plot_times, bol_lum, color='k')
     plt.fill_between(plot_times, bol_lum-bol_err, bol_lum+bol_err,
                      color='k', alpha=0.2)
 
@@ -1061,9 +896,8 @@ def write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
     ------
     '''
 
-    min_time = np.min(lc[:,0].astype('float64'))
-    max_time = np.max(lc[:,0].astype('float64'))
-    times = np.arange(min_time, max_time)
+    times = np.arange(int(np.floor(np.min(lc[:, 0]))),
+                      int(np.ceil(np.max(lc[:, 0])))+1, 0.1)
     dense_lc = np.reshape(dense_lc, (len(dense_lc), -1))
     dense_lc = np.hstack((np.reshape(-times, (len(times), 1)), dense_lc))
     tabledata = np.stack((Tarr / 1e3, Terr_arr / 1e3, Rarr / 1e15,
@@ -1112,7 +946,7 @@ def main():
                         help='Object redshift', default=-1.)
     # Redshift can't =-1
     # this is simply a flag to be replaced later
-    parser.add_argument('-dm', dest='dm', type=float, default=0,
+    parser.add_argument('--dm', dest='dm', type=float, default=0,
                         help='Object distance modulus')
     parser.add_argument("--verbose", help="increase output verbosity",
                         action="store_true")
@@ -1149,8 +983,7 @@ def main():
                         default=False, action="store_true")
     parser.add_argument('--T_max', dest='T_max',  help='Temperature prior \
                                                         for black body fits',
-                        type=float, default=40000.) 
-    parser.add_argument('--settings', dest = 'settings', type=str, default ='settings.txt', help = 'Settings file name')
+                        type=float, default=40000.)
 
     args = parser.parse_args()
 
@@ -1204,15 +1037,14 @@ def main():
 
     snname = ('.').join(args.snfile.split('.')[: -1]).split('/')[-1]
 
-    lc, wv_corr, flux_corr, my_filters, filter_mean_function, filter_name_to_effwv, linear_filters, cubic_filters, template_filters = read_in_photometry(args.snfile,
+    lc, wv_corr, flux_corr, my_filters = read_in_photometry(args.snfile,
                                                             args.dm,
                                                             args.redshift,
                                                             args.start,
                                                             args.end, args.snr,
                                                             args.ebv,
                                                             args.wvcorr,
-                                                            args.verbose, 
-                                                            args.settings)
+                                                            args.verbose)
 
     # Test which template fits the data best
     if sn_type == 'test':
@@ -1220,21 +1052,17 @@ def main():
     if args.verbose:
         print('Using ' + str(sn_type) + ' template.')
 
-    dense_lc, test_data, test_times, ufilts, ufilts_in_angstrom = interpolate(lc, wv_corr, sn_type,
+    dense_lc, test_data, test_times = interpolate(lc, wv_corr, sn_type,
                                                   mean, args.redshift,
-                                                  args.verbose, filter_mean_function, filter_name_to_effwv, 
-                                                  linear_filters, cubic_filters, template_filters)
+                                                  args.verbose)
     lc = lc.T
-    wvs, wvind, wvrev = np.unique(lc[:, 2].astype('float64'), return_index=True, return_inverse = True)
-    wvs = wvs*1000.0 + wv_corr 
-    un_filts = my_filters[wvind]
-    effwv = wvs[wvrev].astype('float64')
+    wvs, wvind = np.unique(lc[:, 2], return_index=True)
+    wvs = wvs*1000.0 + wv_corr
     my_filters = np.asarray(my_filters)
-    ufilts = my_filters[wvind] 
-    print('main ufilts:', ufilts)
+    ufilts = my_filters[wvind]
 
     # Converts to AB magnitudes
-    # dense_lc[:, :, 0] += flux_corr
+    dense_lc[:, :, 0] += flux_corr
 
     if args.verbose:
         print('Fitting Blackbodies, this may take a few minutes...')
@@ -1255,11 +1083,10 @@ def main():
         if args.verbose:
             print('Making plots in ' + args.outdir)
         plot_gp(lc, dense_lc, snname, flux_corr, ufilts, wvs, test_data,
-                args.outdir, sn_type, test_times, mean, args.template, filter_name_to_effwv, 
-                linear_filters, cubic_filters)
-        plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
+                args.outdir, sn_type, test_times, mean, args.template)
+        plot_bb_ev(lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
                    args.outdir, sn_type)
-        plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, args.outdir, sn_type)
+        plot_bb_bol(lc, bol_lum, bol_err, snname, args.outdir, sn_type)
 
     if args.verbose:
         print('Writing output to ' + args.outdir)
