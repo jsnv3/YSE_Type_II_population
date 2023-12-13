@@ -2,5 +2,8 @@ PAN-STARRS/PS1.g	linear
 PAN-STARRS/PS1.i	linear
 PAN-STARRS/PS1.r	linear
 PAN-STARRS/PS1.z	linear
-Palomar/ZTF.g    linear
-Palomar/ZTF.r    linear
+Palomar/ZTF.g	linear
+Palomar/ZTF.r	linear
+SLOAN/SDSS.gprime_filter	linear
+SLOAN/SDSS.iprime_filter	linear
+SLOAN/SDSS.rprime_filter	linear
