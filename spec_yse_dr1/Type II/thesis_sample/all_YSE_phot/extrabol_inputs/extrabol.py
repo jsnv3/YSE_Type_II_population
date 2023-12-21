@@ -819,18 +819,18 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
                                             p0=prior_fit, sigma=flamerrs[wv_sort],
                                             bounds=(0, [T_max, np.inf]), absolute_sigma = True)
                 #visualize bbody fit 
-                fit_curve = bbody(wavelengths[wv_sort], *BBparams)
-                if i % 50 == 0:
-                    new_wvs = np.linspace(np.min(wvs), np.max(wvs), 5000)                                                      
-                    plt.figure()
-                    plt.errorbar(wavelengths[wv_sort], flams[wv_sort], yerr = flamerrs[wv_sort], fmt = 'o', label = 'data')
-                    plt.plot(wavelengths[wv_sort], fit_curve, label = 'fit')
-                    plt.plot(new_wvs, bbody(new_wvs, *BBparams), color = 'k', label = 'bb')
-                    plt.xlabel('wavlength $\AA$')
-                    plt.ylabel('$flux (F_\lambda)$')
-                    plt.legend()
-                    plt.title(f'2020jfo bbfit iteration {i} at t={epoch} days')
-                    plt.show()  
+                # fit_curve = bbody(wavelengths[wv_sort], *BBparams)
+                # if i % 50 == 0:
+                #     new_wvs = np.linspace(np.min(wvs), np.max(wvs), 5000)                                                      
+                #     plt.figure()
+                #     plt.errorbar(wavelengths[wv_sort], flams[wv_sort], yerr = flamerrs[wv_sort], fmt = 'o', label = 'data')
+                #     plt.plot(wavelengths[wv_sort], fit_curve, label = 'fit')
+                #     plt.plot(new_wvs, bbody(new_wvs, *BBparams), color = 'k', label = 'bb')
+                #     plt.xlabel('wavlength $\AA$')
+                #     plt.ylabel('$flux (F_\lambda)$')
+                #     plt.legend()
+                #     plt.title(f'2020jfo bbfit iteration {i} at t={epoch} days')
+                #     plt.show()  
                       
                 # Get temperature and radius, with errors, from fit 
                 T_arr[i] = BBparams[0]
