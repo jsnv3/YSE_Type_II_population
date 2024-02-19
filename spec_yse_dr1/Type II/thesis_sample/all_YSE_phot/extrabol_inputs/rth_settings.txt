@@ -4,6 +4,5 @@ PAN-STARRS/PS1.r	linear
 PAN-STARRS/PS1.w	linear
 Palomar/ZTF.g	linear
 Palomar/ZTF.r	linear
-GAIA/GAIA0.G	linear
 Misc/Atlas.cyan	linear
 Misc/Atlas.orange	linear

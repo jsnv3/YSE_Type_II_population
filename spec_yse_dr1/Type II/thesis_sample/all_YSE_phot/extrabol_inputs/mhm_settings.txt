@@ -1,0 +1,5 @@
+LasCumbres/LasCumbres.Bessel_B	linear
+LasCumbres/LasCumbres.Bessel_V	linear
+LasCumbres/LasCumbres.SDSS_gp	linear
+LasCumbres/LasCumbres.SDSS_ip	linear
+LasCumbres/LasCumbres.SDSS_rp	linear

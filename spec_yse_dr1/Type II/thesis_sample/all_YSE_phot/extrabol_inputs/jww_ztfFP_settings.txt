@@ -1,0 +1,6 @@
+Palomar/ZTF.g	linear
+Palomar/ZTF.r	linear
+PAN-STARRS/PS1.g	linear
+PAN-STARRS/PS1.i	linear
+PAN-STARRS/PS1.r	linear
+PAN-STARRS/PS1.z	linear

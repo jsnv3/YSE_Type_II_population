@@ -1,33 +1,49 @@
 #!/usr/bin/env python
 
-import numpy as np
-from astroquery.svo_fps import SvoFps
-import matplotlib.pyplot as plt
-import george
+# Interpolation and data fitting
+from scipy import interpolate as interp
 from scipy.optimize import minimize, curve_fit
-import argparse
+from scipy.integrate import simps
+# Astronomy-specific and data importing
+from astroquery.svo_fps import SvoFps
+from astropy.table import Table, unique
+from astropy.io import ascii
 from astropy.cosmology import Planck13 as cosmo
 from astropy.cosmology import z_at_value
 from astropy import units as u
-import os
-from astropy.table import Table
-from astropy.io import ascii
+# Plotting
+import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import sys
-from scipy import interpolate as interp
+# Gaussian processes
+import george
 from george.modeling import Model
+# General options
+import numpy as np
+import os
+import sys
 import extinction
 import emcee
 import importlib_resources
+import glob
+import copy
+# pysynphot dependencies for nebular
+import pysynphot as S
+
+# Ignore warnings 
+# import warnings
+# warnings.filterwarnings('ignore')
 
 # Define a few important constants that will be used later
 epsilon = 0.001
-c = 2.99792458E10  # cm / s
-sigsb = 5.6704e-5  # erg / cm^2 / s / K^4
-h = 6.62607E-27
-ang_to_cm = 1e-8
+c = 2.99792458E10     # cm / s
+sigsb = 5.6704e-5     # erg / cm^2 / s / K^4
+h = 6.62607E-27       # erg / Hz
+ang_to_cm = 1e-8      # angstrom -> cm
 k_B = 1.38064852E-16  # cm^2 * g / s^2 / K
+dist_10pc = 10.0 * 3.08568025e18 # 10pc in cm
 
+def offset(mag, A):
+    return(mag+A)
 
 def bbody(lam, T, R):
     '''
@@ -55,6 +71,50 @@ def bbody(lam, T, R):
 
     return lum
 
+def import_nebular(bandpasses, use_jerkstrand=False,
+    use_dessart=True, nebular_normalize=1.0e41, unit='AB',
+    nebular_dir='../nebular'):
+
+    if not os.path.exists(nebular_dir):
+        raise Exception(f'ERROR: {nebular_dir} does not exist.  '+\
+            'Set --nebular-dir to directory with nebular spectra.')
+    j_dir = os.path.join(nebular_dir, 'jerkstrand')
+    d_dir = os.path.join(nebular_dir, 'dessart')
+    if use_jerkstrand and not os.path.exists(j_dir):
+        raise Exception(f'ERROR: cannot find jerkstrand models in {nebular_dir}')
+    if use_dessart and not os.path.exists(d_dir):
+        raise Exception(f'ERROR: cannot find dessart models in {nebular_dir}')
+
+    outdata = []
+
+    if use_dessart:
+        for file in sorted(glob.glob(os.path.join(d_dir, '*.fl'))):
+            print(f'Importing nebular file: {file}')
+            wave, flux = np.loadtxt(file, unpack=True, dtype=float)
+
+            # Normalize flux so pseudo-bolometric luminosity is nebular_normalize
+            norm = simps(flux, wave)
+            flux = flux/norm * nebular_normalize/(4.0 * np.pi * (dist_10pc)**2)
+
+            sp = S.ArraySpectrum(wave, flux, waveunits='angstrom',
+                fluxunits='flam')
+
+            data = {'file': file, 'normalize': nebular_normalize,
+                'unit':unit, 'teff': 2500.0}
+
+            for bp in bandpasses:
+
+                obs = S.Observation(sp, bp, binset=wave)
+                if unit.lower()=='ab':
+                    mag = obs.effstim('abmag')
+                elif unit.lower()=='vega':
+                    mag = obs.effstim('vegamag')
+
+                data[bp.name]=mag
+
+            outdata.append(data)
+
+    return(outdata)
 
 
 def read_in_photometry(filename, dm, redshift, start, end, snr, mwebv,
@@ -286,8 +346,7 @@ def generate_template(filter_wv, sn_type):
     '''
 
 
-
-    my_template_file = importlib_resources.files('extrabol.template_bank') / ('smoothed_sn' + sn_type + '.npz')
+    my_template_file = os.path.join('template_bank',f'smoothed_sn{sn_type}.npz')
     template = np.load(my_template_file)
     temp_times = template['time']
     temp_wavelength = template['wavelength']
@@ -503,7 +562,7 @@ def test(lc, wv_corr, z):
 
 def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function, 
                 filter_name_to_effwv, linear_filters = None, cubic_filters = None, 
-                template_filters = None):
+                template_filters = None, delta_time = 1.0):
     '''
     Interpolate the LC using a 2D Gaussian Process (GP)
 
@@ -529,6 +588,8 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
         A set of flux and wavelength values from the template, to be plotted
     test_times : numpy.array
         A set of time values to plot the template data against
+    delta_time : float
+        Step size in time to interpolate light curves
     '''
 
     lc = lc.T
@@ -547,7 +608,8 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     nfilts = len(ufilts) 
     min_time = np.min(times)
     max_time = int(np.ceil(np.max(times)))
-    length_of_times = len(np.arange(np.min(times), np.max(times)))
+
+    length_of_times = int(np.round((np.max(times)-np.min(times))/delta_time))
    
     x_pred = np.zeros((length_of_times, 2)) 
     dense_fluxes = np.zeros((length_of_times, nfilts)) 
@@ -559,9 +621,6 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     test_times = [] 
     linear_results = {} 
     dense_lc_list = [] 
-    # Set up gp 
-    # kernel = np.var(fluxes) \
-    #     * george.kernels.Matern32Kernel([12, 0.1], ndim=2) 
     key_count = 0 
     if not use_mean:
         mean = 0 
@@ -575,7 +634,6 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                 
             idx = np.where(filters == filt)
             x = times[idx]
-            #x = np.arange(np.min(times), np.max(times))
             y = fluxes[idx]
             yerr = errs[idx] 
             central_wv = wv_effs[idx] * 1000 + wv_corr 
@@ -610,8 +668,7 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
         #move this to bottom once cubic/template functions incorporated
         
         dense_lc = np.concatenate(dense_lc_list, axis = 0)
-    
-        
+
         #create cubic splines, set up and run GP         
         for i, filt in enumerate(cubic_filters):
             idx = np.where(filters == filt)
@@ -678,21 +735,6 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
                               jac = grad_neg_ln_like,
                               bounds = bnds)
             gp.set_parameter_vector(result.x)
-            #Populate arrays with time and wavelength values to be fed into gp 
-        #     print('arange length of times:', len(np.arange(min_time, max_time)))
-        #     print('arange array:', np.arange(min_time, max_time))
-        #     x_pred[:, 0] = np.arange(np.min(times), np.max(times)) 
-        #     x_pred[:, 1] = ufilts[key_count]
-            
-        #     # Run gp to estimate interpolation 
-        #     pred, pred_var = gp.predict(this_filter_fluxes, x_pred, return_var = True)
-            
-            # Populate dense_lc with newly gp-predicted values 
-        #     gind = np.where(np.abs(x_pred[:,1] - ufilts[key_count]) < epsilon)[0]
-        #     dense_fluxes[:, key_count] = pred[gind]
-        #     dense_errs[:, key_count] = np.sqrt(pred_var[gind])
-        #     key_count += 1 
-        # dense_lc = np.dstack((dense_fluxes, dense_errs)) 
         
         #sort data by time 
         dense_lc = dense_lc[dense_lc[:,0].argsort()]
@@ -700,7 +742,193 @@ def interpolate(lc, wv_corr, sn_type, use_mean, z, verbose, filter_mean_function
     return dense_lc, test_y, test_times, ufilts, ufilts_in_angstrom
 
 
-def fit_bb(dense_lc, wvs, use_mcmc, T_max):
+def fit_sed(dense_lc, use_mcmc=False, T_max=40000., nebular_time=None,
+    delta_time=1.0, filters=[], wvs=[]):
+    """
+    Fit model SEDs (either blackbodies or nebular SED) to the GP LC
+
+    Parameters
+    ----------
+    dense_lc : numpy.array
+        GP-interpolated LC
+
+    Optional Parameters
+    -------------------
+    use_mcmc : boolean
+        Use Monte Carlo Markov-Chain to fit SEDs
+    T_max : float
+        maximum temperature (in Kelvin) to fit to SEDs
+    nebular_time : float
+        relative time from peak light (in days) to switch from blackbody to nebular SED fitting
+    """
+
+    epoch_data = get_epoch_data(dense_lc)
+    # Sort by first element in list, which is relative time from peak light
+    epoch_data = sorted(epoch_data, key=lambda x: x[0])
+    # Get just time data and save as array
+    all_times = np.array([x[0] for x in epoch_data])
+    print(f'len(all_times):{len(epoch_data)}')
+    if nebular_time is None:
+        T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr = fit_bb(epoch_data, 
+            use_mcmc=use_mcmc, T_max=T_max, delta_time=delta_time)
+    else:
+        nebular_idx = -1
+        for i,epoch in enumerate(epoch_data):
+            if epoch[0] > nebular_time:
+                nebular_idx = i
+                break
+
+        if nebular_idx==-1:
+            print(f'WARNING: data do not extend to nebular time {nebular_time}')
+            T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr = fit_bb(epoch_data, 
+                use_mcmc=use_mcmc, T_max=T_max, delta_time=delta_time)
+        else:
+            
+            # to prevent discontinuities between models, need to apply apodization 
+            # we want window length to be # of days before and after the model switch date 
+            window_lower_idx = nebular_idx - 10
+            window_upper_idx = nebular_idx + 10
+            window_length = window_upper_idx - window_lower_idx 
+            window_range = np.linspace(0, 1, window_length)
+            window = np.exp(-3.5 * window_range)
+            print(f'window:{window}')
+            
+            bT_arr, bR_arr, bTerr_arr, bRerr_arr, bcovar_arr = fit_bb(epoch_data[:window_upper_idx],
+                use_mcmc=use_mcmc, T_max=T_max, delta_time=delta_time)
+            nT_arr, nR_arr, nTerr_arr, nRerr_arr, ncovar_arr = fit_nebular(epoch_data[window_lower_idx:],
+                use_mcmc=use_mcmc, delta_time=delta_time,
+                filters=filters, wvs=wvs) 
+            
+            # get values in the window 
+            # temp 
+            window_bT = window * bT_arr[-window_length:] 
+            window_nT = (1 - window) * nT_arr[:window_length] 
+            win_Tarr = window_bT + window_nT
+            
+            #radius 
+            window_bR = window * bR_arr[-window_length:]
+            window_nR= (1 - window) * nR_arr[:window_length]
+            win_Rarr = window_bR + window_nR 
+            
+            # temp err 
+            win_Terr = np.sqrt((window * (bTerr_arr[-window_length:] ** 2)) + ((1 - window) * (nTerr_arr[:window_length]**2)))
+            
+            # rad err 
+            win_Rerr =  np.sqrt((window * (bRerr_arr[-window_length:] ** 2)) + ((1 - window) * (nRerr_arr[:window_length]**2))) 
+            
+            #covar 
+            win_bcovar = window * bcovar_arr[-window_length:] 
+            win_ncovar = (1 - window) * ncovar_arr[:window_length]
+            win_cov = win_bcovar + win_ncovar
+            
+            
+            print(f'last 20 bT_arr:{bT_arr[-window_length:]}')
+            print(f'window_bb:{window_bT}')
+            print(f'length of window_bb = {len(window_bT)}')
+            print(f'window_neb:{window_nT}')
+            print(f'length window_neb:{len(window_nT)}') 
+            print(f'win_Tarr:{win_Tarr}')
+            print(f'first 20 nTarr:{nT_arr[:window_length]}')
+            window_times = all_times[window_lower_idx:window_upper_idx]
+            
+            plt.figure()
+            plt.plot(window_times, window)
+            plt.show()
+            # clip off the points in the window for both models  
+            
+            #temp
+            nw_bT_arr = bT_arr[:-20]
+            nw_nT_arr = nT_arr[20:]
+            
+            #rad
+            nw_bR_arr = bR_arr[:-20]
+            nw_nR_arr = nT_arr[20:]
+            
+            #temp err
+            nw_bTerr = bTerr_arr[:-20]
+            nw_nTerr = nTerr_arr[20:]
+            
+            #rad err 
+            nw_bRerr = bRerr_arr[:-20]
+            nw_nRerr = nRerr_arr[20:]
+            
+            #covar 
+            nw_bcov = bcovar_arr[:-20]
+            nw_ncov = ncovar_arr[20:]
+
+        
+            T_arr = np.concatenate([nw_bT_arr, win_Tarr, nw_nT_arr]) 
+            print(f'final T_arr:{len(T_arr)}')
+            R_arr = np.concatenate([nw_bR_arr, win_Rarr ,nw_nR_arr])
+            Terr_arr = np.concatenate([nw_bTerr, win_Terr, nw_nTerr])
+            Rerr_arr = np.concatenate([nw_bRerr,win_Rerr ,nw_nRerr])
+            covar_arr = np.concatenate([nw_bcov, win_cov ,nw_ncov])
+
+
+    return(epoch_data, T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr)
+
+def get_epoch_data(all_data, delta_time=1.0):
+
+    shape = all_data.shape
+
+    # Get data by epoch
+    min_time = np.min(all_data[:,0])
+    max_time = np.max(all_data[:,0])
+    ntimes = int(np.round((max_time-min_time)/delta_time))
+    times = np.linspace(min_time, max_time, ntimes)
+
+    epoch_data = []
+
+    for i,t in enumerate(times):
+        mask = np.abs(all_data[:,0]-t) < 0.5 * delta_time
+
+        if len(all_data[mask,0])==0:
+            continue
+
+        subdata = all_data[mask,:]
+
+        data = [t]
+        for datapoint in subdata:
+            data.append([datapoint[1],datapoint[2],datapoint[3]])
+
+        epoch_data.append(data)
+
+    return(epoch_data)
+
+def get_flam(datapoint):
+    """
+    Convenience function to transform magntidues and magnitude errors into
+    f_lambda and f_lambda_err
+
+    Parameters
+    ----------
+    datapoint : list
+        A list with three elements - assumed to be magnitude, magnitude error,
+        and wavelength
+
+    Output
+    ------
+    f_lambda : float
+        output f_lambda for input magnitude and wavelength
+    f_lambda_err : float
+        output f_lambda_err for input magnitude, magnitude error, and wavelength
+    """
+
+    mag = datapoint[0]
+    magerr = datapoint[1]
+    wavelength = datapoint[2] 
+    fnu = 10.**((-mag + 48.6) / -2.5)
+    fnu = fnu * 4. * np.pi * (3.086e19) ** 2
+    fnu_err = np.abs(0.921034 * 10. ** (0.4 * mag - 19.44)) \
+            * magerr * 4. * np.pi * (3.086e19) ** 2
+
+    flam = fnu*c / (wavelength * ang_to_cm) ** 2
+    flam_err = fnu_err * c / (wavelength * ang_to_cm) ** 2 
+
+    return(flam, flam_err)
+
+def fit_bb(epoch_data, use_mcmc=False, T_max=40000., save_chains=False,
+    delta_time=1.0):
     '''
     Fit a series of BBs to the GP LC
     Adapted from superbol, Nicholl, M. 2018, RNAAS)
@@ -723,56 +951,31 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
     Rerr_arr : numpy.array
         BB temperature error array (cm)
     '''
-    # set times to integers, get unique epochs          
-    dense_lc[:,0] = dense_lc[:,0].astype(int)
-    all_epochs = np.unique(dense_lc[:,0])
+
+    ntimes = len(epoch_data)
     # initialize arrays for temp, radius, errors, covar 
-    print('len all_epochs:', len(all_epochs))
-    T_arr = np.zeros(len(all_epochs))
-    R_arr = np.zeros(len(all_epochs))
-    Terr_arr = np.zeros(len(all_epochs))
-    Rerr_arr = np.zeros(len(all_epochs))
-    covar_arr = np.zeros(len(all_epochs))
+    T_arr = np.zeros(ntimes)
+    R_arr = np.zeros(ntimes)
+    Terr_arr = np.zeros(ntimes)
+    Rerr_arr = np.zeros(ntimes)
+    covar_arr = np.zeros(ntimes)
 
     prior_fit = (9000., 0.2e15) 
-    # initialize arrays to store transformed flux and errors 
-    F_lam = np.zeros(len(dense_lc))
-    F_lam_err = np.zeros(len(dense_lc))
-    
-    # transform flux and errors to f_lambda units
-    for i, datapoint in enumerate(dense_lc):
-        x_time = datapoint[0]
-        flux = datapoint[1]
-        fluxerr = datapoint[2]
-        wavelength = datapoint[3] 
-        fnu = 10.**((-flux + 48.6) / -2.5)
-        ferr = fluxerr
-        fnu = fnu * 4. * np.pi * (3.086e19) ** 2
-        fnu_err = np.abs(0.921034 * 10. ** (0.4 * flux - 19.44)) \
-            * ferr * 4. * np.pi * (3.086e19) ** 2
 
-        flam = fnu*c / (wavelength * ang_to_cm) ** 2
-        flam_err = fnu_err * c / (wavelength * ang_to_cm) ** 2 
-
-        F_lam[i] = flam 
-        F_lam_err[i] = flam_err
-    
-    # replace columns with transformed columns in a copy of dense_lc
-    dense_lc_copy = np.copy(dense_lc)    
-    dense_lc_copy[:,1] = F_lam 
-    dense_lc_copy[:,2] = F_lam_err  
-        
     # loop over unique epoch and apply bbfit 
-    for i, epoch in enumerate(all_epochs):      
-        print('i:', i)
-        print('epoch:', epoch) 
-        idx = np.where(dense_lc[:,0] == epoch)
-        print('data[idx]', dense_lc_copy[:,1][idx]) 
-        wavelengths = dense_lc_copy[:,3][idx] 
-        wv_sort = np.argsort(wavelengths) 
-        wavelengths_sorted = wavelengths[wv_sort]
-        flams = dense_lc_copy[:,1][idx]
-        flamerrs = dense_lc_copy[:,2][idx]
+    for i, epoch in enumerate(epoch_data):
+
+        # Get wavelengths, flux, and flux_err as arrays
+        wavelengths = np.array([e[2] for e in epoch[1:]])
+        flux_data = np.array([get_flam(e) for e in epoch[1:]])
+
+        flams = flux_data[:,0]
+        flamerrs = flux_data[:,1]
+
+        idx_sort = np.argsort(wavelengths)
+        wavelengths = wavelengths[idx_sort]
+        flams = flams[idx_sort]
+        flamerrs = flamerrs[idx_sort]
     
         if use_mcmc:
             def log_likelihood(params, lam, f, f_err):
@@ -795,7 +998,7 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
             nwalkers = 16
             ndim = 2
             sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability,
-                                            args=[wavelength, flam, flam_err])
+                                            args=[wavelengths, flams, flamerrs])
             T0 = 9000 + 1000*np.random.rand(nwalkers)
             R0 = 1e15 + 1e14*np.random.rand(nwalkers)
             p0 = np.vstack([T0, R0])
@@ -815,22 +1018,9 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
         else:
 
             try:
-                BBparams, covar = curve_fit(bbody, wavelengths[wv_sort], flams[wv_sort], maxfev=15000,
-                                            p0=prior_fit, sigma=flamerrs[wv_sort],
+                BBparams, covar = curve_fit(bbody, wavelengths, flams, maxfev=15000,
+                                            p0=prior_fit, sigma=flamerrs,
                                             bounds=(0, [T_max, np.inf]), absolute_sigma = True)
-                #visualize bbody fit 
-                # fit_curve = bbody(wavelengths[wv_sort], *BBparams)
-                # if i % 50 == 0:
-                #     new_wvs = np.linspace(np.min(wvs), np.max(wvs), 5000)                                                      
-                #     plt.figure()
-                #     plt.errorbar(wavelengths[wv_sort], flams[wv_sort], yerr = flamerrs[wv_sort], fmt = 'o', label = 'data')
-                #     plt.plot(wavelengths[wv_sort], fit_curve, label = 'fit')
-                #     plt.plot(new_wvs, bbody(new_wvs, *BBparams), color = 'k', label = 'bb')
-                #     plt.xlabel('wavlength $\AA$')
-                #     plt.ylabel('$flux (F_\lambda)$')
-                #     plt.legend()
-                #     plt.title(f'2020jfo bbfit iteration {i} at t={epoch} days')
-                #     plt.show()  
                       
                 # Get temperature and radius, with errors, from fit 
                 T_arr[i] = BBparams[0]
@@ -848,68 +1038,176 @@ def fit_bb(dense_lc, wvs, use_mcmc, T_max):
                 Rerr_arr[i] = np.nan
                 covar_arr[i] = np.nan 
                 
-        #debugging 
-                      
-        print('T_arr:', T_arr)
-        print('Terr:', Terr_arr)
-        np.savetxt('T_arr', T_arr)
-        np.savetxt('Terr', Terr_arr)
-        np.savetxt('Rarr', R_arr)
-        np.savetxt('Rerr', Rerr_arr)
+        #debugging
+        if save_chains:
+            np.savetxt('T_arr', T_arr)
+            np.savetxt('Terr', Terr_arr)
+            np.savetxt('Rarr', R_arr)
+            np.savetxt('Rerr', Rerr_arr)
+
     return T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr
 
+def fit_nebular(epoch_data, filters, wvs, use_mcmc=False, delta_time=1.0):
 
-def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
-            outdir, sn_type, test_times, mean, show_template, filter_name_to_effwv, linear_filters = None, 
-            cubic_filters = None):
+    print('Generating nebular models...')
+    index = SvoFps.get_filter_index(wavelength_eff_min=100*u.angstrom,
+                                    wavelength_eff_max=30000*u.angstrom,
+                                    timeout=3600)
+
+    bps = []
+    for filt in filters:
+        print(filt)
+        mask = index['filterID']==filt
+        transdata = Table.read(index[mask]['TrasmissionCurve'][0])
+        # Make sure transmission data zeros out
+        minwave = np.min(transdata['Wavelength'])
+        maxwave = np.max(transdata['Wavelength'])
+
+        # Assume wavelength in angstroms
+        transdata.add_row([minwave-1.0, 0.0])
+        transdata.add_row([maxwave+1.0, 0.0])
+
+        # Correct for multiple entries at same wavelength
+        transdata = unique(transdata, keys=['Wavelength'], keep='first')
+
+        transdata.sort('Wavelength')
+        transdata = transdata.filled()
+
+        bp = S.ArrayBandpass(transdata['Wavelength'].data, 
+            transdata['Transmission'].data, name=filt)
+        bps.append(bp)
+
+    nebular_models = import_nebular(bps)
+
+    print('Picking best nebular model...')
+    filters = np.array(filters)
+    model_results = []
+    for i, epoch in enumerate(epoch_data):
+
+        epoch_results = []
+
+        # Get wavelengths, flux, and flux_err as arrays
+        wavelengths = np.array([e[2] for e in epoch[1:]])
+        mags = np.array([-1.0*e[0] for e in epoch[1:]])
+        magerrs = np.array([e[1] for e in epoch[1:]])
+        epoch_filts = np.array([filters[wvs==w][0] for w in wavelengths])
+
+        for model in nebular_models:
+            model_mags = np.array([model[f] for f in epoch_filts])
+            popt, pcov = curve_fit(offset, mags, model_mags, sigma=magerrs,
+                p0=(0.0), absolute_sigma = True)
+            # If popt is negative, that means model_mags are brighter than 
+            # observed mags, hence luminosity needs to be scaled down
+            luminosity = model['normalize'] * 10**(0.4 * popt[0])
+            dlum = 0.921034 * model['normalize'] * 10**(0.4 * popt[0]) * np.sqrt(pcov[0][0])
+            epoch_results.append({'file':model['file'],
+                'luminosity':luminosity,'epoch':epoch[0],
+                'parameter': popt[0], 'dlum': dlum,
+                'covariance':pcov[0][0],'teff':model['teff']})
+
+        model_results.append(epoch_results)
+
+    # Find model with lowest total covariance across all epochs
+    best_covariance = np.inf
+    best_model = ''
+    for i,model in enumerate(nebular_models):
+
+        total_covariance = 0.0
+        for models in model_results:
+            for m in models:
+                if m['file']==model['file']:
+                    total_covariance+=m['covariance']
+
+        if best_covariance > total_covariance:
+            best_covariance=copy.copy(total_covariance)
+            best_model = model['file']
+
+    print(f'Best model is {best_model} with total covariance {best_covariance}') 
+
+
+    best_idx = [i for i,model in enumerate(nebular_models) if model['file']==best_model][0]
+
+    # Grab luminosities, T_eff, radii from output
+    Tarr = [] ; Tarr_err = [] ; Rarr = [] ; Rarr_err = [] ; covar = []
+    for i,epoch in enumerate(epoch_data):
+
+        model = model_results[i][best_idx]
+        Tarr.append(model['teff'])
+        Tarr_err.append(0.0)
+
+        lum = model['luminosity']
+        dlum = model['dlum']
+
+        scaling = 1./(4. * np.pi * sigsb * model['teff']**4)**0.5
+        radius = lum**0.5 * scaling
+        radius_err = dlum/(2 * np.sqrt(lum)) * scaling
+
+        Rarr.append(radius)
+        Rarr_err.append(radius_err)
+
+        covar.append(model['covariance'])
+
+    Tarr = np.array(Tarr)
+    Rarr = np.array(Rarr)
+    Tarr_err = np.array(Tarr_err)
+    Rarr_err = np.array(Rarr_err)
+    covar = np.array(covar)
+
+    return Tarr, Rarr, Tarr_err, Rarr_err, covar
+
+def plot_gp(epoch_data, lc, wvs, snname, filter_name_to_effwv, sn_type,
+    linear_filters=[], mean=True, outdir='.'):
     '''
     Plot the GP-interpolate LC and save
 
     Parameters
     ----------
+    epoch_data : list
+        Data sorted by epoch
     lc : numpy.array
         Original LC data
-    dense_lc : numpy.array
-        GP-interpolated LC
-    snname : string
-        SN Name
-    flux_corr : float
-        Flux correction factor for GP
-    my_filters : list
-        List of filters
     wvs : numpy.array
         List of central wavelengths, for colors
-    outdir : string
-        Output directory
+    snname : string
+        SN Name
     sn_type : string
         Type of sn template used for GP mean function
-    test_times : numpy array
-        Time values for sn template to be plotted against
     mean : bool
         Whether or not a non-zero mean function is being used in GP
-    show_template : bool
-        Whether or not the sn template is plotted
+    outdir : string
+        Output directory
 
     Output
     ------
     '''
     #dictionary to assign filters a color 
     filter_colors = {}
-    
-    np.savetxt('plot_gp_dense_lc', dense_lc)
-    
+        
     #plot interpolation + errors 
     plt.figure()
+    cmap = plt.get_cmap('tab10')
+
     for i, wavelength in enumerate(wvs):
-        cmap = plt.get_cmap('tab10')
         color = cmap(i)
-        idx = np.where(dense_lc[:,3] == wavelength)[0]
-        x_pred = dense_lc[:,0][idx] 
-        pred = dense_lc[:,1][idx]
-        pred_var = dense_lc[:,2][idx]
+        # Sort times, mags, magerrs into lists for this filter
+        times = []
+        mags = []
+        magerrs = []
+        for epoch in epoch_data:
+            for e in epoch[1:]:
+                if e[2]==wavelength:
+                    times.append(epoch[0])
+                    mags.append(e[0])
+                    magerrs.append(e[1])
+
+        times = np.array(times)
+        mags = np.array(mags)
+        magerrs = np.array(magerrs)
+
         filter_colors[wavelength] = color
-        plt.plot(x_pred, -pred, color = color, lw = 1.5, alpha = 0.5)
-        plt.fill_between(x_pred, -pred - np.sqrt(pred_var), -pred + np.sqrt(pred_var), color = 'k', alpha = 0.2)
+        plt.plot(times, mags, color = color, lw = 1.5, alpha = 0.5)
+        plt.fill_between(times, mags-magerrs, mags + magerrs, color = 'k', 
+            alpha = 0.2)
         
 
     #plot original data + errorbars 
@@ -918,25 +1216,33 @@ def plot_gp(lc, dense_lc, snname, flux_corr, my_filters, wvs, test_data,
         color = filter_colors[central_wv]
         idx = np.where(lc[:,5] == filt)
         x = lc[:,0].astype('float64')[idx]
-        y = -lc[:,1].astype('float64')[idx]
+        y = lc[:,1].astype('float64')[idx]
         yerr = lc[:,3].astype('float64')[idx]
-        plt.errorbar(x, y, yerr = yerr, fmt = '.', capsize = 0, color = color, label = filt.split('/')[-1])
+        plt.errorbar(x, y, yerr=yerr, fmt = '.', capsize = 0, color = color, 
+            label = filt.split('/')[-1])
+
+    ylims = [np.max(lc[:,1].astype('float')),np.min(lc[:,1].astype('float'))]
+    yran = ylims[0]-ylims[1]
+    ylims = [ylims[0]+0.05*yran, ylims[1]-0.05*yran]
+    plt.ylim(ylims)
 
     if mean:
         plt.title(snname + ' using sn' + sn_type)
     else:
         plt.title(snname + ' Light Curves')
+
     plt.legend()
     plt.xlabel('Time(days)')
     plt.ylabel('Absolute Magnitudes')
     plt.gca().invert_yaxis()
-    plt.savefig(outdir + snname + '_' + str(sn_type) + '_gp.png')
+    outfig = os.path.join(outdir, f'{snname}_{sn_type}_gp.png')
+    plt.savefig(outfig)
     plt.clf()
 
     return 1
 
-
-def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_type):
+def plot_bb_ev(epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, snname, sn_type,
+    outdir='.'):
     '''
     Plot the BB temperature and radius as a function of time
 
@@ -962,19 +1268,13 @@ def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_
     Output
     ------
     '''
-    #min_time = np.min(lc[:,0].astype('float64'))
-    #max_time = np.max(lc[:,0].astype('float64')) 
-    #plot_times = dense_lc[0]
-    #plot_times = np.arange(min_time, max_time)
     
-    plot_times = np.unique(dense_lc[:,0])
+    plot_times = np.array([e[0] for e in epoch_data])
 
     
     fig, axarr = plt.subplots(2, 1, sharex=True) 
     
     idx = np.where(Terr_arr != np.inf)
-    print('len_Tarr_no_inf:', len(Tarr[idx]))
-    print('len(plot_times[idx])', len(plot_times[idx]))
     axarr[0].plot(plot_times[idx], Tarr[idx] / 1.e3, color='k')
     axarr[0].fill_between(plot_times[idx], Tarr[idx]/1.e3 - Terr_arr[idx]/1.e3,
                           Tarr[idx]/1.e3 + Terr_arr[idx]/1.e3, color='k', alpha=0.2)
@@ -990,13 +1290,14 @@ def plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname, outdir, sn_
     axarr[1].set_xlabel('Time (Days)')
     axarr[0].set_title(snname + ' Black Body Evolution')
 
-    plt.savefig(outdir + snname + '_' + str(sn_type) + '_bb_ev.png')
+    outfig = os.path.join(outdir, f'{snname}_{sn_type}_bb_ev.png')
+    plt.savefig(outfig)
     plt.clf()
 
     return 1
 
 
-def plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, outdir, sn_type):
+def plot_bb_bol(epoch_data, bol_lum, bol_err, snname, sn_type, outdir='.'):
     '''
     Plot the BB bolometric luminosity as a function of time
 
@@ -1018,14 +1319,8 @@ def plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, outdir, sn_type):
     Output
     ------
     '''
-    #min_time = np.min(lc[:,0].astype('float64'))
-    #max_time = np.max(lc[:,0].astype('float64'))
-    # time_length = len(bol_lum)
-    #plot_times = np.arange(min_time, max_time)
-    plot_times = np.unique(dense_lc[:,0])
-    print('len(plot_times):', plot_times)
-    print('bol_err:', bol_err)
 
+    plot_times = np.array([e[0] for e in epoch_data])
     
     plt.plot(plot_times, bol_lum, 'k')
     plt.fill_between(plot_times, bol_lum-bol_err, bol_lum+bol_err,
@@ -1035,13 +1330,14 @@ def plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, outdir, sn_type):
     plt.xlabel('Time (Days)')
     plt.ylabel('Bolometric Luminosity')
     plt.yscale('log')
-    plt.savefig(outdir + snname + '_' + str(sn_type) + '_bb_bol.png')
+    outfig = os.path.join(outdir, f'{snname}_{sn_type}_bb_bol.png')
+    plt.savefig(outfig)
     plt.clf()
 
     return 1
 
 
-def write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
+def write_output(epoch_data, Tarr, Terr_arr, Rarr, Rerr_arr,
                  bol_lum, bol_err, my_filters,
                  snname, outdir, sn_type):
     '''
@@ -1078,41 +1374,29 @@ def write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
     ------
     '''
 
-    # min_time = np.min(lc[:,0].astype('float64'))
-    # max_time = np.max(lc[:,0].astype('float64'))
-    # times = np.arange(min_time, max_time)
-    times = np.unique(dense_lc[:,0].astype(int))
+    times = np.array([e[0] for e in epoch_data])
 
     tabledata = np.stack((times,Tarr / 1e3, Terr_arr / 1e3, Rarr / 1e15,
                           Rerr_arr / 1e15, np.log10(bol_lum),
                           np.log10(bol_err))).T
-    #tabledata = np.hstack((-dense_lc, tabledata)).T
-
 
     table_header = ['Time (MJD)', 'Temp./1e3 (K)', 'Temp. Err.',
                          'Radius/1e15 (cm)', 'Radius Err.',
                          'Log10(Bol. Lum)', 'Log10(Bol. Err)']
-    
 
-    # table_header.extend(['Temp./1e3 (K)', 'Temp. Err.',
-    #                      'Radius/1e15 (cm)', 'Radius Err.',
-    #                      'Log10(Bol. Lum)', 'Log10(Bol. Err)'])
-
-    print("num columns:", len(tabledata[0]))
-    print("num header columns:", len(table_header))
     table = Table(rows = tabledata, names = table_header, meta = {'name':'first table'})
 
     format_dict = {head: '%0.3f' for head in table_header}
     ascii.write(table, outdir + snname + '_' + str(sn_type) + '.txt',
                 formats=format_dict, overwrite=True)
 
-    return 1
+    return 1 
 
-
-def main():
-    default_data = importlib_resources.files('extrabol.example') / 'SN2010bc.dat'
-    default_data = str(default_data)
+def add_options():
+    import argparse
     # Define all arguments
+    default_data = os.path.join('example','SN2010bc.dat')
+    default_data = str(default_data)
     parser = argparse.ArgumentParser(description='extrabol helpers')
     parser.add_argument('snfile', nargs='?',
                         default=default_data,
@@ -1128,6 +1412,8 @@ def main():
                         help='Object luminosity distance', default=1e-5)
     parser.add_argument('-z', '--redshift', dest='redshift', type=float,
                         help='Object redshift', default=-1.)
+    parser.add_argument('--delta-time','-dt', type=float, default=1.0,
+                        help='Step size in time for light curve interpolation.')
     # Redshift can't =-1
     # this is simply a flag to be replaced later
     parser.add_argument('-dm', dest='dm', type=float, default=0,
@@ -1168,9 +1454,25 @@ def main():
     parser.add_argument('--T_max', dest='T_max',  help='Temperature prior \
                                                         for black body fits',
                         type=float, default=40000.) 
-    parser.add_argument('--settings', dest = 'settings', type=str, default ='settings.txt', help = 'Settings file name')
+    parser.add_argument('--settings', dest = 'settings', type=str, 
+        default ='settings.txt', help = 'Settings file name')
+    parser.add_argument('--nebular-dir', default='../nebular', type=str,
+        help='Directory where nebular models are stored.')
+    parser.add_argument('--nebular', type=float, default=None,
+        help='Use a nebular model starting from this relative time in the '+\
+        'SED fit.')
+    parser.add_argument('--nebular-model', type=str, default=None,
+        help='Use this nebular model instead of choosing the best joint fit '+\
+        'to the photometry across all epochs.')
 
     args = parser.parse_args()
+
+    return(args)
+
+
+def main():
+    # Import all options
+    args = add_options()
 
     # We need to know if an sn template is being used for gp
     sn_type = args.mean
@@ -1236,14 +1538,17 @@ def main():
     if sn_type == 'test':
         sn_type = test(lc, wv_corr, args.redshift)
     if args.verbose:
-        print('Using ' + str(sn_type) + ' template.')
+        print(f'Using {sn_type} template.')
 
-    dense_lc, test_data, test_times, ufilts, ufilts_in_angstrom = interpolate(lc, wv_corr, sn_type,
-                                                  mean, args.redshift,
-                                                  args.verbose, filter_mean_function, filter_name_to_effwv, 
-                                                  linear_filters, cubic_filters, template_filters)
+    datavals = interpolate(lc, wv_corr, sn_type, mean, args.redshift,
+        args.verbose, filter_mean_function, filter_name_to_effwv, 
+        linear_filters, cubic_filters, template_filters,
+        delta_time=args.delta_time)
+    dense_lc, test_data, test_times, ufilts, ufilts_in_angstrom = datavals
+
     lc = lc.T
-    wvs, wvind, wvrev = np.unique(lc[:, 2].astype('float64'), return_index=True, return_inverse = True)
+    wvs, wvind, wvrev = np.unique(lc[:, 2].astype('float64'), return_index=True,
+        return_inverse = True)
     wvs = wvs*1000.0 + wv_corr 
     un_filts = my_filters[wvind]
     effwv = wvs[wvrev].astype('float64')
@@ -1251,13 +1556,13 @@ def main():
     ufilts = my_filters[wvind] 
     print('main ufilts:', ufilts)
 
-    # Converts to AB magnitudes
-    # dense_lc[:, :, 0] += flux_corr
-
     if args.verbose:
-        print('Fitting Blackbodies, this may take a few minutes...')
-    Tarr, Rarr, Terr_arr, Rerr_arr, covar_arr = fit_bb(dense_lc, wvs, args.mc,
-                                                       args.T_max)
+        print('Fitting SEDs, this may take a few minutes...')
+    epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, covar_arr = fit_sed(dense_lc, use_mcmc=args.mc,
+                                                       T_max=args.T_max, 
+                                                       delta_time=args.delta_time,
+                                                       filters=ufilts, wvs=wvs,
+                                                       nebular_time=args.nebular)
 
     # Calculate bolometric luminosity and error
     bol_lum = 4. * np.pi * Rarr**2 * sigsb * Tarr**4
@@ -1265,25 +1570,24 @@ def main():
                 (4 * Rarr**2 * Tarr**3) * covar_arr
     bol_err = 4. * np.pi * sigsb * np.sqrt(
                 (2. * Rarr * Tarr**4 * Rerr_arr)**2
-                + (4. * Tarr**3 * Rarr**2 * Terr_arr)**2
-                )
+                + (4. * Tarr**3 * Rarr**2 * Terr_arr)**2)
     bol_err = np.sqrt(bol_err**2 + covar_err)
     np.savetxt('bol_lum', bol_lum)
     np.savetxt('bol_err', bol_err)
     if args.plot:
         if args.verbose:
-            print('Making plots in ' + args.outdir)
-        plot_gp(lc, dense_lc, snname, flux_corr, ufilts, wvs, test_data,
-                args.outdir, sn_type, test_times, mean, args.template, filter_name_to_effwv, 
-                linear_filters, cubic_filters)
-        plot_bb_ev(lc, dense_lc, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
-                   args.outdir, sn_type)
-        plot_bb_bol(lc, dense_lc, bol_lum, bol_err, snname, args.outdir, sn_type)
+            print(f'Making plots in {args.outdir}')
+        plot_gp(epoch_data, lc, wvs, snname, filter_name_to_effwv, sn_type,
+            linear_filters=linear_filters, outdir=args.outdir)
+        plot_bb_ev(epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
+                   sn_type, outdir=args.outdir)
+        plot_bb_bol(epoch_data, bol_lum, bol_err, snname, sn_type,
+            outdir=args.outdir)
 
     if args.verbose:
-        print('Writing output to ' + args.outdir)
-    write_output(lc, dense_lc, Tarr, Terr_arr, Rarr, Rerr_arr,
-                 bol_lum, bol_err, my_filters, snname, args.outdir, sn_type)
+        print(f'Writing output to {args.outdir}')
+    write_output(epoch_data, Tarr, Terr_arr, Rarr, Rerr_arr, bol_lum, 
+        bol_err, my_filters, snname, args.outdir, sn_type)
     print('job completed')
 
 
