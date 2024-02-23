@@ -771,6 +771,7 @@ def fit_sed(dense_lc, use_mcmc=False, T_max=40000., nebular_time=None,
     if nebular_time is None:
         T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr = fit_bb(epoch_data, 
             use_mcmc=use_mcmc, T_max=T_max, delta_time=delta_time)
+        return(epoch_data, T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr)
     else:
         nebular_idx = -1
         for i,epoch in enumerate(epoch_data):
@@ -782,6 +783,7 @@ def fit_sed(dense_lc, use_mcmc=False, T_max=40000., nebular_time=None,
             print(f'WARNING: data do not extend to nebular time {nebular_time}')
             T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr = fit_bb(epoch_data, 
                 use_mcmc=use_mcmc, T_max=T_max, delta_time=delta_time)
+            return(epoch_data, T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr)
         else:
             
             # to prevent discontinuities between models, need to apply apodization 
@@ -798,74 +800,7 @@ def fit_sed(dense_lc, use_mcmc=False, T_max=40000., nebular_time=None,
             nT_arr, nR_arr, nTerr_arr, nRerr_arr, ncovar_arr = fit_nebular(epoch_data[window_lower_idx:],
                 use_mcmc=use_mcmc, delta_time=delta_time,
                 filters=filters, wvs=wvs) 
-            
-            # get values in the window 
-            # temp 
-            window_bT = window * bT_arr[-window_length:] 
-            window_nT = (1 - window) * nT_arr[:window_length] 
-            win_Tarr = window_bT + window_nT
-            
-            #radius 
-            window_bR = window * bR_arr[-window_length:]
-            window_nR= (1 - window) * nR_arr[:window_length]
-            win_Rarr = window_bR + window_nR 
-            
-            # temp err 
-            win_Terr = np.sqrt((window * (bTerr_arr[-window_length:] ** 2)) + ((1 - window) * (nTerr_arr[:window_length]**2)))
-            
-            # rad err 
-            win_Rerr =  np.sqrt((window * (bRerr_arr[-window_length:] ** 2)) + ((1 - window) * (nRerr_arr[:window_length]**2))) 
-            
-            #covar 
-            win_bcovar = window * bcovar_arr[-window_length:] 
-            win_ncovar = (1 - window) * ncovar_arr[:window_length]
-            win_cov = win_bcovar + win_ncovar
-            
-            
-            print(f'last 20 bT_arr:{bT_arr[-window_length:]}')
-            print(f'window_bb:{window_bT}')
-            print(f'length of window_bb = {len(window_bT)}')
-            print(f'window_neb:{window_nT}')
-            print(f'length window_neb:{len(window_nT)}') 
-            print(f'win_Tarr:{win_Tarr}')
-            print(f'first 20 nTarr:{nT_arr[:window_length]}')
-            window_times = all_times[window_lower_idx:window_upper_idx]
-            
-            plt.figure()
-            plt.plot(window_times, window)
-            plt.show()
-            # clip off the points in the window for both models  
-            
-            #temp
-            nw_bT_arr = bT_arr[:-20]
-            nw_nT_arr = nT_arr[20:]
-            
-            #rad
-            nw_bR_arr = bR_arr[:-20]
-            nw_nR_arr = nT_arr[20:]
-            
-            #temp err
-            nw_bTerr = bTerr_arr[:-20]
-            nw_nTerr = nTerr_arr[20:]
-            
-            #rad err 
-            nw_bRerr = bRerr_arr[:-20]
-            nw_nRerr = nRerr_arr[20:]
-            
-            #covar 
-            nw_bcov = bcovar_arr[:-20]
-            nw_ncov = ncovar_arr[20:]
-
-        
-            T_arr = np.concatenate([nw_bT_arr, win_Tarr, nw_nT_arr]) 
-            print(f'final T_arr:{len(T_arr)}')
-            R_arr = np.concatenate([nw_bR_arr, win_Rarr ,nw_nR_arr])
-            Terr_arr = np.concatenate([nw_bTerr, win_Terr, nw_nTerr])
-            Rerr_arr = np.concatenate([nw_bRerr,win_Rerr ,nw_nRerr])
-            covar_arr = np.concatenate([nw_bcov, win_cov ,nw_ncov])
-
-
-    return(epoch_data, T_arr, R_arr, Terr_arr, Rerr_arr, covar_arr)
+            return(epoch_data, bT_arr, bR_arr, bTerr_arr, bRerr_arr, bcovar_arr, nT_arr, nR_arr, nTerr_arr, nRerr_arr, ncovar_arr, window, nebular_idx)
 
 def get_epoch_data(all_data, delta_time=1.0):
 
@@ -1242,7 +1177,7 @@ def plot_gp(epoch_data, lc, wvs, snname, filter_name_to_effwv, sn_type,
     return 1
 
 def plot_bb_ev(epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, snname, sn_type,
-    outdir='.'):
+    outdir='.', nTarr = None, nRarr = None, nTerr_arr = None, nRerr_arr = None):
     '''
     Plot the BB temperature and radius as a function of time
 
@@ -1270,25 +1205,27 @@ def plot_bb_ev(epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, snname, sn_type,
     '''
     
     plot_times = np.array([e[0] for e in epoch_data])
-
-    
+    len_Tarr = len(Tarr)
+    len_nTarr = len(nTarr)
+    print(f'len_Tarr: {len_Tarr}, len_nTarr: {len_nTarr}')
     fig, axarr = plt.subplots(2, 1, sharex=True) 
-    
     idx = np.where(Terr_arr != np.inf)
-    axarr[0].plot(plot_times[idx], Tarr[idx] / 1.e3, color='k')
+    axarr[0].plot(plot_times[idx], Tarr[idx] / 1.e3, color='b', label = 'blackbody model')
     axarr[0].fill_between(plot_times[idx], Tarr[idx]/1.e3 - Terr_arr[idx]/1.e3,
                           Tarr[idx]/1.e3 + Terr_arr[idx]/1.e3, color='k', alpha=0.2)
-    axarr[0].set_ylabel('log Temp. (1000 K)') 
-    axarr[0].set_yscale('log')
+    axarr[0].plot(plot_times[-len_nTarr:], nTarr / 1.e3, 'r--', label = 'nebular model')
+    axarr[0].set_ylabel('Temp. (1000 K)') 
 
-    axarr[1].plot(plot_times[idx], Rarr[idx] / 1e15, color='k')
+
+    axarr[1].plot(plot_times[idx], Rarr[idx] / 1e15, color='b', label = 'blackbody model')
     axarr[1].fill_between(plot_times[idx], Rarr[idx]/1e15 - Rerr_arr[idx]/1e15,
                           Rarr[idx]/1e15 + Rerr_arr[idx]/1e15, color='k', alpha=0.2)
-    axarr[1].set_ylabel(r'log Radius ($10^{15}$ cm)')
-    axarr[1].set_yscale('log')
-
+    axarr[1].plot(plot_times[-len(nRarr):], nRarr / 1e15, 'r--', label = 'nebular model')
+    axarr[1].set_ylabel(r'Radius ($10^{15}$ cm)')
     axarr[1].set_xlabel('Time (Days)')
     axarr[0].set_title(snname + ' Black Body Evolution')
+    axarr[0].legend()
+    axarr[1].legend()
 
     outfig = os.path.join(outdir, f'{snname}_{sn_type}_bb_ev.png')
     plt.savefig(outfig)
@@ -1558,38 +1495,118 @@ def main():
 
     if args.verbose:
         print('Fitting SEDs, this may take a few minutes...')
-    epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, covar_arr = fit_sed(dense_lc, use_mcmc=args.mc,
+    if args.nebular is None:
+        epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, covar_arr= fit_sed(dense_lc, use_mcmc=args.mc,
                                                        T_max=args.T_max, 
                                                        delta_time=args.delta_time,
                                                        filters=ufilts, wvs=wvs,
                                                        nebular_time=args.nebular)
-
-    # Calculate bolometric luminosity and error
-    bol_lum = 4. * np.pi * Rarr**2 * sigsb * Tarr**4
-    covar_err = 2. * (4. * np.pi * sigsb)**2 * (2 * Rarr * Tarr**4) * \
-                (4 * Rarr**2 * Tarr**3) * covar_arr
-    bol_err = 4. * np.pi * sigsb * np.sqrt(
-                (2. * Rarr * Tarr**4 * Rerr_arr)**2
-                + (4. * Tarr**3 * Rarr**2 * Terr_arr)**2)
-    bol_err = np.sqrt(bol_err**2 + covar_err)
-    np.savetxt('bol_lum', bol_lum)
-    np.savetxt('bol_err', bol_err)
-    if args.plot:
-        if args.verbose:
-            print(f'Making plots in {args.outdir}')
-        plot_gp(epoch_data, lc, wvs, snname, filter_name_to_effwv, sn_type,
+        # Calculate bolometric luminosity and error
+        
+        bol_lum = 4. * np.pi * Rarr**2 * sigsb * Tarr**4
+        covar_err = 2. * (4. * np.pi * sigsb)**2 * (2 * Rarr * Tarr**4) * \
+                    (4 * Rarr**2 * Tarr**3) * covar_arr
+        bol_err = 4. * np.pi * sigsb * np.sqrt(
+                    (2. * Rarr * Tarr**4 * Rerr_arr)**2
+                    + (4. * Tarr**3 * Rarr**2 * Terr_arr)**2)
+        bol_err = np.sqrt(bol_err**2 + covar_err) 
+        if args.plot:
+            if args.verbose:
+                print(f'Making plots in {args.outdir}')    
+            plot_gp(epoch_data, lc, wvs, snname, filter_name_to_effwv, sn_type,
             linear_filters=linear_filters, outdir=args.outdir)
-        plot_bb_ev(epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
+            plot_bb_ev(epoch_data, Tarr, Rarr, Terr_arr, Rerr_arr, snname,
                    sn_type, outdir=args.outdir)
-        plot_bb_bol(epoch_data, bol_lum, bol_err, snname, sn_type,
+            plot_bb_bol(epoch_data, bol_lum, bol_err, snname, sn_type,
             outdir=args.outdir)
+        if args.verbose:
+            print(f'Writing output to {args.outdir}')
+        write_output(epoch_data, Tarr, Terr_arr, Rarr, Rerr_arr, bol_lum, 
+            bol_err, my_filters, snname, args.outdir, sn_type)
+        print('job completed')
+                
+    else: 
+        epoch_data, bTarr, bRarr, bTerr_arr, bRerr_arr, bcovar_arr, nTarr, nRarr, nTerr_arr, nRerr_arr, ncovar_arr, window, nebular_idx = fit_sed(dense_lc, use_mcmc=args.mc,
+                                                                                            T_max = args.T_max,
+                                                                                            delta_time = args.delta_time,
+                                                                                            filters = ufilts, wvs = wvs,
+                                                                                            nebular_time = args.nebular)
+        # here we blend the two models using apodization in only the luminoisty space 
+        # this should smooth out any disconitinuties 
+        # first calculate bolometric luminosity and error for the blackbody model only 
+        
+        plt.figure(figsize = (10,10))
+        len_bTarr = len(bTarr)
+        len_nTarr = len(nTarr)
+        print(f'len_bTarr :{len_bTarr}, len_nTarr: {len_nTarr}')
+        times = [i[0] for i in epoch_data]
+        plt.plot(times[:len_bTarr], bTarr, color = 'b', marker = 'o', label = 'bb temp')
+        plt.plot(times[-len_nTarr:], nTarr, color = 'r', marker = 'o', label = 'nebular')
+        plt.legend()
+        plt.show()        
+        
+        bb_bol_lum = 4. * np.pi * bRarr**2 * sigsb * bTarr**4
+        bb_covar_err = 2. * (4. * np.pi * sigsb)**2 * (2 * bRarr * bTarr**4) * \
+                    (4 * bRarr**2 * bTarr**3) * bcovar_arr
+        bb_bol_err = 4. * np.pi * sigsb * np.sqrt(
+                    (2. * bRarr * bTarr**4 * bRerr_arr)**2
+                    + (4. * bTarr**3 * bRarr**2 * bTerr_arr)**2)
+        bb_bol_err = np.sqrt(bb_bol_err**2 + bb_covar_err) 
+        
+        #do the same for neb 
+        neb_bol_lum = 4. * np.pi * nRarr**2 * sigsb * nTarr**4
+        neb_covar_err = 2. * (4. * np.pi * sigsb)**2 * (2 * nRarr * nTarr**4) * \
+                    (4 * nRarr**2 * nTarr**3) * ncovar_arr
+        neb_bol_err = 4. * np.pi * sigsb * np.sqrt(
+                    (2. * nRarr * nTarr**4 * nRerr_arr)**2
+                    + (4. * nTarr**3 * nRarr**2 * nTerr_arr)**2)
+        neb_bol_err = np.sqrt(neb_bol_err**2 + neb_covar_err) 
+        
+        # now we use the window function and propagate error 
+        window_length = len(window)
+        window_bb_bol = window * bb_bol_lum[-window_length:]
+        window_neb_bol = (1 - window) * neb_bol_lum[:window_length]
+        window_bol = window_bb_bol + window_neb_bol
+        
+        window_bb_bol_err = bb_bol_err[-window_length:]
+        window_neb_bol_err = neb_bol_err[:window_length]
+        window_err = np.sqrt((window * (window_bb_bol_err ** 2)) + ((1- window) * (window_neb_bol_err ** 2)))
+        
+        # now we combine the three bol arrays 
+        # first chop off the last n bb_bol_lum/err and first n neb_bol_lum/err 
+                #where n is window_length 
+        nw_bb_bol_lum = bb_bol_lum[:-window_length]
+        nw_bb_bol_err = bb_bol_err[:-window_length]
+        nw_neb_bol_lum = neb_bol_lum[window_length:]
+        nw_neb_bol_err = neb_bol_err[window_length:]
+        
+        #concatenate arrays 
+        
+        bol_lum = np.concatenate([nw_bb_bol_lum, window_bol, nw_neb_bol_lum])
+        bol_err = np.concatenate([nw_bb_bol_err, window_err, nw_neb_bol_err])
+        print(f'main len_bol_lum{len(bol_lum)}')
+        print(f'main len bol_err:{len(bol_err)}')
 
-    if args.verbose:
-        print(f'Writing output to {args.outdir}')
-    write_output(epoch_data, Tarr, Terr_arr, Rarr, Rerr_arr, bol_lum, 
-        bol_err, my_filters, snname, args.outdir, sn_type)
-    print('job completed')
+    
+        if args.plot:
+            if args.verbose:
+                print(f'Making plots in {args.outdir}')
+                
+            plot_gp(epoch_data, lc, wvs, snname, filter_name_to_effwv, sn_type,
+                linear_filters=linear_filters, outdir=args.outdir)
+            plot_bb_ev(epoch_data, bTarr, bRarr, bTerr_arr, bRerr_arr, snname,
+                    sn_type, outdir=args.outdir, nTarr=nTarr, nRarr=nRarr, nTerr_arr=nTerr_arr, nRerr_arr=nRerr_arr)
+            plot_bb_bol(epoch_data, bol_lum, bol_err, snname, sn_type,
+                outdir=args.outdir)
+
+        if args.verbose:
+            print(f'Writing output to {args.outdir}')
+        # write_output(epoch_data, Tarr, Terr_arr, Rarr, Rerr_arr, bol_lum, 
+        #     bol_err, my_filters, snname, args.outdir, sn_type)
+        print('job completed')
 
 
 if __name__ == "__main__":
     main()
+
+
