@@ -1,0 +1,5 @@
+Liverpool/RATCam.bessel-B	linear
+Liverpool/RATCam.bessel-V	linear
+Liverpool/RATCam.sdss-r	linear
+Liverpool/RATCam.sdss-i	linear
+Liverpool/RATCam.sdss-z	linear

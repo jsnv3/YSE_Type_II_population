@@ -1,0 +1,50 @@
+#
+#   VizieR Astronomical Server vizier.cds.unistra.fr
+#    Date: 2024-06-12T07:09:51 [V7.33.3]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2024-06-12T07:09:51	  Query execution date
+#INFO	request=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-oc.form=dec&-out.max=50&-order=I&-source= J/MNRAS/433/1871/table3b&-out=Obs.Date&-out=JD&-out=Phase&-out=Umag&-out=e_Umag&-out=Bmag&-out=e_Bmag&-out=Vmag&-out=e_Vmag&-out=Rcmag&-out=e_Rcmag&-out=Icmag&-out=e_Icmag&-out=Tel&-out=See&-out.src=J/MNRAS/433/1871/table3a&	  Full request URL (POST)
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=7.33.3	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_74331871
+#Name: J/MNRAS/433/1871
+#Title: UBVRI griz light curves of SN 2012aw (Bose+, 2013)
+#INFO	ivoid=ivo://cds.vizier/j/mnras/433/1871	    IVOID of underlying data collection
+#INFO	creator=Bose S.	    First author or institution
+#INFO	cites=bibcode:2013MNRAS.433.1871B	    Article or Data origin sources
+#INFO	original_date=2013	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/433/1871	    Dataset landing page
+#INFO	publication_date=2017-06-12	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_MNRAS_433_1871_table3b:
+#Name: J/MNRAS/433/1871/table3b
+#Title: Photometric evolution of SN 2012aw, griz
+#Column	Obs.Date	(A13)	Observation date (YYYY-MM-DD.dd)	[ucd=time.epoch;obs]
+#Column	JD	(F6.2)	Julian date (JD-2456000)	[ucd=time.epoch]
+#Column	Phase	(I3)	Phase, with reference to the explosion epoch JD=2456002.59	[ucd=time.epoch]
+#Column	gmag	(F6.3)	? SDSS g magnitude	[ucd=phot.mag;em.opt.B]
+#Column	e_gmag	(F6.3)	? 1{sigma} rms error on gmag	[ucd=stat.error;phot.mag;em.opt.B]
+#Column	rmag	(F6.3)	? SDSS r magnitude	[ucd=phot.mag;em.opt.R]
+#Column	e_rmag	(F6.3)	? 1{sigma} rms error on rmag	[ucd=stat.error;phot.mag;em.opt.R]
+#Column	imag	(F6.3)	? SDSS i magnitude	[ucd=phot.mag;em.opt.I]
+#Column	e_imag	(F6.3)	? 1{sigma} rms error on imag	[ucd=stat.error;phot.mag;em.opt.I]
+#Column	zmag	(F6.3)	? SDSS z magnitude	[ucd=phot.mag;em.opt.I]
+#Column	e_zmag	(F6.3)	? 1{sigma} rms error on zmag	[ucd=stat.error;phot.mag;em.opt.I]
+#Column	Tel	(A5)	Telescope (G1)	[ucd=meta.id;instr.tel]
+#Column	See	(F4.1)	FWHM of the median stellar PSF at V-band frame	[ucd=instr.det.psf;stat.median]
+Obs.Date	JD	Phase	gmag	e_gmag	rmag	e_rmag	imag	e_imag	zmag	e_zmag	Tel	See
+2012-05-11.66	 59.16	 57	13.922	 0.031	13.242	 0.028	13.187	 0.021	13.185	 0.070	DFOT 	 3.1
+2012-05-27.68	 75.18	 73	14.038	 0.031	13.259	 0.028	13.199	 0.021	13.164	 0.049	DFOT 	 2.8
+2012-05-28.65	 76.15	 74	14.052	 0.031	13.269	 0.028	13.192	 0.021	13.172	 0.070	DFOT 	 3.1
+2012-06-16.67	 95.17	 93	14.173	 0.031	13.326	 0.028	13.259	 0.021	13.192	 0.070	DFOT 	 3.3
+2012-10-16.97	217.47	215	17.150	 0.033	15.948	 0.028	15.907	 0.022	15.376	 0.071	DFOT 	 3.5
+2012-10-17.98	218.48	216	17.161	 0.033	15.971	 0.028	15.914	 0.022	15.399	 0.071	DFOT 	 3.5
+2012-11-10.93	242.43	240	17.339	 0.033	16.171	 0.028	16.158	 0.022	15.570	 0.071	DFOT 	 2.9
+2012-11-11.93	243.43	241	17.353	 0.033	16.173	 0.028	16.167	 0.022	   NaN	   NaN	DFOT 	 3.0
+

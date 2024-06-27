@@ -1,0 +1,5 @@
+ Generic/Johnson.U	linear
+ Generic/Johnson.B	linear
+ Generic/Johnson.V	linear
+ Generic/Johnson.R	linear
+ Generic/Johnson.I	linear

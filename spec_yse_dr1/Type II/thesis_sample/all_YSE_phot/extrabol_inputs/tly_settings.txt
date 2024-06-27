@@ -1,7 +1,0 @@
-PAN-STARRS/PS1.g	linear
-PAN-STARRS/PS1.r	linear
-PAN-STARRS/PS1.w	linear
-Palomar/ZTF.g	linear
-Palomar/ZTF.r	linear
-Misc/Atlas.cyan	linear
-Misc/Atlas.orange	linear

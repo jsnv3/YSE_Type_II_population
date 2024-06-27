@@ -1,0 +1,94 @@
+#
+#   VizieR Astronomical Server vizier.cds.unistra.fr
+#    Date: 2024-06-12T23:52:25 [V7.33.3]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2024-06-12T23:52:25	  Query execution date
+#INFO	request=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-oc.form=dec&-out.max=50&-order=I&-source= J/MNRAS/433/1871/table3a&-out=Obs.Date&-out=JD&-out=Phase&-out=Umag&-out=e_Umag&-out=Bmag&-out=e_Bmag&-out=Vmag&-out=e_Vmag&-out=Rcmag&-out=e_Rcmag&-out=Icmag&-out=e_Icmag&-out=Tel&-out=See&-out=gmag&-out=e_gmag&-out=rmag&-out=e_rmag&-out=imag&-out=e_imag&-out=zmag&-out=e_zmag&-out.src=J/MNRAS/433/1871/table3a,J/MNRAS/433/1871/table3b&	  Full request URL (POST)
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=7.33.3	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_74331871
+#Name: J/MNRAS/433/1871
+#Title: UBVRI griz light curves of SN 2012aw (Bose+, 2013)
+#INFO	ivoid=ivo://cds.vizier/j/mnras/433/1871	    IVOID of underlying data collection
+#INFO	creator=Bose S.	    First author or institution
+#INFO	cites=bibcode:2013MNRAS.433.1871B	    Article or Data origin sources
+#INFO	original_date=2013	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/433/1871	    Dataset landing page
+#INFO	publication_date=2017-06-12	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_MNRAS_433_1871_table3a:
+#Name: J/MNRAS/433/1871/table3a
+#Title: Photometric evolution of SN 2012aw, UBVRI
+#Column	Obs.Date	(A13)	Observation date (YYYY-MM-DD.dd)	[ucd=time.epoch;obs]
+#Column	JD	(F6.2)	[6/272] Julian date (JD-2456000)	[ucd=time.epoch]
+#Column	Phase	(I3)	[4/269] Phase, with reference to the explosion epoch JD=2456002.59	[ucd=time.epoch]
+#Column	Umag	(F6.3)	? Johnson U magnitude	[ucd=phot.mag;em.opt.U]
+#Column	e_Umag	(F6.3)	? 1{sigma} rms error on Umag	[ucd=stat.error;phot.mag;em.opt.U]
+#Column	Bmag	(F6.3)	? Johnson B magnitude	[ucd=phot.mag;em.opt.B]
+#Column	e_Bmag	(F6.3)	? 1{sigma} rms error on Bmag	[ucd=stat.error;phot.mag;em.opt.B]
+#Column	Vmag	(F6.3)	? Johnson V magnitude	[ucd=phot.mag;em.opt.V]
+#Column	e_Vmag	(F6.3)	? 1{sigma} rms error on Vmag	[ucd=stat.error;phot.mag;em.opt.V]
+#Column	Rcmag	(F6.3)	? Cousins R magnitude	[ucd=phot.mag;em.opt.R]
+#Column	e_Rcmag	(F6.3)	? 1{sigma} rms error on Rcmag	[ucd=stat.error;phot.mag;em.opt.R]
+#Column	Icmag	(F6.3)	? Cousins I magnitude	[ucd=phot.mag;em.opt.I]
+#Column	e_Icmag	(F6.3)	? 1{sigma} rms error on Icmag	[ucd=stat.error;phot.mag;em.opt.I]
+#Column	Tel	(a5)	Telescope (G1)	[ucd=meta.id;instr.tel]
+#Column	See	(F4.1)	FWHM of the median stellar PSF at V-band frame	[ucd=instr.det.psf;stat.median]
+Obs.Date;JD;Phase;Umag;e_Umag;Bmag;e_Bmag;Vmag;e_Vmag;Rcmag;e_Rcmag;Icmag;e_Icmag;Tel;See
+2012-03-19.82;  6.32;  4;12.671; 0.042;13.504; 0.021;13.574; 0.017;13.463; 0.018;13.433; 0.025;ST   ; 2.6
+2012-03-20.80;  7.30;  5;12.582; 0.042;13.492; 0.021;13.478; 0.017;13.372; 0.018;13.325; 0.025;ST   ; 2.3
+2012-03-21.81;  8.31;  6;12.517; 0.042;13.457; 0.021;13.420; 0.012;13.300; 0.018;13.258; 0.018;ST   ; 2.0
+2012-03-22.76;  9.26;  7;12.599; 0.042;13.415; 0.021;13.380; 0.017;13.262; 0.018;13.239; 0.025;ST   ; 2.0
+2012-03-24.84; 11.34;  9;12.652; 0.042;13.394; 0.021;13.340; 0.017;13.175; 0.018;13.132; 0.025;ST   ; 1.9
+2012-03-25.78; 12.28; 10;12.676; 0.043;13.411; 0.021;13.328; 0.017;13.192; 0.014;13.130; 0.025;ST   ; 2.3
+2012-04-01.63; 19.13; 17;13.010; 0.042;13.567; 0.021;13.318; 0.017;13.089; 0.018;12.990; 0.025;ST   ; 2.2
+2012-04-07.63; 25.13; 23;13.627; 0.043;13.756; 0.021;13.325; 0.017;13.073; 0.018;12.923; 0.025;ST   ; 2.2
+2012-04-09.74; 27.24; 25;13.909; 0.042;13.875; 0.021;13.351; 0.017;13.086; 0.018;12.950; 0.025;ST   ; 2.3
+2012-04-12.71; 30.21; 28;14.199; 0.042;14.000; 0.021;13.366; 0.017;13.111; 0.018;12.940; 0.025;ST   ; 2.4
+2012-04-19.65; 37.15; 35;14.788; 0.043;14.228; 0.021;13.439; 0.017;13.140; 0.018;12.918; 0.025;ST   ; 2.5
+2012-04-21.61; 39.11; 37;14.905; 0.043;14.284; 0.021;13.468; 0.017;13.151; 0.018;12.895; 0.018;ST   ; 2.9
+2012-04-22.82; 40.32; 38;   NaN;   NaN;   NaN;   NaN;13.493; 0.017;13.135; 0.018;12.899; 0.052;ST   ; 2.7
+2012-04-25.75; 43.25; 41;15.189; 0.044;14.392; 0.021;13.463; 0.017;13.124; 0.018;12.851; 0.025;ST   ; 2.1
+2012-04-29.70; 47.20; 45;15.377; 0.050;14.466; 0.021;13.487; 0.017;13.126; 0.018;12.836; 0.025;ST   ; 2.8
+2012-05-01.61; 49.11; 47;15.455; 0.057;14.491; 0.025;13.725; 0.024;13.115; 0.023;12.887; 0.035;ST   ; 2.9
+2012-05-04.63; 52.13; 50;15.552; 0.089;   NaN;   NaN;13.439; 0.018;13.115; 0.018;12.776; 0.055;ST   ; 2.1
+2012-05-06.62; 54.12; 52;15.725; 0.041;14.574; 0.021;13.471; 0.017;13.116; 0.018;12.790; 0.052;ST   ; 2.4
+2012-05-08.61; 56.11; 54;   NaN;   NaN;   NaN;   NaN;13.526; 0.018;13.113; 0.019;12.812; 0.026;ST   ; 2.7
+2012-05-09.61; 57.11; 55;15.802; 0.067;14.688; 0.024;13.494; 0.017;13.088; 0.018;12.775; 0.025;ST   ; 2.9
+2012-05-11.65; 59.15; 57;   NaN;   NaN;14.518; 0.022;13.534; 0.017;13.085; 0.018;   NaN;   NaN;DFOT ; 3.1
+2012-05-13.68; 61.18; 59;16.049; 0.059;14.697; 0.021;13.539; 0.017;13.097; 0.018;12.804; 0.025;ST   ; 2.6
+2012-05-14.69; 62.19; 60;16.133; 0.068;14.711; 0.022;13.566; 0.017;13.139; 0.018;12.797; 0.025;ST   ; 2.6
+2012-05-17.64; 65.14; 63;16.239; 0.049;14.771; 0.021;13.556; 0.017;13.102; 0.018;12.774; 0.025;ST   ; 2.8
+2012-05-24.63; 72.13; 70;16.424; 0.089;14.817; 0.021;13.571; 0.017;13.106; 0.018;12.787; 0.025;ST   ; 3.1
+2012-05-27.66; 75.16; 73;16.577; 0.144;14.882; 0.022;13.596; 0.018;13.118; 0.018;12.778; 0.025;ST   ; 2.9
+2012-05-27.65; 75.15; 73;   NaN;   NaN;14.611; 0.023;13.596; 0.012;13.110; 0.018;   NaN;   NaN;DFOT ; 2.8
+2012-05-28.63; 76.13; 74;   NaN;   NaN;14.609; 0.025;13.637; 0.018;13.115; 0.018;   NaN;   NaN;DFOT ; 3.1
+2012-05-30.65; 78.15; 76;   NaN;   NaN;14.872; 0.031;13.627; 0.018;13.126; 0.018;12.786; 0.025;ST   ; 3.8
+2012-06-06.64; 85.14; 83;16.840; 0.061;14.990; 0.021;13.687; 0.017;13.127; 0.018;12.804; 0.018;ST   ; 3.4
+2012-06-09.62; 88.12; 86;17.010; 0.062;15.042; 0.022;13.664; 0.017;13.174; 0.018;12.828; 0.025;ST   ; 2.5
+2012-06-11.63; 90.13; 88;16.886; 0.052;15.057; 0.021;13.670; 0.017;13.159; 0.018;12.815; 0.025;ST   ; 2.8
+2012-06-16.66; 95.16; 93;   NaN;   NaN;14.694; 0.029;13.727; 0.018;13.206; 0.013;   NaN;   NaN;DFOT ; 3.3
+2012-06-25.65;104.15;102;   NaN;   NaN;15.231; 0.029;13.873; 0.022;13.361; 0.023;12.995; 0.031;ST   ; 3.7
+2012-06-27.63;106.13;104;16.979; 0.219;15.158; 0.018;13.824; 0.017;13.296; 0.018;12.947; 0.025;ST   ; 3.7
+2012-10-16.96;217.46;215;   NaN;   NaN;17.526; 0.083;16.577; 0.025;15.794; 0.020;   NaN;   NaN;DFOT ; 3.5
+2012-10-17.96;218.46;216;   NaN;   NaN;17.657; 0.053;16.617; 0.024;15.823; 0.014;   NaN;   NaN;DFOT ; 3.5
+2012-10-23.98;224.48;222;   NaN;   NaN;18.069; 0.361;16.918; 0.366;   NaN;   NaN;15.413; 0.059;ST   ; 3.4
+2012-10-24.97;225.47;223;   NaN;   NaN;18.033; 0.026;16.711; 0.019;15.832; 0.019;15.368; 0.026;ST   ; 2.2
+2012-10-26.97;227.47;225;   NaN;   NaN;18.106; 0.023;16.730; 0.019;15.860; 0.019;15.389; 0.026;ST   ; 2.7
+2012-10-29.99;230.49;228;   NaN;   NaN;   NaN;   NaN;16.667; 0.015;   NaN;   NaN;   NaN;   NaN;ST   ; 1.7
+2012-10-30.98;231.48;229;19.551; 0.361;18.088; 0.038;16.765; 0.020;15.899; 0.014;15.447; 0.025;ST   ; 1.8
+2012-11-02.97;234.47;232;   NaN;   NaN;18.163; 0.030;16.803; 0.020;15.949; 0.011;15.454; 0.026;ST   ; 2.0
+2012-11-04.96;236.46;234;   NaN;   NaN;18.126; 0.030;16.841; 0.016;15.975; 0.020;15.456; 0.026;ST   ; 2.0
+2012-11-07.97;239.47;237;   NaN;   NaN;18.278; 0.078;16.721; 0.046;15.955; 0.031;15.454; 0.040;ST   ; 2.2
+2012-11-10.95;242.45;240;   NaN;   NaN;17.850; 0.051;16.911; 0.022;15.992; 0.019;   NaN;   NaN;DFOT ; 2.9
+2012-11-11.94;243.44;241;   NaN;   NaN;17.875; 0.051;16.963; 0.021;15.996; 0.019;   NaN;   NaN;DFOT ; 3.0
+2012-11-16.98;248.48;246;20.291; 0.239;18.264; 0.019;16.908; 0.014;16.039; 0.019;15.586; 0.019;ST   ; 2.0
+2012-11-18.98;250.48;248;19.934; 0.153;18.289; 0.020;16.927; 0.018;16.054; 0.019;15.610; 0.026;ST   ; 1.7
+2012-11-25.95;257.45;255;19.821; 0.111;18.323; 0.018;17.011; 0.014;16.132; 0.019;15.709; 0.026;ST   ; 1.9
+
