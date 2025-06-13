@@ -1,37 +1,4 @@
-#
-#   VizieR Astronomical Server vizier.cds.unistra.fr
-#    Date: 2025-06-12T19:09:57 [V7.5.1]
-#   In case of problem, please report to:	cds-question@unistra.fr
-#
-#
-#Coosys	J2000:	eq_FK5 J2000
-#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
-#INFO	request_date=2025-06-12T19:09:57	  Query execution date
-#INFO	request=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-oc.form=dec&-out.max=50&-order=I&-out.src=J/MNRAS/459/3939/tabled4&-source=J/MNRAS/459/3939/tabled4&-out=Name&-out=Tpt&-out=e_Tpt&	  Full request URL (POST)
-#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
-#INFO	server_software=7.5.1	  Software version
-#INFO	publisher=CDS	  Data centre that produced the VOTable
-
-#RESOURCE=yCat_74593939
-#Name: J/MNRAS/459/3939
-#Title: Type II supernova light curves (Valenti+, 2016)
-#INFO	ivoid=ivo://cds.vizier/j/mnras/459/3939	    IVOID of underlying data collection
-#INFO	creator=Valenti S.	    First author or institution
-#INFO	cites=bibcode:2016MNRAS.459.3939V	    Article or Data origin sources
-#INFO	original_date=2016	    Year of the article publication
-#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/459/3939	    Dataset landing page
-#INFO	citation=doi:10.26093/cds/vizier.74593939	    Dataset identifier that can be used for citation
-#INFO	publication_date=2024-08-16	    Date of first publication in the data centre
-#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
-#Table	J_MNRAS_459_3939_tabled4:
-#Name: J/MNRAS/459/3939/tabled4
-#Title: Bolometric MCMC light curve parameters
-#Column	Name	(a14)	SN name	[ucd=meta.id;meta.main]
-#Column	Tpt	(F5.1)	Time of the drop (G1)	[ucd=time.epoch]
-#Column	e_Tpt	(F4.1)	rms uncertainty on Tpt	[ucd=stat.error]
 Name	Tpt	e_Tpt
- 	 	
---------------	-----	----
 2013bu        	102.8	 4.5
 2013fs        	 86.2	 0.5
 LSQ13dpa      	129.9	 2.0
