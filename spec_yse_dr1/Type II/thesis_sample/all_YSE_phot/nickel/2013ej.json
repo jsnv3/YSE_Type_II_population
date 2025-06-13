@@ -23,7 +23,7 @@
   "host_name": "2013ej",
   "host_ra_deg": 24.17117786,
   "host_dec_deg": 15.78409625,
-  "host_redshift": null,
+  "host_redshift": 0.002,
   "host_milkyway_dust_reddening": 0.0604029513895512,
   "local_aperture_id": 164082,
   "local_aperture_ra_deg": 24.20067,
