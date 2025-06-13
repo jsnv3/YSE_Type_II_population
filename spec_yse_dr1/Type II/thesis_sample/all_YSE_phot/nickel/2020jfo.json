@@ -15,7 +15,7 @@
     "ra_deg": 185.45963792,
     "dec_deg": 4.47523724,
     "name": "2020jfo",
-    "redshift": null,
+    "redshift": 0.00502,
     "photometric_redshift": 0.021368142504091,
     "milkyway_dust_reddening": 0.0192633137106895,
     "software_version": null
@@ -23,7 +23,7 @@
   "host_name": "2020jfo",
   "host_ra_deg": 185.45963792,
   "host_dec_deg": 4.47523724,
-  "host_redshift": null,
+  "host_redshift": 0.00502,
   "host_milkyway_dust_reddening": 0.0192633137106895,
   "local_aperture_id": 164006,
   "local_aperture_ra_deg": 185.460333,
