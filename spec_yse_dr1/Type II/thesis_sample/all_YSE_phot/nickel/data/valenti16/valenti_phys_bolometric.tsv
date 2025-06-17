@@ -1,0 +1,83 @@
+#
+#   VizieR Astronomical Server vizier.cds.unistra.fr
+#    Date: 2025-06-13T19:47:58 [V7.5.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2025-06-13T19:47:58	  Query execution date
+#INFO	request=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-oc.form=dec&-out.max=unlimited&-source=J/MNRAS/459/3939/tabled3&-order=I&-out=Name&-out=logL1(0)&-out=S1&-out=e_S1&-out=n_e_S1&-out=phstart1&-out=phstop1&-out=logL2(0)&-out=S2&-out=e_S2&-out=phstart2&-out=phstop2&-out=MNi&-out=e_MNi&	  Full request URL (POST)
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=7.5.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_74593939
+#Name: J/MNRAS/459/3939
+#Title: Type II supernova light curves (Valenti+, 2016)
+#INFO	ivoid=ivo://cds.vizier/j/mnras/459/3939	    IVOID of underlying data collection
+#INFO	creator=Valenti S.	    First author or institution
+#INFO	cites=bibcode:2016MNRAS.459.3939V	    Article or Data origin sources
+#INFO	original_date=2016	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/459/3939	    Dataset landing page
+#INFO	citation=doi:10.26093/cds/vizier.74593939	    Dataset identifier that can be used for citation
+#INFO	publication_date=2024-08-16	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_MNRAS_459_3939_tabled3:
+#Name: J/MNRAS/459/3939/tabled3
+#Title: *Bolometric light curve parameters
+#Column	Name	(a13)	SN name	[ucd=meta.id;meta.main]
+#Column	logL1(0)	(F5.2)	? Luminosity of the initial, steeper slope of the light curve (Log10(Lum1(0))	[ucd=phys.luminosity]
+#Column	S1	(F7.4)	? Decline rate of the initial, steeper slope of the light curve	[ucd=src.var.amplitude]
+#Column	e_S1	(F7.4)	? rms uncertainty on S1	[ucd=stat.error]
+#Column	n_e_S1	(A1)	[i] i for infinity	[ucd=meta.note]
+#Column	phstart1	(F4.1)	? Starting day of initial slope	[ucd=arith.grad;time.start]
+#Column	phstop1	(F4.1)	? Ending day of initial slope	[ucd=arith.grad;time.end]
+#Column	logL2(0)	(F5.2)	? Luminosity of the second, shallower slope of the light curve (Log10(Lum2(0))	[ucd=phys.luminosity]
+#Column	S2	(F7.4)	? Decline rate of the second, shallower slope of the light curve	[ucd=src.var.amplitude]
+#Column	e_S2	(F7.4)	? rms uncertainty on S2	[ucd=stat.error]
+#Column	phstart2	(F4.1)	? Starting day of second slope	[ucd=arith.grad;time.start]
+#Column	phstop2	(F5.1)	? Ending day of second slope	[ucd=arith.grad;time.end]
+#Column	MNi	(F7.4)	? Ni mass	[ucd=phys.mass]
+#Column	e_MNi	(F7.4)	? rms uncertainty on MNi	[ucd=stat.error]
+Name|logL1(0)|S1|e_S1|n_e_S1|phstart1|phstop1|logL2(0)|S2|e_S2|phstart2|phstop2|MNi|e_MNi
+2013ai       |41.62|-0.0081| 0.0001| |18.6|49.5|41.47|-0.0057| 0.0005|54.5| 92.2|       |
+2013bu       |41.24|-0.0044| 0.0003| | 6.2|35.1|41.18|-0.0020| 0.0003|35.1| 78.1| 0.0021| 0.0007
+2013fs       |42.47|-0.0146| 0.0009| | 4.5|27.6|42.19|-0.0054| 0.0002|31.5| 75.5| 0.0545| 0.0003
+LSQ13dpa     |42.02|-0.0042| 0.0006| | 5.5|36.9|41.99|-0.0021| 0.0004|43.4|114.3| 0.0714| 0.0127
+2014cy       |41.66|-0.0060| 0.0005| | 5.4|33.0|41.51|-0.0031| 0.0002|44.3| 94.5| 0.0037| 0.0038
+2014dw       |42.23|-0.0135| 0.0005| |14.2|38.2|42.18|-0.0113| 0.0003|47.5| 78.5| 0.0094| 0.0008
+LSQ14gv      |42.19|-0.0081| 0.0014| | 3.8|40.6|42.17|-0.0087| 0.0007|35.5| 70.6|       |
+ASASSN-14dq  |42.36|-0.0098| 0.0004| | 7.7|33.6|42.18|-0.0048| 0.0003|48.7| 82.6| 0.0461| 0.0079
+ASASSN-14gm  |42.10|-0.0030| 0.0003| |12.2|43.3|42.07|-0.0021| 0.0004|43.3| 85.6| 0.0767| 0.0102
+ASASSN-14ha  |41.28|-0.0093| 0.0003| | 1.8|37.5|41.02|-0.0020| 0.0002|42.9|121.5| 0.0014| 0.0002
+2015W        |42.26|-0.0096| 0.0005| | 9.8|45.3|42.08|-0.0061| 0.0006|51.4| 92.2| 0.0314| 0.0098
+2013ab       |42.36|-0.0120| 0.0002| | 8.8|36.4|42.00|-0.0027| 0.0001|42.4| 82.2| 0.0588| 0.0100
+2013by       |42.80|-0.0167| 0.0007| | 8.5|39.7|42.48|-0.0083| 0.0002|39.7| 67.6| 0.0320| 0.0043
+2013ej       |42.46|-0.0136| 0.0004| | 9.9|38.4|42.25|-0.0079| 0.0005|43.4| 83.0| 0.0207| 0.0019
+2014G        |42.68|-0.0151| 0.0006| |15.4|36.4|42.39|-0.0091| 0.0005|49.3| 78.4| 0.0341| 0.0006
+1987A        |     |       |       | |    |    |     |       |       |    |     | 0.0750| 0.0007
+1990E        |     |       |       | |    |    |     |       |       |    |     | 0.0653| 0.0134
+1999em       |42.21|-0.0109| 0.0004| | 3.0|34.4|41.91|-0.0014| 0.0002|32.4| 82.2| 0.0536| 0.0119
+1999gi       |42.02|-0.0090| 0.0001| | 8.6|38.2|41.72|-0.0020| 0.0002|50.2|100.5| 0.0320| 0.0023
+2001X        |42.02|-0.0053| 0.0008| |13.1|41.9|41.89|-0.0018| 0.0001|49.0| 86.8| 0.0550| 0.0047
+2002hh       |     |       |       | |    |    |     |       |       |    |     | 0.0316| 0.0102
+2003Z        |41.19|-0.0071| 0.0005| | 5.8|29.4|41.13|-0.0031| 0.0003|56.7|100.7| 0.0047| 0.0002
+2003hd       |42.18|-0.0068| 0.0010| | 9.3|44.3|42.02|-0.0030| 0.0009|44.3| 72.2| 0.0361| 0.0040
+2003hn       |42.53|-0.0152| 0.0007| |20.8|42.8|42.08|-0.0048| 0.0002|48.9| 83.8| 0.0324| 0.0046
+2004et       |42.19|-0.0064|       |i|18.4|53.4|42.00|-0.0028| 0.0002|53.4| 84.3| 0.0414| 0.0086
+2005cs       |41.48|-0.0192| 0.0005| | 4.3|22.3|41.03| 0.0004| 0.0001|28.4| 79.2| 0.0021| 0.0002
+2007it       |     |       |       | |    |    |     |       |       |    |     | 0.0721| 0.0175
+2007od       |42.59|-0.0148| 0.0010| | 6.6|21.5|42.43|-0.0074| 0.0002|28.5| 69.2| 0.0032| 0.0006
+2008fq       |43.13|-0.0168| 0.0013| |12.6|33.6|42.80|-0.0077| 0.0006|39.6| 70.5|       |
+2008in       |41.68|-0.0201| 0.0021| | 4.9|34.7|41.23|-0.0056| 0.0005|38.8| 89.7| 0.0037| 0.0007
+2009N        |41.71|-0.0127| 0.0007| |10.7|26.6|41.43|-0.0012| 0.0001|31.6| 79.3| 0.0165| 0.0021
+2009bw       |42.51|-0.0164| 0.0010| | 9.7|33.8|42.01|-0.0034| 0.0004|53.8|116.2| 0.0234| 0.0017
+2009dd       |42.50|-0.0130| 0.0008| |11.2|46.1|42.18|-0.0055|       |46.1|107.9| 0.0466| 0.0116
+2009ib       |41.77|-0.0069| 0.0005| |13.1|38.1|41.50|-0.0004| 0.0002|59.0|109.8| 0.0520| 0.0162
+2009kr       |42.23|-0.0168| 0.0011| | 9.1|27.0|41.98|-0.0093| 0.0010|49.1| 75.8| 0.0085| 0.0002
+2009md       |41.36|-0.0069| 0.0006| |18.0|35.5|41.26|-0.0030| 0.0002|49.6|100.7| 0.0044| 0.0033
+2012A        |41.96|-0.0139| 0.0012| | 9.5|28.4|41.66|-0.0042| 0.0003|35.6| 71.5| 0.0087| 0.0012
+2012aw       |42.23|-0.0096| 0.0002| | 9.0|36.6|41.97|-0.0021| 0.0001|41.0|102.9| 0.0497| 0.0059
+2012ec       |42.21|-0.0102| 0.0007| |11.2|36.3|41.93|-0.0020| 0.0003|37.9| 78.1| 0.0394| 0.0051
+

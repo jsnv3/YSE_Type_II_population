@@ -1,0 +1,73 @@
+#
+#   VizieR Astronomical Server vizier.cds.unistra.fr
+#    Date: 2025-06-16T16:41:07 [V7.5.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2025-06-16T16:41:07	  Query execution date
+#INFO	request=https://vizier.cds.unistra.fr/viz-bin/asu-tsv?-oc.form=dec&-out.max=unlimited&-source=J/MNRAS/459/3939/tabled4&-order=I&-out=Name&-out=Tpt&-out=e_Tpt&-out=A0&-out=E_A0&-out=e_A0&-out=W0&-out=E_W0&-out=e_W0&-out=M0&-out=E_M0&-out=e_M0&-out=P0&	  Full request URL (POST)
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=7.5.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_74593939
+#Name: J/MNRAS/459/3939
+#Title: Type II supernova light curves (Valenti+, 2016)
+#INFO	ivoid=ivo://cds.vizier/j/mnras/459/3939	    IVOID of underlying data collection
+#INFO	creator=Valenti S.	    First author or institution
+#INFO	cites=bibcode:2016MNRAS.459.3939V	    Article or Data origin sources
+#INFO	original_date=2016	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/MNRAS/459/3939	    Dataset landing page
+#INFO	citation=doi:10.26093/cds/vizier.74593939	    Dataset identifier that can be used for citation
+#INFO	publication_date=2024-08-16	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_MNRAS_459_3939_tabled4:
+#Name: J/MNRAS/459/3939/tabled4
+#Title: Bolometric MCMC light curve parameters
+#Column	Name	(a14)	SN name	[ucd=meta.id;meta.main]
+#Column	Tpt	(F5.1)	Time of the drop (G1)	[ucd=time.epoch]
+#Column	e_Tpt	(F4.1)	rms uncertainty on Tpt	[ucd=stat.error]
+#Column	A0	(F8.5)	Depth of the drop (G1)	[ucd=phot.mag;arith.diff]
+#Column	E_A0	(F8.5)	Error on A0, upper value	[ucd=stat.error;stat.max]
+#Column	e_A0	(F8.5)	Error on A0, lower value	[ucd=stat.error]
+#Column	W0	(F8.5)	Shape of the drop (G1)	[ucd=phot.flux;arith.ratio]
+#Column	E_W0	(F8.5)	Error on W0, upper value	[ucd=stat.error;stat.max]
+#Column	e_W0	(F8.5)	Error on W0, lower value	[ucd=stat.error]
+#Column	M0	(F8.5)	M0 parameter (G1)	[ucd=stat.fit.param]
+#Column	E_M0	(F8.5)	Error on M0, upper value	[ucd=stat.error;stat.max]
+#Column	e_M0	(F8.5)	Error on M0, lower value	[ucd=stat.error]
+#Column	P0	(F7.4)	P0 parameter (G1)	[ucd=stat.fit.param]
+Name|Tpt|e_Tpt|A0|E_A0|e_A0|W0|E_W0|e_W0|M0|E_M0|e_M0|P0
+2013bu        |102.8| 4.5|-1.14330| 0.00008| 0.00011| 3.85663| 0.00011| 0.00011|39.73643| 0.00011| 0.00010|-0.0038
+2013fs        | 86.2| 0.5|-0.60601| 0.00010| 0.00009| 4.85452| 0.00010| 0.00010|41.17148| 0.00010| 0.00009|-0.0038
+LSQ13dpa      |129.9| 2.0|-0.52529| 0.00010| 0.00009| 4.60926| 0.00010| 0.00010|41.16555| 0.00007| 0.00010|-0.0038
+2014cy        |122.6| 1.0|-1.17027| 0.00009| 0.00010| 4.68129| 0.00010| 0.00010|39.92448| 0.00010| 0.00010|-0.0038
+2014dw        | 90.8|10.0|-0.75675| 0.00011| 0.00009| 4.17129| 0.00009| 0.00009|40.51770| 0.00011| 0.00010|-0.0058
+ASASSN-14dq   |101.5| 5.5|-0.65170| 0.00010| 0.00010| 4.48552| 0.00011| 0.00011|41.06156| 0.00011| 0.00010|-0.0038
+ASASSN-14gm   |110.6| 1.5|-0.58317| 0.00012| 0.00009| 5.09893| 0.00009| 0.00009|41.21063| 0.00011| 0.00010|-0.0028
+ASASSN-14ha   |136.9| 1.5|-1.29399| 0.00010| 0.00010| 1.67183| 0.00010| 0.00010|39.38707| 0.00011| 0.00010|-0.0038
+2015W         |109.2|10.0|-0.50126| 0.00009| 0.00010| 6.75293| 0.00010| 0.00010|40.97968| 0.00012| 0.00007|-0.0038
+2013ab        |102.0| 1.0|-0.51427| 0.00010| 0.00008| 3.78071| 0.00010| 0.00010|41.17435| 0.00009| 0.00010|-0.0038
+2013by        | 85.8| 2.0|-0.91657| 0.00009| 0.00010| 5.65613| 0.00009| 0.00009|40.96187| 0.00011| 0.00010|-0.0038
+2013ej        | 99.4| 1.0|-0.72281| 0.00010| 0.00010| 2.94088| 0.00009| 0.00009|40.75374| 0.00010| 0.00009|-0.0048
+2014G         | 87.8| 1.0|-0.71244| 0.00010| 0.00009| 4.51613| 0.00010| 0.00010|40.99829| 0.00011| 0.00009|-0.0038
+1999em        |117.9| 1.0|-0.57741| 0.00008| 0.00009| 3.41479| 0.00010| 0.00010|41.06099| 0.00009| 0.00008|-0.0038
+1999gi        |126.6| 3.1|-0.62125| 0.00010| 0.00010| 4.55976| 0.00010| 0.00010|40.79945| 0.00009| 0.00009|-0.0038
+2001X         |114.5| 5.0|-0.53832| 0.00009| 0.00010| 4.38129| 0.00010| 0.00010|41.08004| 0.00009| 0.00009|-0.0038
+2003Z         |124.2| 4.5|-0.71998| 0.00009| 0.00010| 3.26323| 0.00011| 0.00011|39.99370| 0.00010| 0.00011|-0.0038
+2003hn        |107.3| 4.0|-0.65753| 0.00010| 0.00009| 2.53678| 0.00012| 0.00012|40.89828| 0.00010| 0.00009|-0.0038
+2004et        |123.5| 4.0|-0.64942| 0.00009| 0.00011| 6.01467| 0.00011| 0.00011|40.96975| 0.00011| 0.00009|-0.0038
+2005cs        |125.8| 0.5|-1.22037| 0.00010| 0.00010| 1.93610| 0.00010| 0.00010|39.64530| 0.00011| 0.00011|-0.0038
+2008in        |107.6| 1.0|-0.71691| 0.00009| 0.00011| 1.94207| 0.00010| 0.00010|39.94404| 0.00009| 0.00010|-0.0038
+2009N         |108.1| 1.2|-0.60762| 0.00008| 0.00009| 2.34563| 0.00010| 0.00010|40.59108| 0.00010| 0.00011|-0.0038
+2009bw        |135.5| 3.0|-0.85874| 0.00011| 0.00010| 1.51075| 0.00009| 0.00009|40.63664| 0.00009| 0.00010|-0.0038
+2009dd        |118.3| 5.0|-0.56500| 0.00011| 0.00010| 4.44222| 0.00009| 0.00009|41.02448| 0.00010| 0.00010|-0.0038
+2009ib        |140.2| 2.0|-0.35851| 0.00010| 0.00010| 2.69334| 0.00009| 0.00009|40.96322| 0.00010| 0.00010|-0.0038
+2009kr        | 90.0| 2.0|-0.87569| 0.00010| 0.00010| 4.34359| 0.00012| 0.00012|40.36315| 0.00008| 0.00011|-0.0054
+2009md        |117.8| 8.0|-0.93139| 0.00010| 0.00009| 2.61584| 0.00010| 0.00010|39.93533| 0.00011| 0.00011|-0.0038
+2012A         |106.2| 2.0|-0.90870| 0.00009| 0.00008| 4.45165| 0.00010| 0.00010|40.29491| 0.00010| 0.00011|-0.0038
+2012aw        |135.2| 4.0|-0.60089| 0.00011| 0.00011| 7.49323| 0.00011| 0.00011|41.02130| 0.00011| 0.00011|-0.0038
+2012ec        |110.6| 5.0|-0.67027| 0.00010| 0.00010| 9.74179| 0.00010| 0.00010|40.98082| 0.00010| 0.00010|-0.0038
+

@@ -1,0 +1,116 @@
+TBD                                                      (J. Biteau, 2021)
+================================================================================
+Stellar Mass and Star Formation Rate within a Billion Light-Years
+    J. Biteau
+    =bibcode_TBD
+================================================================================
+Keywords: galaxy masses; large-scale structure of the universe; particle astrophysics;
+          scaling relations; sky surveys
+
+Abstract:
+  To develop galaxy-targeting approaches, the gravitational-wave community built
+  a catalog of stellar mass in the local universe based on the 2MASS
+  spectroscopic and photometric redshift surveys. By cleaning and supplementing
+  this catalog, the present work aims to establish a near-infrared flux-limited
+  sample to map both stellar mass and star formation rate (SFR) over the full
+  sky. The 2MASS spectroscopic and photometric redshift surveys are cross-
+  matched with the HyperLEDA database and the Local Volume sample at d < 11 Mpc,
+  providing a flux-limited sample with revised distance estimates and
+  corrections for incompleteness out to 350 Mpc. Scaling relations with stellar
+  mass as a function of morphology are used to construct a SFR cosmography in
+  the local universe. Stellar mass and SFR densities converge towards values
+  compatible with deep-field observations beyond 100 Mpc. The 3D distribution of
+  these two tracers is consistent with the distribution of matter deduced from
+  cosmic flows. With spectroscopic redshifts available for about half of the
+  ~400,000 galaxies within 350 Mpc and photometric distances with a 12%
+  uncertainty available for the other half, the present sample may find
+  applications in both cosmology and astroparticle physics. The present work
+  provides in particular new bases for modeling the large- and intermediate-
+  scale anisotropies observed at ultra-high energies. The distribution of
+  magnetic fields at Mpc scales, which can be deduced from the 3D distribution
+  of matter, is inferred to be crucial in shaping the ultra-high-energy sky.
+
+File Summary:
+--------------------------------------------------------------------------------
+ FileName    Lrecl   Records    Explanations
+--------------------------------------------------------------------------------
+ReadMe          80        .  this file
+table1.mrt      15   671593  Revised Principal Galaxy Catalog association to MANGROVE sample
+table2.mrt      15      361  Duplicate entries in the MANGROVE sample
+table3.mrt      31     1029  Principal Galaxy Catalog association to Local Volume sample
+table4.mrt      52     1387  Entries excluded from the MANGROVE sample
+table5.mrt     138   510072  Revised MANGROVE sample above the 2MPZ sensitivity limit including clones (Name='clone') in the Zone of Avoidance
+
+
+--------------------------------------------------------------------------------
+Byte-by-byte Description of file: table1.mrt
+--------------------------------------------------------------------------------
+ Bytes Format Units  Label     Explanations
+--------------------------------------------------------------------------------
+ 1- 7   I7     ---    PGC     [2/6775358] HyperLEDA PGC number
+ 9-15   I7     ---    IDX     [0/2965858] GLADE id.
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table2.mrt
+--------------------------------------------------------------------------------
+ Bytes Format Units  Label     Explanations
+--------------------------------------------------------------------------------
+ 1- 7   I7     ---    IDX      [3623/2481185] GLADE id.
+ 9-15   I7     ---    IDX_dupl [8965/1459502] GLADE id. of duplicate entry
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table3.mrt
+--------------------------------------------------------------------------------
+ Bytes Format Units  Label     Explanations
+--------------------------------------------------------------------------------
+ 1- 7   I7     ---    PGC     [35/6740711] HyperLEDA PGC number
+ 9-31   A23    ---    LV      Local Volume designation
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table4.mrt
+--------------------------------------------------------------------------------
+ Bytes Format Units  Label     Explanations
+--------------------------------------------------------------------------------
+ 1- 7   I7     ---    IDX     [213/2358708] GLADE id.
+ 9-52   A44    ---    Note    Reason for exclusion
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table5.mrt
+--------------------------------------------------------------------------------
+ Bytes Format Units  Label     Explanations
+--------------------------------------------------------------------------------
+  1- 29   A29    ---    Name      Galaxy designation
+ 31- 37   F7.3   deg    RAJ2000   [0.0/360.0]? Right Ascension (J2000)
+ 39- 45   F7.3   deg    DEJ2000   [-89.78/89.65]? Declination (J2000)
+ 47- 53   F7.3   deg    GLON      [0.0/360.0]? Galactic latitude
+ 55- 61   F7.3   deg    GLAT      [-89.93/89.97]? Galactic longitude
+ 63- 63   I1     ---    flag_asso [1/2]? Association flag
+ 65- 72   F8.2   Mpc    d_L       [0.02/16904.41]? Luminosity distance
+ 74- 74   I1     ---    flag_d    [1/6]? Distance reference flag
+ 76- 80   F5.2   [solMass] M*        [2.97/14.19]? Stellar mass
+ 82- 82   I1     ---    flag_M*   [0/1]? Mass reference flag
+ 84- 88   F5.3   ---    c_Nm      [0.0/1.0]? Mass incompleteness correction
+ 90- 94   F5.2   [solMass/yr] SFR       [-9.86/4.53]? Star formation rate (SFR)
+ 96- 96   I1     ---    flag_SFR  [0/5]? SFR reference flag
+ 98-102   F5.3   ---    c_Ns      [0.0/0.99]? SFR incompleteness correction
+104-110   I7     ---    PGC       [2/6775358]? HyperLEDA PGC number
+112-130   A19    ---    AllWISE   AllWISE id.
+132-138   I7     ---    IDX       [0/2965852]? GLADE id.
+
+--------------------------------------------------------------------------------
+
+
+
+See also:
+ https://relay.sao.ru/lv/lvgdb/ : Local Volume Catalogue
+ http://leda.univ-lyon1.fr/     : HyperLEDA database
+ II/328                         : AllWISE Data Release
+ http://glade.elte.hu/          : GLADE Catalogue
+ https://mangrove.lal.in2p3.fr/ : MANGROVE Catalogue
+
+================================================================================
+     (prepared by author  / pyreadme )
