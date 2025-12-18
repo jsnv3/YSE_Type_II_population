@@ -1,0 +1,43 @@
+figure.facecolor: white
+figure.frameon: True
+figure.edgecolor: white
+figure.figsize: 14.5, 9.0
+
+legend.fontsize: 16.0
+
+axes.grid:False
+axes.titlesize : 25
+axes.labelsize : 20
+
+grid.linewidth: 0.8
+lines.linewidth: 1.5
+patch.linewidth: 0.24
+lines.markersize: 10.0
+lines.markeredgewidth: 2.0
+
+xtick.major.size: 3.0
+ytick.major.size: 3.0
+xtick.minor.size: 1.5
+ytick.minor.size: 1.5
+
+xtick.labelsize: 22.0
+ytick.labelsize: 22.0
+
+xtick.major.pad: 2.5
+ytick.major.pad: 2.5
+
+xtick.direction: in
+ytick.direction: in
+xtick.minor.visible: True
+ytick.minor.visible: True
+
+pdf.compression: 9
+savefig.format: pdf
+savefig.dpi: 300
+
+font.family: serif
+font.serif: Computer Modern
+text.usetex: True
+axes.formatter.use_mathtext: True
+axes.formatter.useoffset: False
+#axes.formatter.limits : -3, 3
